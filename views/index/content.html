@@ -1,0 +1,62 @@
+  {{template "template/head.html" .}}
+<link rel="stylesheet" type="text/css" href="/static/editormd/css/editormd.min.css" />
+
+<style type="text/css">
+	.editormd-html-preview{
+		width: auto;
+		padding: 0;
+	}
+    /*解决layui屏蔽li标签默认样式临时方案*/
+  .markdown-body ul li{list-style: disc;}
+  .markdown-body ul li li{list-style: circle;}
+  .markdown-body ul li li li{list-style: square;}
+  .markdown-body ol li{list-style: decimal;}
+  .markdown-body ol li li{list-style: lower-roman;}
+  .markdown-body ol li li li{list-style: lower-alpha;}
+</style>
+
+<div class="layui-container" style="margin-top: 20px;">
+  <div class="layui-row layui-col-space15">
+    <div class="layui-col-md8">
+      <div class="fly-panel detail-box">
+        <h1>{{.ArticleInfo.Title}}</h1>
+        <div class="fly-detail-info">
+          
+          <span class="fly-list-nums" style="color: #c2c2c2;" > 
+            <a style="color: #c2c2c2;">时间：{{.ArticleInfo.UpdatedAt}}</a>
+            <i class="iconfont" title="人气" style="color: #c2c2c2;">&#xe60b;</i>{{.ArticleInfo.Visit}}
+            <br />
+            <!-- 文章标签 -->
+            {{range .ArticleInfo.Tags}}
+							<span class="layui-badge fly-badge-accept blog-tags"><a href="/search/tags.html?word={{.ID}}">{{.Title}}</a></span>
+            {{end}}
+          </span>
+        </div>
+        <br /><br /><hr />
+        <div class="detail-body photos">
+            <div class="markdown-body editormd-html-preview" >
+        {{.ArticleInfo.Content}}
+			</div>
+        </div>
+      </div>
+    </div>
+
+
+<script src="/static/layui/layui.js"></script>
+ <script type="text/javascript">
+	layui.use(['element','laypage','jquery'],function(){
+      element = layui.element,laypage = layui.laypage,$ = layui.$;
+//    menu.init();
+    })
+</script>     
+
+<!-- 百度推送 -->
+<!-- {{template "third/baidu_tuisong.html" .}} -->
+
+
+<!-- 百度统计 -->
+<!-- {{template "third/baidu_tongji.html" .}} -->
+
+<!-- 自带统计 -->
+
+{{template "template/foot.html" .}}

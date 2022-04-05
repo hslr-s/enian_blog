@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>登入</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/static/layui/css/layui.css">
+  <link rel="stylesheet" href="/static/css/global.css">
+</head>
+<body>
+
+<div class="fly-header layui-bg-black">
+  <div class="layui-container">
+    <a class="fly-logo" href="/">
+      <!-- <img src="/static/images/logo.png" alt="layui"> -->
+      XXX的博客
+    </a>
+    <ul class="layui-nav fly-nav layui-hide-xs">
+      <li class="layui-nav-item">
+        <a href="/">首页</a>
+      </li>
+      <li class="layui-nav-item layui-this">
+        <a href="/profile/">个人中心</a>
+      </li>
+      <!-- <li class="layui-nav-item">
+        <a href="http://www.layui.com/" target="_blank"><i class="iconfont icon-ui"></i>框架</a>
+      </li> -->
+    </ul>
+
+   
+  </div>
+</div>
+
+<div class="layui-container fly-marginTop">
+  <div class="fly-panel fly-panel-user" pad20>
+    <!-- 内容页 -->
+    <div id="page-content">
+    
+    </div>
+    
+  </div>
+</div>
+
+<div id="footer">
+
+</div>
+
+<script src="/static/layui/layui.js"></script>
+<script>
+  layui.config({
+    version: false
+    , base: '/static/mods/'
+  }).extend({
+    fly: 'index'
+  }).use(['layer', 'jquery', 'app', 'my_base', 'fly',"form"], function () {
+    var $ = layui.jquery,form=layui.form
+      , layer = layui.layer;
+
+    app = layui.app;
+    app.init({
+      contentElemId: '#page-content',
+      config: {
+        templatePath: "/profile/template/",
+      },
+      success: function () {
+        console.log('==== Index Success ====');
+        app.runTpl("footer", { elem: "#footer" })
+        // 核心扩展方法
+        app.base = layui.my_base;
+        
+        // 代码开始
+        app.base.routeDefine([
+          {
+            path: '/login',
+            url: "/profile/pages/login/login.html"
+          },
+          {
+            path: '/linkRegister',
+            url: "/profile/pages/login/linkRegister.html"
+          },
+          {
+            path: '/updateMail',
+            url: "/profile/pages/login/updateMail.html"
+          },
+          {
+            path: '/updatePassword',
+            url: "/profile/pages/login/updatePassword.html"
+          },
+          
+       
+
+        ])
+        var url = app.getRoute();
+        if (url) {
+          app.goToPage(url);
+        } else {
+          app.go("/login");
+        }
+        
+      }
+    })
+
+  })
+</script>
+
+</body>
+</html>

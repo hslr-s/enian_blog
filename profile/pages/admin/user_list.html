@@ -1,0 +1,205 @@
+<style>
+
+</style>
+
+<div>
+    <table class="layui-hide" id="user_list" lay-filter="user_list"></table>
+
+    <script type="text/html" class="layui-hide" id="tpl_edit_user_list">
+        <form class="layui-form" style="padding:20px" lay-filter="form-edit_user_list" >
+            <!-- 隐藏的id -->
+            <input type="text" class="layui-hide" name="id">
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户名</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="username"  autocomplete="off" placeholder="仅支持字母、数字、下划线"
+                        value="" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">mail</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="mail"  required lay-verify="required" autocomplete="off" value="" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">状态</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="status" value=1 title="启用" checked>
+                    <input type="radio" name="status" value=2 title="禁用" >
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">角色</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="role" value=2 title="普通用户">
+                    <input type="radio" name="role" value=1 title="管理员">
+                </div>
+            </div>
+            
+        </form>
+    </script>
+    
+    <script type="text/html" id="toolbarUserlist">
+      <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="add_user">添加用户</button>
+      </div>
+    </script>
+    
+    <script type="text/html" id="barDemo">
+      <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+      <a class="layui-btn layui-btn-xs" lay-event="updatePassword">密码</a>
+      <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+
+    <script type="text/html" id="bar_status">
+            {{# if(d.status ==1){ }}
+            <span style="color:#5FB878">正常</span>
+            {{# }else if(d.status ==2){ }}
+            <span style="color:#FF5722">停用</span>
+            {{# }else{ }}
+            -
+            {{#  } }}
+    </script>
+
+    <script type="text/html" id="bar_role">
+      {{# if(d.role ==1){ }}
+        <!-- <span class="layui-badge layui-bg-gray">未知</span> -->
+        <span class="layui-badge layui-bg-blue">管理员</span>
+      {{# }else if(d.role ==2){ }}
+        普通
+      {{# }else{ }}
+         - 
+      {{#  } }}
+    </script>
+
+</div>
+
+<script>
+   layui.use(['table',"jquery","layer","form"], function () {
+        var table = layui.table,$=layui.jquery,layer=layui.layer,form=layui.form;
+
+        table.render({
+            elem: '#user_list'
+            ,url: '/api/admin/user/getList'
+            , headers: {
+                "token": app.base.getUserInfo().token
+            }
+            , toolbar: '#toolbarUserlist' //开启头部工具栏，并为其绑定左侧模板
+            , defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+                title: '提示'
+                , layEvent: 'LAYTABLE_TIPS'
+                , icon: 'layui-icon-tips'
+            }]
+            // , title: '用户数据表'
+            , cols: [[
+                // { type: 'checkbox', fixed: 'left' }
+                { field: 'id', title: 'UID', width: 80, fixed: 'left', unresize: true, sort: true }
+                , { field: 'username', title: '用户名' }
+                , { field: 'mail', title: '邮箱'  }
+                , { field: 'name', title: '昵称' }
+                , { field: 'status', title: '状态',toolbar:"#bar_status",width: 90 }
+                , { field: 'role', title: '角色', toolbar: "#bar_role",width: 90 }
+                // , { field: 'sex', title: '性别', width: 80, edit: 'text', sort: true }
+                // , { field: 'city', title: '城市', width: 100 }
+                // , { field: 'sign', title: '签名' }
+                // , { field: 'logins', title: '登入次数', width: 100, sort: true }
+                , { field: 'create_time', title: '加入时间' }
+                , { fixed: 'right', title: '操作', toolbar: '#barDemo'}
+            ]]
+            // , page: true
+            , parseData: app.base.layuiTableParseData
+        });
+
+        //头工具栏事件
+        table.on('toolbar(user_list)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'add_user':
+                    var data = checkStatus.data;
+                    edit_user_list(1)
+                    break;
+                //自定义头工具栏右侧图标 - 提示
+                case 'LAYTABLE_TIPS':
+                    layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                    break;
+            };
+        });
+
+        //监听行工具事件
+        table.on('tool(user_list)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('确定删除该用户？请一定要至少保留一个管理员的账号。', function (index) {
+                    app.base.ajaxPost("/api/admin/user/delete", {id:String(data.id)}, function () {
+                        obj.del();
+                        layer.close(index)
+                        table.reload("user_list");
+                    }, function (msg) {
+                        layer.msg(msg)
+                    })
+                });
+            } else if (obj.event === 'edit') {
+                edit_user_list(2,data)
+            } else if (obj.event === 'updatePassword') {
+   
+                layer.prompt({ title: '设置(修改)密码', formType: 1 }, function (pass, index) {
+                    
+                    app.base.ajaxPost("/api/admin/user/updatePassword", {id:String(data.id),password:pass}, function () {
+                        layer.close(index);
+                        table.reload("user_list");
+                    }, function (msg) {
+                        layer.msg(msg)
+                    })
+                });
+            }
+        });
+
+
+        layerButtons = [
+           {
+               title: '保存',
+               type: 'primary',// warm,danger,primary
+               onClick: function (layer_index) {
+                   var value = form.val("form-edit_user_list")
+                   app.base.ajaxPost("/api/admin/user/edit", value, function () {
+                        layer.close(layer_index)
+                        table.reload("user_list");
+                   },function(msg){
+                        layer.msg(msg)
+                   })
+                   return false;//阻止默认事件
+               }
+           },
+       ];
+
+        function edit_user_list(type, old_obj_value) {
+           if (type == 1) {
+                app.base.layer({
+                    type: 1,
+                    shade: 0.5,
+                    // skin: 'content-info-layer',// 按钮有样式必须要定义skin
+                    title: (type == 1 ? "添加" : "编辑") + "用户",
+                    content: $('#tpl_edit_user_list').html(),
+                    buttons: layerButtons,
+                    success: function () {
+                        form.render()
+                    }
+                })
+           } else {
+                app.base.layer({
+                    type: 1,
+                    shade: 0.5,
+                    // skin: 'content-info-layer',// 按钮有样式必须要定义skin
+                    title: (type == 1 ? "添加" : "编辑") + "用户信息(谨慎修改)",
+                    content: $('#tpl_edit_user_list').html(),
+                    buttons: layerButtons,
+                    success: function () {
+                        form.render()
+                        form.val("form-edit_user_list", old_obj_value)
+                    }
+                })
+           }
+       }
+    });
+</script>

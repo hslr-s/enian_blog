@@ -1,0 +1,43 @@
+.wheres{
+  		margin: 10px;
+ }
+.where{
+	margin: 0 auto;
+	background: white;
+	/*width: 90%;*/
+	padding: 8px;
+	margin-bottom: 10px;
+}
+
+.where li{
+	margin-top:5px;
+	margin-bottom:5px;
+}
+
+.where .select{
+	width: 120px;
+	margin: 0;
+}
+
+.where .enian-table-search-del{
+	height: 37px;
+	float: right;
+}
+
+.between .input{
+	width: 46%;
+}
+.between .sign{
+	text-align: center;
+	width: 8%;
+}
+.enian-table-search .layui-layer-content{
+	background: #f2f2f2;
+	margin: 0;
+}
+.enian-table-search-btns{
+	position: absolute;
+	top: 200px;
+	height: 200px;
+	background: white;
+}

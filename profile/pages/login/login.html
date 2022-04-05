@@ -1,0 +1,253 @@
+<style>
+    .forget-password{
+        cursor: pointer;
+    }
+</style>
+<div class="layui-tab layui-tab-brief" lay-filter="user">
+    <ul class="layui-tab-title">
+        <li class="layui-this">登入</li>
+        <li>邮箱登入</li>
+        <li>注册</li>
+    </ul>
+    <div class="layui-tab-content" style="padding: 20px 0;">
+        <div class="layui-tab-item layui-show">
+            <div class="layui-form layui-form-pane" lay-filter="username_login_form">
+                <form method="post">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">用户名</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="username" required lay-verify="required" autocomplete="off"
+                                class="layui-input" placeholder="请输入用户名">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">密码</label>
+                        <div class="layui-input-inline">
+                            <input type="password" name="password" required lay-verify="required" autocomplete="off"
+                                class="layui-input">
+                        </div>
+                    </div>
+                    <!-- <div class="layui-form-item">
+                <label class="layui-form-label">验证码</label>
+                <div class="layui-input-inline">
+                  <input type="text" name="vercode" required lay-verify="required" placeholder="请回答后面的问题"
+                    autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-form-mid">
+                  <span style="color: #c00;">{{d.vercode}}</span>
+                </div>
+              </div> -->
+                    <div class="layui-form-item">
+                        <button class="layui-btn" lay-filter="username_login_btn" lay-submit>立即登录</button>
+                        <span style="padding-left:20px;">
+                            <a class="forget-password" >忘记密码？</a>
+                        </span>
+                    </div>
+                    <!-- <div class="layui-form-item fly-form-app">
+                        <span>或者使用社交账号登入</span>
+                        <a href="" onclick="layer.msg('正在通过QQ登入', {icon:16, shade: 0.1, time:0})" class="iconfont icon-qq" title="QQ登入"></a>
+                        <a href="" onclick="layer.msg('正在通过微博登入', {icon:16, shade: 0.1, time:0})" class="iconfont icon-weibo" title="微博登入"></a>
+                      </div> -->
+                </form>
+            </div>
+        </div>
+        <div class="layui-tab-item">
+            <div class="layui-form layui-form-pane" lay-filter="mail_login_form">
+                <form method="post">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">邮箱</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="email" required lay-verify="required" autocomplete="off"
+                                class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">密码</label>
+                        <div class="layui-input-inline">
+                            <input type="password" name="pass" required lay-verify="required"
+                                autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <!-- <div class="layui-form-item">
+                        <label class="layui-form-label">验证码</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="L_vercode" name="vercode" required lay-verify="required"
+                                placeholder="请回答后面的问题" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid">
+                            <span style="color: #c00;">{{d.vercode}}</span>
+                        </div>
+                    </div> -->
+                    <div class="layui-form-item">
+                        <button class="layui-btn" lay-submit lay-filter="mail_login_btn">立即登录</button>
+                        <span style="padding-left:20px;">
+                            <a class="forget-password" >忘记密码？</a>
+                        </span>
+                    </div>
+                    <!-- <div class="layui-form-item fly-form-app">
+                <span>或者使用社交账号登入</span>
+                <a href="" onclick="layer.msg('正在通过QQ登入', {icon:16, shade: 0.1, time:0})" class="iconfont icon-qq" title="QQ登入"></a>
+                <a href="" onclick="layer.msg('正在通过微博登入', {icon:16, shade: 0.1, time:0})" class="iconfont icon-weibo" title="微博登入"></a>
+              </div> -->
+                </form>
+            </div>
+        </div>
+
+        <div class="layui-tab-item">
+            <div class="layui-form layui-form-pane" lay-filter="register_form">
+                <form method="post">
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">邮箱</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="mail" required lay-verify="email" autocomplete="off"
+                                class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">可用作登录</div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">用户名</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="username" required lay-verify="required" autocomplete="off"  placeholder="3-15个字符" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">可包含数字、英文、下划线</div>
+                    </div>
+
+                    
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">昵称</label>
+                        <div class="layui-input-inline">
+                            <input type="text"  name="name" placeholder="2-10个汉字、字符"
+                                autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">不填写将与用户名相同</div>
+
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">密码</label>
+                        <div class="layui-input-inline">
+                            <input type="password" name="pass" required lay-verify="required"  placeholder="6-16个字符"
+                                autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">可包含数字、英文、“.”、“@”、“&”</div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">确认密码</label>
+                        <div class="layui-input-inline">
+                            <input type="password" name="repass" required lay-verify="required" placeholder="再次输入密码"
+                                autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <!-- <div class="layui-form-item">
+                        <label class="layui-form-label">人类验证</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="L_vercode" name="vercode" required lay-verify="required"
+                                placeholder="请回答后面的问题" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid">
+                            <span style="color: #c00;">{{d.vercode}}</span>
+                        </div>
+                    </div> -->
+                    <div class="layui-form-item">
+                        <button class="layui-btn" lay-filter="register_btn" lay-submit>提交注册</button>
+                    </div>
+                    <!-- <div class="layui-form-item fly-form-app">
+                <span>或者直接使用社交账号快捷注册</span>
+                <a href="" onclick="layer.msg('正在通过QQ登入', {icon:16, shade: 0.1, time:0})" class="iconfont icon-qq"
+                  title="QQ登入"></a>
+                <a href="" onclick="layer.msg('正在通过微博登入', {icon:16, shade: 0.1, time:0})" class="iconfont icon-weibo"
+                  title="微博登入"></a>
+              </div> -->
+                </form>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<script>
+    layui.use(['layer', 'jquery', "form"], function () {
+        var $ = layui.jquery, form = layui.form
+            , layer = layui.layer;
+            
+        // 监听用户名登录
+        form.on("submit(username_login_btn)", function (data) {
+            data.field.method = 1
+            app.base.ajaxPost("/api/profile/auth/login", data.field, function (data) {
+                layer.msg("登录成功!")
+                app.base.login(data.token)
+                var info = {}
+                info["name"] = data.name;
+                info["autograph"] = data.autograph;
+                info["head_image"] = data.head_image;
+                app.base.setUserInfo(info)
+                location.href = "/profile/"
+            }, function (msg) {
+                layer.msg("登录失败 原因：" + msg)
+            })
+            return false;
+        })
+
+        // 邮箱登录
+        form.on("submit(mail_login_btn)", function (data) {
+            console.log(data)
+            var postData={};
+            postData.method=2
+            postData.password = data.field.pass
+            postData.username = data.field.email
+            app.base.ajaxPost("/api/profile/auth/login", postData, function (data) {
+      
+                layer.msg("登录成功!")
+                app.base.login(data.token)
+                var info = {}
+                info["name"] = data.name;
+                info["autograph"] = data.autograph;
+                info["head_image"] = data.head_image;
+                app.base.setUserInfo(info)
+                location.href = "/profile/"
+            }, function (msg) {
+                layer.msg("登录失败 原因：" + msg)
+            })
+            return false;
+        })
+
+        // 注册账户
+        form.on("submit(register_btn)", function (data) {
+            // console.log(data)
+            d=data.field;
+            if(d.pass!=d.repass){
+                layer.msg("两次密码输入不一致");
+                return false;
+            }
+            if(data.field.name==""){
+                data.field.name= data.field.username
+            }
+            
+            app.base.ajaxPost("/api/profile/auth/sign/open", data.field, function (data) {
+                // console.log("token", data.token)
+                // alert(data.token)
+                layer.alert("注册确认邮件已发至邮箱请注意查收");
+                
+            }, function (msg) {
+                layer.msg("注册失败 原因：" + msg);
+            })
+            return false;
+        })
+
+        $(".forget-password").click(function(){
+            layer.prompt({ title: '请输入绑定的邮箱', formType: 0 }, function (mail, index) {
+                app.base.ajaxPost("/api/profile/auth/forgetPassword", { mail: mail }, function (data) {
+                    layer.close(index);
+                    layer.alert("操作成功，重置密码的链接已发送至（" + mail + "）邮箱，请查收")
+                }, function (msg) {
+                    layer.msg("操作失败，" + msg)
+                })
+            });
+        })
+
+
+    })
+</script>

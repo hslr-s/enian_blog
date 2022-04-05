@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>日历记事本</title>
+    <link rel="stylesheet" href="/static/layui/css/layui.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <style>
+        body{
+            background: #f2f2f2;
+        }
+        .page{
+            height: calc(100% - 50px);
+            border: 1px solid #f2f2f2;
+            box-shadow: 0 0 2px #888;
+            border-radius: 10px;
+            padding: 15px;
+            background: white;
+            width: 600px;
+            margin: 0 auto;
+        }
+        .header{
+            height: 50px;
+            line-height: 50px;
+            background: white;
+            text-align: center;
+            border-bottom: 1px #f2f2f2 solid;
+            font-size: 25px;
+        }
+        .header .title{
+            font-size: 15px;
+        }
+        .header .layui-icon{
+            width: 50px;
+            font-size: 25px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        #btn_header_left{
+            float: left;
+            color: #ff3e3e;
+        }
+        #btn_header_right{
+            float: right;
+            
+            /* color: #fff; */
+        }
+        .content{
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: inline-block;
+            height: 600px;
+            width: 100%
+            
+        }
+        .footer{
+            height: 50px;
+            background: white;
+            padding: 5px;
+        }
+
+
+        .time-tag{
+            /*margin:0 auto;*/
+            text-align: center;
+        }
+        
+        .time-tag .text{
+            display: inline-block;
+            padding: 5px 3px;
+            background: #d6d4d438;
+            text-align: center;
+            /*width: 100px;*/
+            margin: auto;
+            margin-top:5px;
+            border-radius: 5px;
+        }
+        .input{
+            
+            width: calc(100% - 125px);
+            /*margin-left: 20px;*/
+        }
+        .input-content{
+            width: 100%;
+            height: 48px;
+        }
+        .button-upload{
+            /*width: 70px;*/
+            margin:auto;
+        }
+        .button-send{
+            width: 70px;
+            margin-left: 5px;
+        }
+        .type-file{
+            color: blue;
+        }
+
+        #loading{
+            text-align: center;
+            position: absolute;
+            width: calc(100%);
+            left:0;
+            top: 51px;
+            display: none;
+            background: white;
+        }
+        
+        .content-item{
+            /*height: 80px;*/
+            padding: 10px 20px;
+            /* background: white; */
+            /* margin-bottom: 2px; */
+        }
+        .content-item .title{
+            font-size: 18px;
+            font-weight: 600;
+            color: #525252;
+        }
+
+        .content-item .title:hover{
+            color: #49c796;
+        }
+
+        .content-item .title-check{
+            font-size: 18px;
+            font-weight: 600;
+            color: #0095ff;
+        }
+
+        
+        .box-p{
+            display: inline;
+            height: 100%;
+            padding: 20px;
+            /*width: 100%;*/
+            /*text-align: center;*/
+        }
+
+        .content-item .note{
+            color: #c5c5c5;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .content-item .note i{
+            font-size: 10px;
+        }
+
+        .content-item .class-hr{
+            margin: 0;
+            display: none;
+        }
+
+        @media screen and (max-width:700px ) {
+            .page{
+                width: 80%;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="box-p">
+        <div class="page">
+            <div id='loading'>加载中...</div>
+            <div class="header">
+                <div id="btn_header_left" class="layui-inline"><i class="layui-icon layui-icon-logout" title="退出登录"></i></div>
+                <div class="layui-inline title">我的日历记事本</div>
+                <div id="btn_header_right" class="layui-inline"><i class="layui-icon layui-icon-addition" title="添加项目"></i></div>
+            </div>
+            <div class="content-box">
+                <a class="content">
+                    
+                </a>
+            </div>
+            <!-- <div class="footer">
+            </div> -->
+        </div>
+    </div>
+    
+    <script src="/static/layui/layui.js"></script>
+    <script>
+        layui.config({base: '/static/layui/extends/'})
+        layui.use(['jquery','upload','layer'],function(){
+            var $=layui.jquery,layer=layui.layer,core=layui.core
+            upload=layui.upload;
+
+            // 记录最新最旧时间
+            var time={new:0,old:0}
+            //0 非选择状态
+            var checkStatus=0;
+            // 最新页码记录，用于滑到顶部加载
+            var newPage=1
+            setWindow()
+            getContent(1)
+
+            $('.content-item').click(function(){
+                location.href='/calendar/obj/set?obj_id='+$(this).data('object_id');
+            })
+
+            $('#btn_header_right').click(function(){
+                // location.href='/calendar/index/add_object'
+                layer.prompt({
+                    title:"新建项目"
+                },function (value, index, elem) {
+                     $.ajax({
+                        url: '/calendar/objectapi/add',
+                        type:"post",
+                        data:{
+                            "name": value,
+                        },
+                        success: function (res) {
+                            if (res['code'] == 1) {
+                                getContent(1);
+                            }
+                        }
+                    })
+                    layer.close(index);
+                });
+                
+            })
+
+            $('#btn_header_left').click(function(){
+                layer.confirm('确定要退出登录吗', {
+                    btn: ['确定', '取消'] //按钮
+                }, function () {
+                    location.href = '/calendar/index/logout'
+                });
+                
+            })
+
+
+
+            $('.work-btns').click(function(){
+                var type=$(this).data('type')
+                if(type==0){
+                    // 取消
+                    setCheck()
+                }else if(type==1){
+                    // 删除
+                    var check=getCheck()
+                    delData(check.items,check.ids)
+                }
+            })
+            
+            function getContent(page){
+                $('.content').html("");
+                $.ajax({
+                    url:'/calendar/objectapi/getList?page='+page,
+                    success:function(res){
+                        if(res['code']==1){
+                            for (var i = 0; i < res['data'].length; i++) {
+                                var info=res['data'][i];
+                                addDataHtml(info['id'],info['name'],info['update_time']);
+                            }
+                            
+                        }
+                    }
+                })
+            }
+            
+            // 添加一条数据
+            function addDataHtml(object_id,title,note){
+                var html=`
+                <div class="content-item" data-object_id=${object_id}>
+                    <a href="/calendar/obj?obj_id=${object_id}">
+                        <div class="title">
+                            ${title}
+                        </div>
+                        <div class="note">
+                            <span>
+                                <i class="layui-icon layui-icon-time"></i>
+                                ${note}
+                            </span>
+                        </div>
+                        <hr class="class-hr">
+                    </a>
+                </div>`
+                $('.content').append(html);
+            }
+
+      
+            function setWindow(){
+                // $('.content-box').css('height',$(window).height()-115)
+                $('.content').css('height',$(window).height()-140)
+                // console.log($(window).width());
+                // if($(window).width()>600){
+                //     $('.page').css('width',600)
+                //     $('.page').css('height','100%')
+                //     $('.page').css('margin','0 auto')
+                //     // $('.page').css('border','1px gray solid')
+                // }
+            }
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<style type="text/css">
+    .register-status{
+        text-align: center;
+        margin-top: 200px;
+    }
+    
+    .register-status,.register-status .layui-icon{
+        font-weight: bolder;
+        font-size: 20px;
+        color: #626262;
+    }
+
+    .go-login{
+        cursor: pointer;
+        color: #00a4d5;
+    }
+</style>
+<div>
+    <h2 class="register-status"><i class="layui-icon layui-icon-loading-1 layui-anim layui-anim-rotate layui-anim-loop"></i> 注册中,请稍后...</h2>
+</div>
+
+        
+
+<script>
+    app.base.loadApi('apiLogin');
+    layui.use(['form', 'layer','jquery','laytpl','apiLogin'], function() {
+        var form = layui.form;
+        var $ = layui.jquery;
+        var laytpl = layui.laytpl;
+        var timeOut
+        var qrContent={
+                type:'login'
+                ,code:false
+            };
+
+        app.base.setTitle('注册 - 日历记事本');
+        var code= app.parseUrl().params.code;
+        layui.apiLogin.linkRegister(code, function (data) {
+            app.base.setTitle('注册完成 - 日历记事本');
+            var html = '<br>那么马上去<span class="go-login">登录</span>记录你的生活吧';
+            $('.register-status').html('<i class="layui-icon layui-icon-ok" style="color:#15db2d;"></i> 恭喜你，注册成功!' + html)
+            $('.go-login').click(function () {
+                app.go(app.base.route.login)
+            })
+        }, function (msg) {
+            app.base.setTitle('注册失败 - 日历记事本');
+            $('.register-status').html('<i class="layui-icon layui-icon-close" style="color:crimson;"></i> '+msg)
+             
+        });
+        
+     
+    });
+</script>

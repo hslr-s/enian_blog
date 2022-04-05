@@ -1,0 +1,190 @@
+
+
+<style>
+   .aaaaa{
+
+   }
+
+   .aaaaa .layui-layer-btn .layui-layer-btn1{
+       background-color: darkcyan;
+   }
+
+  
+
+    /* .search-list-box {
+        border: 1px solid #f2f2f2;
+        box-shadow: 0 0 2px #888;
+        border-radius: 10px;
+        padding: 15px;
+        background: white;
+        display: inline-block;
+        height: 100%;
+        width: calc(100% - 70px);
+        margin: auto 20px;
+        margin-top: 20px;
+    }
+
+    .search-list-item-left{
+        width: calc(100% - 120px);
+        background-color: rgb(141, 141, 141);
+    }
+
+    .search-list-item-right{
+        width: 100px;
+        background-color: rgb(141, 141, 141);
+    } */
+
+   
+</style>
+
+<div id="apppppp">
+    <input type="text" name="search_word" required lay-verify="required" placeholder="请输入关键字" autocomplete="off"
+        class="layui-input">
+
+    <!-- <button type="button" class="layui-btn">
+        <i class="layui-icon layui-icon-search"></i>
+    </button> -->
+
+    <!-- <div>
+        <div class="layui-inline search-list-item-left">
+            <div class=" layui-elip">
+                我是标题
+            </div>
+            <div class=" layui-elip">
+                我是内容我是内容我是内容我是内容我是内容我是内容我是内容
+            </div>
+        </div>
+        <div class="layui-inline search-list-item-right">
+            操作区
+        </div>
+    </div> -->
+    <div>
+        {{# layui.each(d.list, function(index, item){ }}
+        <div>
+            <div class="layui-inline search-list-item-left">
+                <div class=" layui-elip">
+                    {{item.title}}
+                </div>
+                <div class=" layui-elip">
+                    {{item.content}}
+                </div>
+            </div>
+            <div class="layui-inline search-list-item-right">
+                操作区
+            </div>
+        </div>
+        {{# } }}
+    </div>
+        
+    <!-- <p><span class="event-info-time-p-span-title">我是标题，我要写很多的呢绒哦。很多很多很多的</span></p>
+    
+    <p class="event-info-time-p">创建时间： <span>2021-11-16 16:27:53</span></p>
+    <hr>
+    <p><span class="event-info-time-p-span-content">555555</span></p>
+    <p class="event-info-time-p">执行时间： <span>2021-11-16 16:27:53 ~ 2021-11-16 16:27:59</span></p> -->
+</div>
+
+<div id="apppppp">
+    <input type="text" name="search_word" required lay-verify="required" placeholder="请输入关键字" autocomplete="off"
+        class="layui-input">
+
+    <!-- <button type="button" class="layui-btn">
+        <i class="layui-icon layui-icon-search"></i>
+    </button> -->
+
+    <!-- <div>
+        <div class="layui-inline search-list-item-left">
+            <div class=" layui-elip">
+                我是标题
+            </div>
+            <div class=" layui-elip">
+                我是内容我是内容我是内容我是内容我是内容我是内容我是内容
+            </div>
+        </div>
+        <div class="layui-inline search-list-item-right">
+            操作区
+        </div>
+    </div> -->
+    <div>
+        {{# layui.each(d.list, function(index, item){ }}
+        <div>
+            <div class="layui-inline search-list-item-left">
+                <div class=" layui-elip">
+                    {{item.title}}
+                </div>
+                <div class=" layui-elip">
+                    {{item.content}}
+                </div>
+            </div>
+            <div class="layui-inline search-list-item-right">
+                操作区
+            </div>
+        </div>
+        {{# } }}
+    </div>
+        
+    <!-- <p><span class="event-info-time-p-span-title">我是标题，我要写很多的呢绒哦。很多很多很多的</span></p>
+    
+    <p class="event-info-time-p">创建时间： <span>2021-11-16 16:27:53</span></p>
+    <hr>
+    <p><span class="event-info-time-p-span-content">555555</span></p>
+    <p class="event-info-time-p">执行时间： <span>2021-11-16 16:27:53 ~ 2021-11-16 16:27:59</span></p> -->
+</div>
+
+<script type="text/javascript">
+    layui.use(['layer', 'jquery'], function () {
+        var $ = layui.jquery
+            , layer = layui.layer;
+     
+        console.log('加载完毕---')
+        app.runTpl("eventSearch",{objId:1})
+        // app.runTpl("eventInfo", {
+        //     title:'我是标题',
+        //     create_time: '2021-11-16 17:09:14',
+        //     start_time: '2021-11-16 17:09:14',
+        //     end_time: '2021-11-16 17:09:14',
+        //     content: '本篇主要集中罗列页面中的一些简单辅助元素，如：引用块、字段集区块、横线等等，这些元素都无需依赖任何模块',
+        //     onEditClick: function (layerIndex) {
+        //         console.log(layerIndex)
+        //     }
+        // })
+        // 监听地址变化
+        // app.eventRegister('routeChange',function(new_route,old_route){
+        //     console.log('路由变化', new_route, old_route)
+        //     return false;
+        // })
+
+        // app.$e.routeChange=function (new_route, old_route) {
+        //     console.log('路由变化', new_route, old_route)
+        //     return false;
+        // }
+
+        // $('button').click(function(){
+        //     app.go($(this).attr('href'));
+        // })
+
+        // app.base.tplRender('#tpl-event_info', { title: "我是标题" }, null, function (html) {
+        //     // ....
+        // })
+
+        // app.base.layer({
+        //     title:"详情",
+        //     area:[400,500],
+        //     // btn:['aa1','aaa2'],
+        //     skin:'aaaaa',
+        //     content:$('#apppppp').html(),
+        //     buttons:[
+        //         {   
+        //             title:'编辑',
+        //             type:2,
+        //             onClick:function(e){ 
+        //                 console.log('点击1',e)
+        //             }
+        //         }
+
+        //     ],
+        // })
+        
+        
+    })
+</script>

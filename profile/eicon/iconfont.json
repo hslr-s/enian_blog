@@ -1,0 +1,44 @@
+{
+  "id": "2914302",
+  "name": "日历记事本",
+  "font_family": "iconfont",
+  "css_prefix_text": "eicon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "201638",
+      "name": "编辑",
+      "font_class": "edit",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "5732759",
+      "name": "定位",
+      "font_class": "location",
+      "unicode": "ec32",
+      "unicode_decimal": 60466
+    },
+    {
+      "icon_id": "12771532",
+      "name": "详情",
+      "font_class": "info",
+      "unicode": "e625",
+      "unicode_decimal": 58917
+    },
+    {
+      "icon_id": "1471608",
+      "name": "add-more",
+      "font_class": "add-more",
+      "unicode": "e623",
+      "unicode_decimal": 58915
+    },
+    {
+      "icon_id": "25458188",
+      "name": "登出",
+      "font_class": "logout",
+      "unicode": "e89e",
+      "unicode_decimal": 59550
+    }
+  ]
+}

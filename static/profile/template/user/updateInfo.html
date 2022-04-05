@@ -1,0 +1,98 @@
+
+<style>
+  .layui-form-label {
+    width: 150px;
+  }
+
+  form {
+    margin: 20px;
+  }
+</style>
+
+<script type="text/html" id="tpl-updateInfo">
+  <form class="layui-form " action="" onsubmit="return false" lay-filter='obj-updateInfo'>
+    <fieldset class="layui-elem-field  layui-field-title">
+      <legend>个人信息</legend>
+      <div class="layui-field-box">
+
+        <div class="layui-form-item">
+          <label class="layui-form-label">账号（邮箱）</label>
+          <div class="layui-input-inline">
+            <input type="text" name="username" required lay-verify="required" placeholder="请输入邮箱" autocomplete="off"
+              class="layui-input">
+          </div>
+        </div>
+
+        <div class="layui-form-item">
+          <label class="layui-form-label">昵称</label>
+          <div class="layui-input-inline">
+            <input type="text" name="name" required lay-verify="required" placeholder="昵称" autocomplete="off"
+              class="layui-input">
+          </div>
+        </div>
+        
+        <!-- <div class="layui-form-item">
+          <label class="layui-form-label">访问密码</label>
+          <div class="layui-input-inline">
+            <input type="text" name="project_password" required lay-verify="required" placeholder="无密码" autocomplete="off"
+              class="layui-input">
+          </div>
+        </div> -->
+      </div>
+    </fieldset>
+    
+    <!-- <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" lay-submit lay-filter="save_setting">保存</button>
+        <button class="layui-btn layui-btn-danger"  lay-submit lay-filter="delete_obj">删除此项目</button>
+      </div>
+    </div> -->
+  </form>
+</script>
+
+
+<script>
+    app.base.loadApi('apiUser');
+    app.defTpl('updateInfo', function (tplArg) {
+      layui.use(['layer','laydate','form','colorpicker','jquery','apiUser','app'],function(){
+          var layer=layui.layer,laydate=layui.laydate,colorpicker=layui.colorpicker,form=layui.form;
+          $=layui.jquery;
+          
+          // 直接弹窗
+          app.base.layer({
+            // title:"",
+            type: 1,
+            skin:"tpl-objectSetting",
+            area: ['440px', '500px'], //宽高
+            content: $('#tpl-updateInfo').html(),
+            buttons:[
+              {
+                title:"保存",
+                onClick:function(index){
+                  // 保存设置
+                  postdata = form.val("obj-updateInfo");
+                  layui.apiUser.updateUserInfo(postdata['username'], postdata['name'], function (data) {
+                    layer.msg('修改成功')
+                    layer.close(index)
+                  },function (msg) {
+                    layer.msg(msg)
+                  })
+                  return false;
+                }
+              },
+              {
+                title: "取消"
+              }
+            ],
+            success:function(){
+              layui.apiUser.getUserInfo(function (data) {
+                form.val("obj-updateInfo", data);
+              })
+              form.render()
+            }
+          })
+
+      });
+
+    })
+</script>

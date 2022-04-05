@@ -1,0 +1,97 @@
+    <!-- 此模板模块全部迁出 -->
+    
+    <div class="layui-col-md4">
+	
+	  <div class="fly-panel part-user-card">
+        <h3 class="fly-panel-title">BLOG</h3>
+        <ul class="fly-panel-main fly-list-static">
+          <div>
+            <div class="layui-inline">
+              <img style="width: 60px;height: 60px;" src="{{.UserCardData.HeaderImg}}" alt="博客头像" />
+            </div>
+          	
+            <div class="layui-inline" style="width: calc(100% - 70px);">
+              <a href="{{.UserCardData.UserInfoUrl}}" style="margin-left: 20px;font-size: 20px;">{{.UserCardData.UserName}}</a>
+              <p><span class="autograph">{{.UserCardData.Autograph}}</span></p>
+            </div>
+          	
+          </div>
+        </ul>
+      </div>
+      
+      
+      <div class="fly-panel">
+        <h3 class="fly-panel-title">搜索博客</h3>
+        <ul class="fly-panel-main fly-list-static">
+          <input type="text" id="search" name="title" required lay-verify="required" placeholder="输入关键字回车键搜索" autocomplete="off" class="layui-input">
+          
+        </ul>
+      </div>
+
+      <!-- 其他链接模板 -->
+      <div class="fly-panel">
+        <h3 class="fly-panel-title">温馨通道</h3>
+        <ul class="fly-panel-main fly-list-static">
+          <li>
+            <a href="http://fly.layui.com/jie/4281/" target="_blank">enianAdmi</a>
+          </li>
+          <li>
+            <a href="http://fly.layui.com/jie/5366/" target="_blank">
+              layui 常见问题的处理和实用干货集锦
+            </a>
+          </li>
+          <li>
+            <a href="http://fly.layui.com/jie/4281/" target="_blank">layui 的 GitHub 及 Gitee (码云) 仓库，欢迎Star</a>
+          </li>
+          <li>
+            <a href="http://fly.layui.com/jie/5366/" target="_blank">
+              layui 常见问题的处理和实用干货集锦
+            </a>
+          </li>
+          <li>
+            <a href="http://fly.layui.com/jie/4281/" target="_blank">layui 的 GitHub 及 Gitee (码云) 仓库，欢迎Star</a>
+          </li>
+        </ul>
+      </div>
+
+
+     
+      <!-- 标签模板 -->
+      <div class="fly-panel">
+        <h3 class="fly-panel-title">常用标签</h3>
+        <div class="fly-panel-main fly-list-static">
+          {{range .LabelData}}
+          <a class="blog-tags blog-tags-right layui-btn layui-btn-sm {{.StyleClass}}"
+            href="/search/tags.html?word={{.Id}}">{{.Name}}</a>
+          {{end}}
+        </div>
+        
+      </div>
+
+      
+      <!-- A-D模板 -->
+      <!-- <div class="fly-panel">
+        <div class="fly-panel-title">
+          快捷入口
+        </div>
+        <div class="fly-panel-main">
+          <a href="http://enianteam.com/enian_admin.html" target="_blank" class="fly-zanzhu" style="background-color: #5FB878;">enianAdmin后台管理系统</a>
+        </div>
+        <div class="fly-panel-main">
+          <a href="http://enianteam.com" target="_blank" class="fly-zanzhu" style="background-color: #2F4056;">我的个人网站</a>
+        </div>
+      </div> -->
+      
+      <!-- 友情链接模板 -->
+      <div class="fly-panel fly-link">
+        <h3 class="fly-panel-title">友情链接</h3>
+        <dl class="fly-panel-main">
+          <dd><a href="http://www.layui.com/" target="_blank">layui</a><dd>
+          <dd><a href="http://layim.layui.com/" target="_blank">WebIM</a><dd>
+          <dd><a href="http://layer.layui.com/" target="_blank">layer</a><dd>
+          <dd><a href="http://www.layui.com/laydate/" target="_blank">layDate</a><dd>
+          <dd><a href="mailto:xianxin@layui-inc.com?subject=%E7%94%B3%E8%AF%B7Fly%E7%A4%BE%E5%8C%BA%E5%8F%8B%E9%93%BE" class="fly-link">申请友链</a><dd>
+        </dl>
+      </div>
+
+    </div>

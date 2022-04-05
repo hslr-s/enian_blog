@@ -1,0 +1,54 @@
+{{template "template/head.html" .}}
+<script src="/static/layui/layui.js"></script>
+<div class="" style="background-image: url();">
+	<div class="layui-container" style="margin-top: 20px;padding: 10px;">
+		<h1 style="font-weight: 700;">{{.AnthologyInfo.title}}</h1>
+		<p style="color:grey">
+			<span>创建人：<a href="/u/{{.AnthologyInfo.username}}">{{.AnthologyInfo.userName}}</a></span>
+			<span>创建时间：{{.AnthologyInfo.createTime}}</span>
+		</p>
+		{{if .AnthologyInfo.description}}
+		<h3>专栏介绍：{{.AnthologyInfo.description}}</h3>
+		{{end}}
+	</div>
+	
+
+	<!-- <p style="padding: 10px 0; color: #5FB878;">认证信息：layui 作者</p> -->
+
+	<!-- <p class="fly-home-info">
+		<i class="iconfont icon-kiss" title="飞吻"></i><span style="color: #FF7200;">66666 飞吻</span>
+		<i class="iconfont icon-shijian"></i><span>2015-6-17 加入</span>
+		<i class="iconfont icon-chengshi"></i><span>来自杭州</span>
+	</p> -->
+
+	<!-- <p class="fly-home-sign">{{.UserCardData.Autograph}}</p> -->
+
+	<!-- <div class="fly-sns" data-user="">
+		<a href="javascript:;" class="layui-btn layui-btn-primary fly-imActive" data-type="addFriend">加为好友</a>
+		<a href="javascript:;" class="layui-btn layui-btn-normal fly-imActive" data-type="chat">发起会话</a>
+	</div> -->
+
+</div>
+
+
+<div class="layui-container" style="margin-top: 20px">
+	<div class="layui-row layui-col-space15">
+		<div class="layui-col-md8">
+			{{template "template/list.html" .}}
+		</div>
+		
+		<div class="layui-col-md4">
+			{{template "template/right/search_word.html" .}}
+			{{template "template/right/label.html" .}}
+			
+			<!-- {{template "template/right/user_card.html" .}}
+			{{template "template/right/user_card.html" .}}
+			{{template "template/right/user_card.html" .}} -->
+
+		</div>
+		
+		
+		<!-- {include file="../application/blog_/view/template/right.html" /} -->
+		<!-- {include file="../application/viewTpl/baidu_tuisong.html" /}
+		{include file="../application/viewTpl/baidu_tongji.html" /} -->
+		{{template "template/foot.html" .}}

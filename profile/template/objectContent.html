@@ -1,0 +1,843 @@
+
+<!-- 日期处理时间工具 -->
+<script type="text/javascript" src="/static/calendar/5.10/moment.min.js"></script>
+
+
+<script type="text/html" id="tpl-file_tool_objcontent">
+    <style id="objectContent-style">
+        #calendar {
+            /* max-width: 1200px; */
+            /* margin: 20px auto 0; */
+            width: 100%;
+    
+        }
+    
+        .event-btn {
+            display: inline-block;
+            padding: 5px;
+            border-radius: 5px;
+        }
+    
+    
+    
+        .fc-button-group .fc-button {
+            height: 35px;
+        }
+    
+        .title {
+            color: #a7a7a7;
+            border-bottom: 1px solid #f3f3f3;
+        }
+    
+        /* 月视图事件超出部分省略号显示 */
+        .fc-daygrid-block-event .fc-event-main .event-content {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding: 5px;
+            /*margin: 3px;*/
+            display: block;
+            /*font-size: 14px;*/
+        }
+    
+        .fc-list-event-graphic,
+        .fc-list-event-time {
+            display: none;
+        }
+    
+        .fc-theme-standard td:hover,
+        .fc-theme-standard th:hover {
+            color: black;
+        }
+    
+        .nav-title {
+            color: #a7a7a7;
+            text-align: center;
+            border-bottom: 1px #efefef solid;
+            margin-bottom: 10px;
+        }
+    
+        .password-title {
+            margin: 10px 0;
+            color: #6e6e6e;
+        }
+    
+        .password-input {
+            width: calc(100% - 50px);
+            display: inline-block;
+        }
+    
+        .password-btn {
+            text-align: center;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    
+        #password-box {
+            width: 300px;
+            border-radius: 0.5rem;
+            top: calc(50% - 58px);
+            position: absolute;
+            left: calc(50% - 150px);
+            padding: 20px;
+            border: 1px #ddd solid;
+        }
+    
+        #btn-password-commit {
+            color: darkcyan;
+        }
+    
+        .forget-project-password {
+            color: cornflowerblue;
+            cursor: pointer;
+        }
+    
+        /* 标题栏样式 */
+        .fc-toolbar-chunk .fc-toolbar-title {
+            font-weight: 600;
+            /* color: darkcyan; */
+            color: #6e6e6e;
+        }
+    
+        /* 自定义按钮自定义图标 */
+        .custom-button {
+            font-size: 18px !important;
+            font-family: layui-icon !important;
+        }
+    </style>
+    <!-- <div class="layui-hide"> -->
+        <!-- <style id="objectContent-style">
+        </style> -->
+    <!-- </div> -->
+   
+    <header class="nav">
+        <div class="nav-title"> {{d.title}} </div>
+    </header>
+    <div id='password-box' class="layui-anim layui-anim-fadein layui-hide">
+        <div class="password-title">
+            请输入密码查看项目 <span class="forget-project-password"> 忘记密码?</span>
+        </div>
+        
+        <div>
+            <div class="password-input">
+                <input type="text" id="input-password" autocomplete="off" placeholder="{{d.pwd_text}}" class="layui-input">
+            </div>
+            <div class="layui-inline password-btn">
+                <div id="btn-password-commit">查看</div>
+            </div>
+        
+        </div>
+    </div>
+    <div id='calendar-box' class="layui-anim layui-anim-fadein layui-hide">
+        <div id="calendar"></div>
+    </div>
+    <div id='empty-box' class="layui-anim layui-anim-fadein layui-hide">
+        <style>
+            .center-vertical .text {
+                text-align: center;
+                font-weight: 800;
+                color: #a1a1a1;
+            }
+            
+
+            
+        
+            
+        </style>
+        <div class="center-vertical">
+            <h1 class="nothing text">404</h1>
+            <h4 class="text">项目不存在</h4>
+        </div>
+    </div>
+
+
+    <!-- 添加编辑模板 -->
+    <script type="text/html" id='form_input'>
+
+        <div class="layui-form layui-form-pane" action="" style="padding: 20px;">
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">标题</label>
+                <div class="layui-input-block">
+                    <!-- <input type="text" name="title" lay-verify="title" id='text_input' autocomplete="off" placeholder="请输入标题" class="layui-input"> -->
+                    <textarea name="desc" name="title" lay-verify="title" class="layui-textarea"  placeholder="请输入标题内容(不超过255字)" id="text_input"></textarea>
+                </div> 
+            </div>
+            
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">内容</label>
+                <div class="layui-input-block">
+                    <textarea name="desc" placeholder="可选(不超过1500字)" class="layui-textarea" id="content"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">风格</label>
+                <div class="layui-input-block">
+                    <!-- <div class="event-btn green">演示风格</div> -->
+                    <select name="class_name" id="class_select">
+                        <option value="">默认</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- 取消颜色值（自定义太多影响样式错乱） -->
+            <!-- <div class="layui-form-item">
+                <label class="layui-form-label">颜色值</label>
+                <div style="margin-left: 30px;">
+                    <div class="layui-input-inline" style="width: 120px;">
+                        <input type="text" value="" readonly="" id="color_input" placeholder="可选（选择后类失效）" class="layui-input">
+                    </div>
+                    <div class="layui-inline" style="left: -11px;">
+                        <div id="test-form"></div>
+                    </div>
+                </div>
+            </div> -->
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">开始时间</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" readonly="" id="start_time" placeholder="yyyy-MM-dd">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">结束时间</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" readonly="" id="end_time" placeholder="yyyy-MM-dd">
+                </div>
+            </div>
+            <!-- <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" lay-submit="" id="submit" lay-filter="demo1">保存</button>
+                <button type="reset" class="layui-btn layui-btn-danger" id="delete">删除</button>
+            </div>
+            </div> -->
+        </div>
+            
+    </script>
+</script>
+
+<script>
+    app.base.loadApi([
+        'apiObject',
+        'apiEvent',
+        'apiStyle'
+    ]);
+    app.defTpl('objectContent', function (tplArg) {
+        layui.use(['layer', 'laydate', 'form', 'colorpicker', 'jquery','apiObject', 'apiEvent', 'apiStyle'], function () {
+            var layer = layui.layer, laydate = layui.laydate, colorpicker = layui.colorpicker, form = layui.form;
+            var calendar = null;
+            var get = moment().format('YYYY-MM-DD');
+            var objId = tplArg.objId;
+            var $ = layui.$;
+            var visit_password=null;
+            var config={};//项目配置
+            // var searchLayerIndex=0;// 查询的弹窗index
+            // 接口API
+            var apiObject=layui.apiObject, apiEvent = layui.apiEvent, apiStyle = layui.apiStyle;
+
+            
+            
+
+            apiEvent.visit_password= visit_password;
+            // ====================
+            // 组件自定义按钮
+            // ====================
+            var leftButtonsText = "setting,search";
+            var customButtons = {
+                setting: {
+                    hint: "管理平台",
+                    icon: ' custom-button layui-icon-app',
+                    click: function () {
+                        app.runTpl('setting/objectSetting', {
+                            objId: objId
+                        })
+                    }
+                },
+                search: {
+                    hint: "查询事件",
+                    icon: ' custom-button layui-icon-search',
+                    click: function () {
+                        // if(searchLayerIndex!=0){
+                        //     // 保证只打开一个弹窗
+                        //     layer.restore(searchLayerIndex);
+                        //     return;
+                        // }
+                        // 打开事件详情组件
+                        app.runTpl("eventSearch", { 
+                            objId: objId ,
+                            onClickInfo:function(data){
+                                app.runTpl("eventInfo", {
+                                    title: data.title,
+                                    create_time: data.create_time,
+                                    start_time: data['start_time'],
+                                    end_time: data['end_time'],
+                                    content: data.content,
+                                    onEditClick: function (layerIndex) {
+                                        var event={};
+                                        event['start'] = data.start_time;
+                                        event['end'] = data.end_time;
+                                        event['title'] = data.title;
+                                        event['className'] = data.className;
+                                        event['color'] = data.color;
+                                        event['content'] = data.content;
+                                        event['id'] = data.id;
+                                        openInfo(event, event);
+                                        layer.close(layerIndex)
+                                    }
+                                })
+                            },
+                            onClickEdit:function(data){
+                                var event = {};
+                                event['start'] = data.start_time;
+                                event['end'] = data.end_time;
+                                event['title'] = data.title;
+                                event['className'] = data.className;
+                                event['color'] = data.color;
+                                event['content'] = data.content;
+                                event['id'] = data.id;
+                                openInfo(event, event);
+                            },
+                            onClickLocation:function(data){
+                                calendar.gotoDate(data.start_time.slice(0,10))
+                            },
+                            getLayerIndex(index){
+                                console.log(index)
+                                // searchLayerIndex=index;
+                            },
+                            end:function(){
+                                // searchLayerIndex = 0;
+                            }
+
+                            
+                        })
+                    }
+                },
+            };
+            // 左侧
+            if(tplArg.leftButtons){
+                // 格式
+                // [
+                //     {
+                //         name:'setting',
+                //         text:'设置',
+                //         click:function(){
+                //             // ...
+                //         }
+                //     }
+                // ]
+                
+                for (let i = 0; i < tplArg.leftButtons.length; i++) {
+                    const element = tplArg.leftButtons[i];
+                    customButtons[element.name]={
+                        'text': element.text,
+                        'hint': element.hint,
+                        'icon': element.icon,
+                        'click': element.onClick
+                    }
+                    leftButtonsText += ","+element.name
+                }
+            }
+
+            // ========
+            // 获取详情
+            // ========
+            apiObject.getInfo(objId,function(data){
+
+                
+
+                var tplData={};
+                tplData['pwd_text']="请输入密码";
+                tplData['title']= (data && data.name)? data.name:'';
+                app.base.tplRender('#tpl-file_tool_objcontent', tplData, tplArg.elem,function(){
+                    // 加载样式文件
+                    apiStyle.getStyleText(function (html) {
+                        $('#objectContent-style').append(html)
+                    })
+                    if (!data) {
+                        $('#empty-box').removeClass('layui-hide')
+                        return;
+                    }
+                    if (data.password) {
+                        showModle(1);
+                    } else {
+                        showModle(2, objId)
+                    }
+
+                    // 忘记密码被点击
+                    $('.forget-project-password').on('click', function () {
+                        layer.confirm('确定后密码将会发送到你的邮箱中', {
+                            btn: ['确定', '取消'] //按钮
+                        }, function () {
+                            apiObject.retrievePassword(objId, function () {
+                                layer.msg('项目密码已经发送到你的注册邮箱中，请注意查收');
+                            }, function (msg) {
+                                layer.alert(msg);
+                            })
+
+                        });
+                    })
+
+                    // 查看密码被点击
+                    $("#btn-password-commit").click(function(){
+                        var password= $('#input-password').val();
+                        
+                        // 给接口密码变量设置密码
+                        apiObject.passwordCheck(objId, password, function(){
+                            apiEvent.visit_password= password;
+                            showModle(2, objId)
+                        }, function(){
+                            layer.msg('密码不正确')
+                        })
+                        
+                    })
+
+                    // 监听密码回车
+                    $('#password-box').bind('keyup', function (event) {
+                        // console.log(event.keyCode)
+                        if (event.keyCode == "13") {
+                            //回车执行查询
+                            $("#btn-password-commit").click()
+                        }
+                    });
+                    
+                })
+                
+            });
+          
+            
+
+
+
+            function start(obj_id) {
+                apiObject.getConfig(obj_id,function(data){
+                    render(data)
+                })
+            }
+
+            function goToObjList() {
+                var last_url = document.referrer;
+                var res = last_url.search(/calendar/i)
+                // 如果上一页不是项目列表，则跳转，如果是则返回
+                if (res == -1) {
+                    location.href = "/calendar";
+                } else {
+                    window.history.back(-1);
+                }
+            }
+
+            function render(config) {
+                config = config || {};
+                // 配置生成
+                var c={};
+                config.firstDay= config.firstDay? config.firstDay:0;// 一周第一天显示日
+                config.c_onlyRead = 0;// 取消只读模式
+                c.showStartTime= config.c_dayTimeDisplay == 0 ? false : true;// 显开始束时间
+                c.showEndTime=  config.c_dayTimeDisplay == 0 ? false : true;// 显示结束时间
+                c.dayMaxEvents= config.eventLimit? Number(config.eventLimit):true;// true 自动。数字实际量
+                // console.log(c);
+                var obj2 = {
+                    height: 'calc(100% - 30px)',
+                    // width: 'calc(100% - 20px)',
+                    expandRows: false,
+                    locale: 'zh-cn',
+                    fixedWeekCount: false,//false:根据实际情况4 5 6周
+                    firstDay: config.firstDay,//一周第一天显示日
+                    displayEventTime: c.showStartTime,
+                    displayEventEnd: c.showEndTime,
+                    weekNumbers: Number(config.weekNumbers),
+                    // weekText: '',
+                    // handleWindowResize:true,
+                    customButtons: customButtons,
+                    buttonText: {
+                        today: '今天',
+                        month: '月',
+                        week: '周',
+                        day: '天',
+                        listMonth: '月日程'
+                    },
+                    // slotMinTime: '08:00',
+                    // slotMaxTime: '20:00',
+                    headerToolbar: {
+                        left: leftButtonsText,
+                        center: 'title',
+                        right: 'prev,next,today dayGridMonth,timeGridWeek,listMonth'
+                    },
+                    initialView: 'dayGridMonth',
+                    initialDate: get,
+                    navLinks: true, // can click day/week names to navigate views
+                    editable: true,
+                    selectable: true,
+                    nowIndicator: true,
+                    eventDisplay: 'block',
+                    dayMaxEvents: c.dayMaxEvents, // allow "more" link when too many events
+                    allDaySlot: false,
+                    events: function (info, successCallback, failureCallback) {
+                        // https://fullcalendar.io/docs/events-function
+                        // console.log('获取数据');
+                        var start = info.start.valueOf()
+                        var end = info.end.valueOf()
+
+                        // console.log(,moment(end).utc().format('YYYY-MM-DD HH:mm:ss'));
+                        var start_time = moment(start).format('YYYY-MM-DD HH:mm:ss');
+                        var end_time = moment(end).format('YYYY-MM-DD HH:mm:ss');
+                        if (!config.holidayBackground || config.holidayBackground == "") {
+                            // 不显示假期背景
+                            getList(objId,  start_time,  end_time,function(list){
+                                // console.log(list);
+                                successCallback(list);
+                            })
+                        } else {
+                            // 获取假期数据和日历数据并合并
+                            apiObject.getHolidayList(objId, start_time, end_time, function(data){
+                                console.log('假期数据',data);
+                                for (var i = 0; i < data.length; i++) {
+                                    data[i].display = 'background';
+                                    data[i].color = config.holidayBackground;
+                                    // data[i].overlap=false;
+                                    data[i].start = moment(data[i].start).format('YYYY-MM-DD')
+                                    data[i].end = moment(data[i].end).format('YYYY-MM-DD')
+                                }
+
+                                // 获取数据
+                                getList(objId, start_time, end_time, function (list) {
+                                    data.push.apply(data, list);
+                                    successCallback(data);
+                                })
+                            })
+                        }
+
+
+                    },
+                    select: function (arg) {
+                        // 判断只读模式
+                        if (config.c_onlyRead==1) {
+                            return false;
+                        }
+                        var data = {};
+                        // console.log(arg);  
+                        data['start'] = moment(arg.start).format('YYYY-MM-DD HH:mm:ss');
+                        data['end'] = moment(arg.end).format('YYYY-MM-DD HH:mm:ss');
+                        // moment().format('YYYY-MM-DD HH:mm:ss'); // "2020-07-30 21:11:01"
+                        openInfo(data);
+                    },
+                    eventClick: function (arg) {
+                        // if (confirm('Are you sure you want to delete this event?')) {
+                        //     arg.event.remove()
+                        // }
+                        //点击已有日程事件
+                        // console.log(arg);
+                        var data = {};
+                        var event = arg.event;
+                        data['start'] = moment(event.start).format("YYYY-MM-DD HH:mm:ss");
+                        data['end'] = moment(event.end).format("YYYY-MM-DD HH:mm:ss");
+                        data['title'] = event.title;
+                        data['color'] = event.backgroundColor;
+                        data['className'] = event.classNames[0];
+                        data['content'] = event.extendedProps.content;
+                        if(arg){
+                            app.runTpl("eventInfo", {
+                                title: event.title,
+                                create_time: event.extendedProps.create_time,
+                                start_time:  data['start'],
+                                end_time: data['end'],
+                                content:  event.extendedProps.content,
+                                onEditClick: function (layerIndex) {
+                                    // console.log(layerIndex)
+                                    openInfo(data, event);
+                                    layer.close(layerIndex)
+                                }
+                            })
+                        }else{
+                            openInfo(data, event);
+                        }
+                        
+                    },
+                    eventDrop: function (info) {
+                        var event = info.event;
+                        // console.log(event);
+
+                        // alert(info.event.title + " was dropped on " + info.event.start.toISOString());
+
+                        // if (!confirm("Are you sure about this change?")) {
+                        //   info.revert();
+                        // }
+                        var data = {};
+                        data['startTime'] = moment(event.start).format("YYYY-MM-DD HH:mm:ss");
+                        data['endTime'] = moment(event.end).format("YYYY-MM-DD HH:mm:ss");
+                        data['title'] = event.title;
+                        data['color'] = event.color;
+                        data['className'] = event.classNames[0];
+                        data['event_id'] = event.id;
+                        data['content'] = event.extendedProps.content;
+                        updateEvent(data);
+                    },
+                    eventResize: function (info) {
+                        var event = info.event;
+                        // console.log(event, delta, revertFunc, jsEvent, ui, view );
+                        //日程拖拽尺寸改变停止，并且时间改变时触发，ayDelta日程前后移动了多少天
+                        var data = {};
+                        data['startTime'] = moment(event.start).format("YYYY-MM-DD HH:mm:ss");
+                        data['endTime'] = moment(event.end).format("YYYY-MM-DD HH:mm:ss");
+                        data['title'] = event.title;
+                        data['color'] = event.color;
+                        data['className'] = event.classNames[0];
+                        data['event_id'] = event.id;
+                        data['content'] = event.extendedProps.content;
+                        updateEvent(data);
+                    },
+                    eventTimeFormat: { // like '14:30:00'
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    },
+                    dayCellContent: function (arg) {
+                        // 修改日标题 例：26日
+                        // console.log(arg);
+                        // arg.dayNumberText='5';
+
+
+                        if (arg.isToday == true) {
+                            arg.dayNumberText = "(今)" + arg.dayNumberText
+                            return { html:  arg.dayNumberText  };
+                        }
+
+                    },
+                    eventMouseEnter: function (arg) {
+                        // 鼠标放在事件上
+                        // console.log(arg);
+                    },
+                    eventContent: function (arg) {
+                        // 事件内容渲染
+                        // console.log(arg);
+
+                        // 判断是否为背景
+                        if (arg.event.display !== 'background') {
+                            var start = moment(arg.event.start).format("HH:mm")
+                            var time = "";
+                            if (Number(config.c_dayTimeDisplay) == 2) {
+                                var end = moment(arg.event.end).format("HH:mm")
+                                time = start + '-' + end;
+                            } else if (Number(config.c_dayTimeDisplay) == 1) {
+                                time = start;
+                            }
+
+                            return { html: '<b class="event-content" title="' + arg.event.title + '">' + time + ' ' + arg.event.title + '</b>' };
+                        }
+
+                    },
+                    loading: function (isLoading, index) {
+                        // console.log(isLoading, index);
+                        // if (isLoading) {
+                        //     index = layer.load(1, {
+                        //         shade: [0.5, '#fff']
+                        //     });
+                        // } else {
+                        //     $('.main').removeClass('layui-hide');
+                        //     layer.closeAll()
+                        // }
+
+                    },
+                    // windowResize: function (arg) {
+                    //     calendar.render();
+                    //     // alert('The calendar has adjusted to a window resize. Current view: ' + arg.view.type);
+                    // }
+                }
+                calendar = new FullCalendar.Calendar(document.getElementById('calendar'), obj2);
+
+                calendar.render();
+
+
+            }
+
+
+            // 打开详情窗口
+            function openInfo(data, event) {
+                var title = data.title || '';
+                var color = data.color || '';
+                var layerButtons=[];
+                    
+                    layerButtons=[
+                        {
+                            title: '保存',
+                            onClick: function (layer_index) {
+                                var d = {
+                                    //一旦日历重新取得日程源，则原有日程将消失，当指定stick为true时，日程将永久的保存到日历上
+                                    title: $('#text_input').val(),
+                                    start: $('#start_time').val(),
+                                    end: $('#end_time').val(),
+                                    content: $('#content').val(),
+                                    allDay: data.allDay,
+                                    // rendering: 'background',
+                                    block: true,
+                                    className: $('#class_select').val(),
+                                    color: $('#color_input').val(),
+                                }
+
+                                if (d.title == '') {
+                                    layer.msg('请填写标题')
+                                    return;
+                                }
+
+                                var postdata = {};
+                                if (event) {
+                                    d['source'] = event.source
+                                }
+                                postdata['startTime'] = d.start;
+                                postdata['endTime'] = d.end;
+                                postdata['title'] = d.title;
+                                postdata['className'] = d.className;
+                                postdata['color'] = d.color;
+                                postdata['content'] = d.content;
+                                if (event && event.id) {
+                                    postdata['event_id'] = event.id;
+                                    apiEvent.update(objId, postdata, function (res) {
+                                        // calendar.fullCalendar('renderEvent',d,false);
+                                        calendar.refetchEvents()
+                                        layer.close(layer_index);
+                                    }, function () {
+                                        layer.msg('修改失败')
+                                    })
+                                } else {
+                                    apiEvent.add(objId, postdata, function (res) {
+                                        // calendar.fullCalendar('renderEvent',d,false);
+                                        calendar.refetchEvents()
+                                        layer.close(layer_index);
+                                    }, function () {
+                                        layer.msg('修改失败')
+                                    })
+                                }
+                                return false
+                            }
+                        },
+                        
+                    ];
+                    var layeropentitle = (event ? '修改事件' : '新增事件');
+                    if(event){
+                        // 删除按钮
+                        layerButtons.push({
+                            title: '删除',
+                            type: 'danger',
+                            onClick: function () {
+                                var postdata = {};
+                                layer.confirm('确定删除此事件吗', {
+                                    btn: ['确定', '取消'] //按钮
+                                }, function () {
+                                    apiEvent.delete(objId, event.id, function () {
+                                        event.remove()
+                                        layer.closeAll();
+                                    }, function () {
+                                        layer.msg('删除失败')
+                                    })
+                                })
+                                return false
+                            }
+                        },)
+                    }
+                    
+                
+                app.base.layer({
+                    type: 1,
+                    shade: 0.5,
+                    skin:'content-info-layer',
+                    title: layeropentitle,
+                    content: $('#form_input').html(),
+                    buttons: layerButtons,
+                    success: function () {
+                        // 如果只读模式需要删除不需要的元素
+                        if (config.c_onlyRead==1) {
+                            $('#class_select').parents('.layui-form-item').remove();
+                            $('#color_input').parents('.layui-form-item').remove();
+                            $('#submit').parents('.layui-form-item').remove();
+                            $('#text_input').attr('readonly', '');
+                            $('#content').attr('readonly', '');
+
+                        } else {
+                            laydate.render({
+                                elem: '#start_time'
+                                , type: 'datetime'
+                                ,trigger: 'click'
+                            });
+                            laydate.render({
+                                elem: '#end_time'
+                                , type: 'datetime'
+                                ,trigger: 'click'
+                            });
+                        }
+                        
+                        // 获取风格列表
+                        apiStyle.getList(function (list) {
+                                for (var i = 0; i < list.length; i++) {
+                                    $('#class_select').append('<option value="' + list[i]['name'] + '">' + list[i]['name_cn'] + '</option>')
+                                }
+                                $('#start_time').val(data.start)
+                                $('#end_time').val(data.end)
+                                $('#color_input').val(color);
+                                $('#text_input').val(title);
+                                $('#class_select').val(data['className']);
+                                $('#content').val(data['content']);
+                                form.render()
+                        })
+
+
+
+
+                        colorpicker.render({
+                            elem: '#test-form'
+                            , color: color
+                            , done: function (color) {
+                                $('#color_input').val(color);
+                            }
+                        });
+                        if (!event || !event.id) {
+                            $("#delete").remove();
+                        }
+
+                    }
+                });
+
+
+            }
+
+            // 更新事件
+            function updateEvent(data,successCallback){
+                apiEvent.update(objId, data, function (res) {
+                    if(successCallback)successCallback()
+                }, function () {
+                    layer.msg('修改失败')
+                })
+            }
+
+            function setOption(k, v) {
+                calendar.fullCalendar('option', k, v);// 动态设置参数
+            }
+
+            function getList(objId, start_time, end_time,successClaccback){
+                apiEvent.getList(objId, start_time, end_time, function (list) {
+                    successClaccback(list)
+                }, function (code, msg) {
+                    // console.log(code, msg)
+                    if (code == -1) {
+                        layer.alert("密码错误或未填写")
+                        showModle(1)
+                    } else {
+                        // showModle(1)
+                    }
+                })
+            }
+
+            // 显示模块 1.密码 2.内容 3.错误
+            function showModle(code,arg1,arg2){
+                if(code==1){
+                    $('#password-box').removeClass('layui-hide');
+                    $('#calendar-box').addClass('layui-hide');
+                }else{
+                    $('#calendar-box').removeClass('layui-hide');
+                    $('#password-box').addClass('layui-hide');
+                    start(arg1)
+                }
+            }
+
+        });
+    })
+
+</script>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>设计</title>
+    <link rel="stylesheet" type="text/css" href="/static/layui/css/layui.css" />
+    <!-- <link rel="stylesheet" href="https://www.jq22.com/jquery/bootstrap-3.3.4.css"> -->
+    <link rel="stylesheet" type="text/css" href="/static/calendar/jqFullCalendar/css/fullcalendar.css" />
+    <link rel="stylesheet" type="text/css" href="/static/calendar/jqFullCalendar/css/index.css"/>
+    <link rel="stylesheet" type="text/css" href="/calendar/style/getStyleText/style.css"/>
+
+    <style>
+        .event-btn{
+            display: inline-block;
+            padding: 5px;
+            border-radius: 5px;
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        .event-btn-demo{
+            display: inline-block;
+            padding: 5px;
+            color: #FFFFFF;
+            background-color: #369a5f;
+            border: 1px solid #257e4a;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div style="padding: 50px">
+        <div class="event-btn-demo">这是一段演示文字</div>
+    </div>
+
+    <div class="layui-form" >
+        <input type="text" class="layui-hide" name='id' id='update_id'>
+        <div class="layui-form-item">
+            <label class="layui-form-label">背景颜色</label>
+            <div style="margin-left: 30px;">
+                <div class="layui-input-inline" style="width: 120px;">
+                    <input type="text" value="" readonly="" id="background_color" name="background_color" placeholder="请选择" class="layui-input">
+                </div>
+                <div class="layui-inline" style="left: -11px;">
+                    <div id="background-form"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">边框颜色</label>
+            <div style="margin-left: 30px;">
+                <div class="layui-input-inline" style="width: 120px;">
+                    <input type="text" value="" readonly="" id="border_color" name="border_color" placeholder="请选择" class="layui-input">
+                </div>
+                <div class="layui-inline" style="left: -11px;">
+                    <div id="border-form"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">文字颜色</label>
+            <div style="margin-left: 30px;">
+                <div class="layui-input-inline" style="width: 120px;">
+                    <input type="text" value="" readonly="" id="text_color" name="text_color" placeholder="请选择" class="layui-input">
+                </div>
+                <div class="layui-inline" style="left: -11px;">
+                    <div id="color-form"></div>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="layui-form-item">
+            <label class="layui-form-label">类名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="name" lay-verify="" autocomplete="off" placeholder="eg：red" class="layui-input">
+            </div>
+        </div> -->
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-inline">
+                <input type="text" id="name_cn" name="name_cn"  lay-verify="" autocomplete="off" placeholder="eg:中国红" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" lay-submit="" id="submit" lay-filter="demo1">新增</button>
+                <button type="submit" class="layui-btn layui-hide" lay-submit="" id="submit2" lay-filter="demo2">修改</button>
+                
+            </div>
+        </div>
+    </div>
+    <div class="btns"></div>
+    <script type="text/javascript" src="/static/calendar/jqFullCalendar/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="/static/layui/layui.js" ></script>
+    <script>
+        layui.use(['layer','laydate','form','colorpicker','jquery'],function(){
+            var layer=layui.layer,laydate=layui.laydate,colorpicker=layui.colorpicker,form=layui.form;
+            // $=jQuery=layui.jquery;
+            var calendar=null;
+
+            render('#ff0000','#000000','#ffffff')
+            renderBtns()
+            // $('#test-btn').click(function(){
+            //         console.log('安妮');
+            //         // render()
+            //         calendar.fullCalendar('refetchEvents');
+            //         // calendar.getTopLevelResources()
+            // })
+
+            function render(bag,border,text,title){
+                console.log(bag,".",border,".",text);
+                if(bag){
+                    colorpicker.render({
+                        elem: '#background-form'
+                        ,color: bag
+                        ,done: function(color){
+                            $('#background_color').val(color);
+                            $('.event-btn-demo').css('background',color);
+                        }
+                    });
+                    $('#background_color').val(bag);
+                    $('.event-btn-demo').css('background-color',bag);
+                }
+                if(border){
+                    colorpicker.render({
+                        elem: '#border-form'
+                        ,color: border
+                        ,done: function(color){
+                            $('#border_color').val(color);
+                            if(color){
+                                $('.event-btn-demo').css('border','1px solid '+color);
+                            }else{
+                                $('.event-btn-demo').css('border','none');
+                            }
+                        }
+                    });
+                    $('#border_color').val(border);
+                    $('.event-btn-demo').css('border','1pc soild '+border);
+                }else{
+                    colorpicker.render({
+                        elem: '#border-form'
+                        ,color: ""
+                        ,done: function(color){
+                            $('#border_color').val(color);
+                            if(color){
+                                $('.event-btn-demo').css('border','1px solid '+color);
+                            }else{
+                                $('.event-btn-demo').css('border','none');
+                            }
+                        }
+                    });
+                    $('#border_color').val("");
+                    $('.event-btn-demo').css('border','none');
+                }
+                if(text){
+                    colorpicker.render({
+                        elem: '#color-form'
+                        ,color: text
+                        ,done: function(color){
+                            $('#text_color').val(color);
+                            $('.event-btn-demo').css('color',color);
+                        }
+                    });
+                    $('#text_color').val(text);
+                    $('.event-btn-demo').css('color',text);
+                }
+                if(title){
+                    $('#name_cn').val(title)
+                }else{
+                    $('#name_cn').val('')
+                }
+            }
+            function renderBtns(){
+                $('.btns').html('')
+                post('/calendar/style/getStyleList','',function(res){
+                    if(res.code==1){
+                        console.log(res.data);
+                        for (var i = 0; i < res.data.length; i++) {
+                            var style='';
+                            style+=' data-text_color="'+res.data[i]["text_color"]+'"';
+                            style+=' data-background_color="'+res.data[i]["background_color"]+'"';
+                            style+=' data-id="'+res.data[i]["id"]+'"';
+                            if(res.data[i]["border_color"]){
+                                style+=' data-border_color="'+res.data[i]["border_color"]+'"';
+                            }
+                            console.log(style);
+                            $('.btns').append('<div class="'+res.data[i]["name"]+' event-btn" '+style+'>'+res.data[i]["name_cn"]+'</div>')
+
+                        }
+
+                        $('.event-btn').click(function(){
+                            console.log($(this).html());
+                            $('#submit2').removeClass('layui-hide');
+                            $('#update_id').val($(this).data('id'));
+                            // $('.event-btn-demo').css('color',$(this).data('color'));
+                            // $('.event-btn-demo').css('background-color',$(this).data('background-color'));
+                            if($(this).data('border_color')){
+                                render($(this).data('background_color'),$(this).data('border_color'),$(this).data('text_color'),$(this).html())
+                                // $('.event-btn-demo').css('border',$(this).data('border'));
+                            }else{
+                                render($(this).data('background_color'),"",$(this).data('text_color'),$(this).html())
+                                // $('.event-btn-demo').css('border','none');
+                                // 
+                            }
+                            
+                        })
+                        
+                    }
+                })
+            }
+            
+
+            
+            form.on('submit(demo1)', function(data){
+                data.field.id=""
+                console.log(data.elem) //被执行事件的元素DOM对象，一般为button对象
+                console.log(data.form) //被执行提交的form对象，一般在存在form标签时才会返回
+                console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+                
+                post('/calendar/style/designAdd',data.field,function(res){
+                    if(res.code==1){
+                        layer.msg('保存成功');
+                        renderBtns()
+                    }else{
+                        layer.msg('保存失败 '+res.msg);
+                    }
+                })
+                
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+
+            form.on('submit(demo2)', function(data){
+
+                console.log(data.elem) //被执行事件的元素DOM对象，一般为button对象
+                console.log(data.form) //被执行提交的form对象，一般在存在form标签时才会返回
+                console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+                
+                post('/calendar/style/designUpdate',data.field,function(res){
+                    if(res.code==1){
+                        layer.msg('保存成功');
+                        renderBtns()
+                    }else{
+                        layer.msg('保存失败 '+res.msg);
+                    }
+                })
+                
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+
+            function post(url,data,callback){  
+                 $.ajax({
+                    type : "post",
+                    url : url,
+                    dateType:'json',
+                    data:data,
+                    success : function(res) {
+                        callback(res);
+                    }
+                 });
+            }
+        });
+
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/layui/layui.js"></script>
+    <title>日历记事本</title>
+    <style>
+        body,html {
+            background: #f2f2f2;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 内容页 -->
+    <div id="page-content">
+        
+    </div>
+
+    <script type="text/javascript">
+        var app;
+        layui.config({
+            base: '/static/app/'
+            , version: true//禁止浏览器缓存，此处建议禁止
+        })
+        layui.use(['layer', 'jquery', 'app', 'my_base'], function () {
+            var $ = layui.jquery
+                , layer = layui.layer;
+            app = layui.app;
+            app.init({
+                contentElemId: '#page-content',
+                config: {
+                    // viewUrlPrefix: "/calendar/",
+                    templatePath: "/static/template/",
+                    // viewUrlSuffix:'.html'
+                },
+ 
+                success: function () {
+                    console.log('==== Index Success ====');
+                    // 核心扩展方法
+                    app.base = layui.my_base;
+                    var url= app.getRoute();
+                    if(url){
+                        app.goToPage(url);
+                    }else{
+                        app.go(app.base.route.home);
+                    }
+                }
+            })
+
+        })
+    </script>
+</body>
+
+</html>

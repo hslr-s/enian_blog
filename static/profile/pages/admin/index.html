@@ -1,0 +1,385 @@
+<style>
+    #page_box {
+
+        height: calc(100% - 70px);
+        width: 100%;
+    }
+
+
+    .page_box_style {
+        border: 1px solid #f2f2f2;
+        box-shadow: 0 0 2px #888;
+        border-radius: 10px;
+        padding: 15px;
+        background: white;
+        display: inline-block;
+        height: 100%;
+        width: calc(100% - 70px);
+        margin: auto 20;
+        margin-top: 20px;
+    }
+</style>
+
+<div>
+
+    <!-- 日历内容 -->
+    <div id="page_box" class="layui-inline">
+        <!-- 默认显示空内容 -->
+        <div class="page_box_style">
+            <div class="layui-tab layui-tab-brief">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">邮箱设置</li>
+                    <li>其他设置</li>
+                    <li>用户管理</li>
+                    <!-- <li>测试</li> -->
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <blockquote class="layui-elem-quote">此邮箱是用作用户找回密码，用户注册等操作下发的系统级别邮箱。</blockquote>
+                        <form class="layui-form" action=""  lay-filter="MailInfoForm">
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">发信人邮箱</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="username" required lay-verify="required" placeholder="请输入发信人邮箱" autocomplete="off"
+                                        class="layui-input">
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">服务器地址</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="host" required lay-verify="required" placeholder="请输入SMTP 服务器地址" autocomplete="off"
+                                        class="layui-input">
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">服务器端口</label>
+                                <div class="layui-input-inline">
+                                    <input type="number" name="port" required lay-verify="required" placeholder="请输入SMTP 端口" autocomplete="off"
+                                        class="layui-input">
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">常用:25,465,587</div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">邮箱密码</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="password" required lay-verify="required" placeholder="请输入发信人密码或授权码" autocomplete="off"
+                                        class="layui-input">
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">部分邮箱是授权码</div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">加密方式</label>
+                                <div class="layui-input-inline">
+                                    <select name="secure" lay-verify="required">
+                                        <option value="tls">TLS</option>
+                                        <option value="ssl">SSL(加密连接)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button class="layui-btn layui-btn-xs" lay-submit lay-filter="sendTestMail">发送测试邮件</button>
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button class="layui-btn" lay-submit lay-filter="submitMailInfo">保存</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- 其他配置栏 -->
+                    <div class="layui-tab-item" >
+                        <!-- <blockquote class="layui-elem-quote"></blockquote> -->
+                        <div class="layui-form" lay-filter="OtherConfigForm">
+                         
+                            <div class="layui-form-item"  >
+                                <label class="layui-form-label">开放注册</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="open_register" value="1" title="是">
+                                    <input type="radio" name="open_register" value="0" title="否" checked>
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">允许新用户注册，开启前请确保邮箱信息已填写</div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button class="layui-btn" lay-submit lay-filter="submitOtherConfigInfo">保存</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 用户栏 -->
+                    <div class="layui-tab-item">
+                        <table class="layui-hide" id="admin_user_list" lay-filter="AdminUserList"></table>
+                        
+                        <script type="text/html" id="toolbarUserList">
+                          <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-sm" lay-event="add">添加用户</button>
+                            <!-- <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+                            <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+                            <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button> -->
+                          </div>
+                        </script>
+                        
+                        <script type="text/html" id="barDemo">
+                          <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                          <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                        </script>
+                    </div>
+                    <div class="layui-tab-item">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/html" id="admin_index_user_edit">
+        <div class="layui-form-item" style="margin-top: 20px;">
+            
+            <form class="layui-form" lay-filter="AdminIndexUserEdit">
+
+                <!-- 用户id -->
+                <input type="text" name="id" class="layui-hide">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">用户名</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="username" required lay-verify="required" placeholder="请输入邮箱" autocomplete="off"
+                            class="layui-input">
+                    </div>
+                </div>
+        
+                <div class="layui-form-item">
+                    <label class="layui-form-label">密码</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="password" required lay-verify="required" placeholder="修改时留空不修改"
+                            autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">6-18位</div>
+                </div>
+        
+                <div class="layui-form-item">
+                    <label class="layui-form-label">昵称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="name" required lay-verify="required" placeholder="请输入昵称" autocomplete="off"
+                            class="layui-input">
+                    </div>
+        
+                </div>
+        
+                <div class="layui-form-item">
+                    <label class="layui-form-label">状态</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="status" value="1" title="启用" checked>
+                        <input type="radio" name="status" value="0" title="停用">
+                    </div>
+                </div>
+        
+        
+                <div class="layui-form-item">
+                    <label class="layui-form-label">权限</label>
+                    <div class="layui-input-inline">
+                        <select name="auth_id" lay-verify="required">
+                            <option value="2">普通</option>
+                            <option value="1">管理员</option>
+                        </select>
+                    </div>
+                </div>
+        
+                <!-- <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formDemo">保存</button>
+                    </div>
+                </div> -->
+            </form>
+        </div>
+    </script>
+
+</div>
+
+<script>
+    app.base.loadApi('apiAdmin');
+    //注意：选项卡 依赖 element 模块，否则无法进行功能性操作
+    layui.use(['element','form','table','apiAdmin','jquery','apiAdmin'], function () {
+        var element = layui.element,table=layui.table,form=layui.form, apiAdmin=layui.apiAdmin;
+        layui.form.render()
+
+
+
+        // 第一栏 邮件
+
+        // 获取配置信息进行回显到页面
+        apiAdmin.getMailConfig(function(data){
+            form.val('MailInfoForm',data)
+        })
+
+        // 发送测试邮件
+        form.on('submit(sendTestMail)', function (data) {
+            var d= data.field;
+            layer.prompt({ title: '请输入要接收测试邮件的邮箱账号', formType: 0 }, function (text, index) {
+                apiAdmin.sendTestMail(d.username,d.password,d.host,d.port, d.secure,text,function(){
+                    layer.msg('测试邮箱已发送，请去邮箱查收');
+                },function(msg){
+                    layer.msg(msg);
+                })
+            });
+            // console.log(data.elem) //被执行事件的元素DOM对象，一般为button对象
+            // console.log(data.form) //被执行提交的form对象，一般在存在form标签时才会返回
+            // console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        // 保存邮件信息
+        form.on('submit(submitMailInfo)', function (data) {
+            var d = data.field;
+            apiAdmin.saveMailConfig(d.username, d.password, d.host, d.port,d.secure, function () {
+                layer.msg('保存已生效');
+            }, function (msg) {
+                layer.msg(msg);
+            })
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+
+        // 第二栏 其他信息
+        apiAdmin.getSystemOtherConfig(function (data) {
+            form.val('OtherConfigForm', data)
+        })
+        
+        
+        form.on('submit(submitOtherConfigInfo)', function (data) {
+            var d = data.field;
+            apiAdmin.saveSystemOtherConfig(d, function () {
+                layer.msg('保存已生效');
+            }, function (msg) {
+                layer.msg(msg);
+            })
+            // console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+
+
+        // 第三栏
+        table.render({
+            elem: '#admin_user_list'
+            , url: apiAdmin.urlGetUserList()
+            , toolbar: '#toolbarUserList' //开启头部工具栏，并为其绑定左侧模板
+            , defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+                title: '提示'
+                , layEvent: 'LAYTABLE_TIPS'
+                , icon: 'layui-icon-tips'
+            }]
+            , title: '用户数据表'
+            , cols: [[
+                // { type: 'checkbox', fixed: 'left' }
+                 { field: 'id', title: 'ID', width: 80}
+                , { field: 'username', title: '用户名/邮箱' }
+                , { field: 'name', title: '昵称' }
+                , { field: 'create_time', title: '加入时间',sort:true}
+                , { field: 'status', title: '状态' , templet:function(d){
+                    if(d.status==1){
+                        return '<span class="layui-badge-rim">已启用</span>';
+                    }else{
+                        return '<span class="layui-badge">已停用</span>';
+                    }
+                }}
+                , { field: 'auth_id', title: '权限' , templet: function (d) {
+                        if (d.auth_id == 1) {
+                            return '<span class="layui-badge layui-bg-blue">管理员</span>';
+                        } else {
+                            return '<span class="layui-badge-rim">普通用户</span>';
+                        }
+                    }}
+                , { fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150 }
+            ]]
+            // , page: true
+        });
+
+
+        //监听行工具事件
+        table.on('tool(AdminUserList)', function (obj) {
+            var data = obj.data;
+            //console.log(obj)
+            if (obj.event === 'del') {
+                layer.confirm('真的删除行么', function (index) {
+                    apiAdmin.delete(data.id,function(){
+                        layer.msg('操作成功');
+                        obj.del();
+                        layer.close(index);
+                    },function(msg){
+                        layer.alert(msg);
+                    })
+                    
+                });
+            } else if (obj.event === 'edit') {
+                editUser(data)
+            }
+        });
+
+        //头工具栏事件
+        table.on('toolbar(AdminUserList)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'add':
+                    editUser(null);
+                    break;
+            };
+        });
+
+        // 编辑user
+        function editUser(val){
+            app.base.layer({
+                type: 1,
+                shade: 0.5,
+                skin: 'content-info-layer',
+                title: "编辑",
+                area:['390','450'],
+                content: layui.$('#admin_index_user_edit').html(),
+                buttons: [
+                    {
+                        title: '保存',
+                        // type: 'primary',// warm,danger,primary
+                        onClick: function (layer_index) {
+                            // console.log();
+                            var d= form.val('AdminIndexUserEdit')
+                            if(d.id){
+                                d.user_id=d.id;
+                            }
+                            apiAdmin.editUser(d,function(){
+                                layer.msg('操作成功');
+                                layer.close(layer_index)
+                                table.reload('admin_user_list')
+                            },function(msg){
+                                layer.alert(msg);
+                            })
+                            return false;//阻止默认事件
+                        }
+                    },
+                    {
+                        title: '取消',
+                        onClick: function (layer_index) {
+
+                            // return false;//阻止默认事件
+                        }
+                    },
+                ],
+                success: function () {
+                    form.val('AdminIndexUserEdit', val)
+
+                    layui.form.render();
+                }
+            })
+        }
+    });
+</script>

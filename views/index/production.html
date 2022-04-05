@@ -1,0 +1,49 @@
+  {include file="../application/blog_/view/layout/head_tpl.html" /}
+
+
+<div class="layui-container" style="margin-top: 20px;">
+  <div class="layui-row layui-col-space15">
+    <div class="layui-col-md8">
+      
+
+      <!-- 最新 -->
+      <div class="fly-panel">
+        <div class="fly-panel-title fly-filter">
+          <a>我的作品</a>
+        </div>
+        <ul class="fly-list">
+          <!-- 子列表 -->
+          {include file="../application/blog_/view/layout/list.html" /}
+         
+          
+        </ul>
+        <div id="page" style="margin-left:10px ;">
+        	
+        </div>
+      </div>
+      
+    </div>
+    <script src="__STATIC__/layui/layui.js"></script>
+    <script type="text/javascript">
+    	layui.use('laypage',function(){
+    		layui.laypage.render({
+				  elem: 'page'
+				  ,count: {$content_count} //数据总数，从服务端得到
+				  ,curr:{$this_page??'0'}
+				  ,jump: function(obj, first){
+				    //obj包含了当前分页的所有参数，比如：
+//				    console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+//				    console.log(obj.limit); //得到每页显示的条数
+				    
+				    //首次不执行
+				    if(!first){
+				      location.href="/list/{$group_name}/"+obj.curr+".html";
+				    }
+				  }
+				});
+    	})
+    </script>
+      {include file="../application/blog_/view/layout/right_tpl.html" /}
+      {include file="../application/viewTpl/baidu_tuisong.html" /}
+			{include file="../application/viewTpl/baidu_tongji.html" /}
+      {include file="../application/blog_/view/layout/foot_tpl.html" /}

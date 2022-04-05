@@ -1,0 +1,197 @@
+<style>
+
+</style>
+
+
+
+<div class="layui-tab layui-tab-brief" lay-filter="user">
+    <button class="layui-btn layui-btn-sm" id="add_anthology_btn">添加新专栏</button>
+    <table class="layui-hide" lay-filter="anthology_list" id="anthology_list"></table>
+
+    <script type="text/html" class="layui-hide" id="tpl_edit_anthologyList">
+        <form class="layui-form" style="padding:20px" lay-filter="form-edit_anthologyList" >
+            <!-- 隐藏的id -->
+            <input type="text" class="layui-hide" name="id">
+            <div class="layui-form-item">
+                <label for="L_username" class="layui-form-label">专栏标题</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="title" required lay-verify="required" autocomplete="off"
+                        value="" class="layui-input">
+                </div>
+    
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">公开到全局</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="golbal_open" value=1 title="允许">
+                    <input type="radio" name="golbal_open" value=2 title="禁止" checked>
+                </div>
+                <div class="layui-form-mid layui-word-aux">允许管理员推荐此专栏展示在全局首页</div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">接收文章</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="accept_article" value=1 title="开放" >
+                    <input type="radio" name="accept_article" value=2 title="关闭" checked>
+                    <input type="radio" name="accept_article" value=3 title="需审核">
+                </div>
+                <div class="layui-form-mid layui-word-aux">允许其他用户将文章添加到此专栏</div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label for="L_sign" class="layui-form-label">描述</label>
+                <div class="layui-input-block">
+                    <textarea placeholder="专栏的描述内容" name="description" autocomplete="off"
+                        class="layui-textarea" style="height: 80px;"></textarea>
+                </div>
+            </div>
+            
+        </form>
+    </script>
+
+    <blockquote class="layui-elem-quote layui-quote-nm">说明：
+        <p>公开到全局：允许管理员推荐指定专栏展示在全局首页</p>
+        <p>接收文章：允许其他用户将文章添加到指定专栏</p>
+    </blockquote>
+
+
+    <script type="text/html" id="bar_golbal_open">
+      {{# if(d.golbal_open ==0 || d.golbal_open ==2){ }}
+        <!-- <span class="layui-badge layui-bg-gray">未知</span> -->
+        <span class="layui-badge">不公开</span>
+      {{# }else if(d.golbal_open ==1){ }}
+        <span class="layui-badge layui-bg-blue">公开</span>
+      {{#  } }}
+    </script>
+
+    <script type="text/html" id="bar_accept_article">
+      {{# if(d.accept_article ==0 || d.accept_article ==2){ }}
+        <!-- <span class="layui-badge layui-bg-gray">未知</span> -->
+        <span class="layui-badge">不接收</span>
+      {{# }else if(d.accept_article ==1){ }}
+        <span class="layui-badge layui-bg-blue">接收</span>
+      {{# }else if(d.accept_article ==3){ }}
+        <span class="layui-badge layui-bg-orange">需审核</span>
+      {{#  } }}
+    </script>
+
+
+    <script type="text/html" id="bar_anthology_table_tool">
+      <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+      <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+
+    
+</div>
+
+<script>
+    // app.base.loadApi('apiGlobal');
+
+    layui.use([ 'form', 'table', 'jquery',"layer"], function () {
+        var  table = layui.table, form = layui.form,layer=layui.layer,$=layui.$;
+        form.render()
+        
+        form.on('submit(submit-seo)', function (data) {
+            layui.apiGlobal.setGlobalInfo("seo", data.field, function (res) {
+                layer.msg("保存成功")
+            })
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        // 渲染表格
+        table.render({
+            elem: '#anthology_list'
+            , url: '/api/personal/getAnthologyList'
+            , headers:{
+                "token":app.base.getUserInfo().token
+            }
+            // , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            , cols: [[
+                // { field: 'id', width: 80, title: 'ID', sort: true }
+                { field: 'title',  title: '标题' }
+                , { field: 'golbal_open',  title: '公开到全局', toolbar: '#bar_golbal_open' , align:"center"}
+                , { field: 'accept_article', title: '接收文章', toolbar: '#bar_accept_article', align: "center" }
+                , { field: 'description', title: '描述',  minWidth: 100 } //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                , { field: 'create_time', title: '创建时间',  sort: true } 
+                , { title: '操作',toolbar:"#bar_anthology_table_tool"} 
+                
+            ]]
+            , parseData: app.base.layuiTableParseData
+        });
+
+        //工具栏事件
+        table.on('tool(anthology_list)', function (obj) {
+            switch (obj.event) {
+                case 'edit':
+                    var data = obj.data;
+                    edit_anthology(2,data)
+                    break;
+                case 'del':
+                    layer.confirm('你确定删除此专栏，删除后不可恢复，专栏下的文章不会被删除', {
+                        btn: ['确定', '放弃'] //按钮
+                    }, function () {
+                        app.base.ajaxPost("/api/personal/deleteAnthologyByAnthologyId", { ids: [obj.data.id] }, function () {
+                            table.reload("anthology_list");
+                        })
+                    });
+                    
+                    break;
+            };
+        });
+
+        layerButtons = [
+            {
+                title: '保存',
+                type: 'primary',// warm,danger,primary
+                onClick: function (layer_index) {
+                    var value= form.val("form-edit_anthologyList")
+                    // console.log(form.val("form-edit_anthologyList"))
+                    value.accept_article=Number(value.accept_article)
+                    value.golbal_open = Number(value.golbal_open)
+                    value.id = Number(value.id)
+                    app.base.ajaxPost("/api/personal/editAnthology", value,function(){
+                        layer.close(layer_index)
+                        table.reload("anthology_list");
+                    })
+                    return false;//阻止默认事件
+                }
+            },
+        ];
+
+        function edit_anthology(type,old_obj_value){
+            // table.reload("anthology_list");
+            if(type==1){
+                app.base.layer({
+                    type: 1,
+                    shade: 0.5,
+                    skin: 'content-info-layer',// 按钮有样式必须要定义skin
+                    title: (type == 1 ? "添加" : "编辑") + "专栏",
+                    content: $('#tpl_edit_anthologyList').html(),
+                    buttons: layerButtons,
+                    success: function () {
+                        form.render()
+                    }
+                })   
+            }else{
+                app.base.layer({
+                    type: 1,
+                    shade: 0.5,
+                    // skin: 'content-info-layer',// 按钮有样式必须要定义skin
+                    title: (type == 1 ? "添加" : "编辑") + "专栏",
+                    content: $('#tpl_edit_anthologyList').html(),
+                    buttons: layerButtons,
+                    success: function () {
+                        form.render()
+                        form.val("form-edit_anthologyList",old_obj_value)
+                    }
+                })   
+            }
+            
+        }
+        
+
+        // 添加新专栏
+        $("#add_anthology_btn").click(function(){
+            edit_anthology(1)
+        })
+    });
+</script>

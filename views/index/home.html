@@ -1,0 +1,48 @@
+
+{{template "template/head.html" .}}
+<script src="/static/layui/layui.js"></script>
+<div class="fly-panel">
+	<div class="layui-tab-item layui-show">
+
+		<div class="layui-carousel" id="head_background">
+			<div carousel-item>
+				<img src="{{.HeaderData.BackgroundUrl}}">
+			</div>
+		</div>
+	</div>
+	<div class="fly-panel fly-column">
+	  <div class="layui-container">
+	    <ul class="layui-clear">
+			{{range .AnthologyTitleData}}
+			<li>
+				<a href="{{.url}}" {{if .checked}}style="color:#5fb878"{{end}}>{{.title}}</a>
+			</li> 
+			{{end}}
+	    </ul> 
+	
+	  </div>
+	</div>
+</div>
+
+<div class="layui-container" style="margin-top: 20px">
+	<div class="layui-row layui-col-space15">
+		<div class="layui-col-md8">
+			{{template "template/list.html" .}}
+		</div>
+		
+		<div class="layui-col-md4">
+			{{template "template/right/user_card.html" .}}
+			{{template "template/right/search_word.html" .}}
+			{{template "template/right/label.html" .}}
+			
+			<!-- {{template "template/right/user_card.html" .}}
+			{{template "template/right/user_card.html" .}}
+			{{template "template/right/user_card.html" .}} -->
+
+		</div>
+		
+		
+		<!-- {include file="../application/blog_/view/template/right.html" /} -->
+		<!-- {include file="../application/viewTpl/baidu_tuisong.html" /}
+		{include file="../application/viewTpl/baidu_tongji.html" /} -->
+		{{template "template/foot.html" .}}

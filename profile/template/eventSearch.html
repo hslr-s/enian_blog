@@ -1,0 +1,180 @@
+<link rel="stylesheet" href="/static/eicon/iconfont.css">
+<style>
+  
+    .search-box {
+        margin: auto 20px;
+        margin-top: 20px;
+    }
+
+    .search-list-item-left{
+        width: calc(100% - 120px);
+        /* background-color: rgb(141, 141, 141); */
+    }
+
+    .search-list-item-left:hover{
+        cursor: pointer;
+    }
+
+    .search-list-item-right{
+        float: right;
+        width: 100px;
+        
+        /* background-color: rgb(141, 141, 141); */
+    }
+
+    .search-list-item-right .iconfont{
+        font-size: 22px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .search-list-item-right .icon-box{
+        float: right;
+        margin-left: 20px;
+    }
+
+    
+    
+
+    .tpl-event_search_list-item{
+        margin-top: 10px;
+    }
+    .tpl-event_search_list-item-title{
+        font-weight: 700;
+        font-size: 16px;
+    }
+    .tpl-event_search_list-item-content{
+        font-size: 12px;
+        color: #999;
+    }
+    .tpl-event_search_list-item-time{
+        font-size: 11px;
+        color: #999;
+    }
+</style>
+
+<script type="text/html" id="tpl-event_search">
+    <div class='search-box'>
+        <input type="text" name="search_word" id="tpl-event_search-word-input" required lay-verify="required" placeholder="请输入关键字,回车搜索" autocomplete="off"
+            class="layui-input">
+        <div id="search-list-box"></div>
+    </div>
+</script>
+<script type="text/html" id="tpl-event_search_list">
+    
+        {{# layui.each(d.list, function(index, item){ }}
+        <div class="tpl-event_search_list-item" title="创建时间：{{item.create_time}} ">
+            <div class="layui-inline search-list-item-left theme-font-color-hover" data-index="{{index}}">
+                <div class="tpl-event_search_list-item-title layui-elip" title="{{item.title}}">
+                    {{item.title}}
+                </div>
+                <div class="tpl-event_search_list-item-time layui-elip">
+                    {{item.start_time}} ~ {{item.end_time}}
+                </div>
+                <div class="tpl-event_search_list-item-content layui-elip">
+                    {{item.content?item.content:'无内容'}}
+                </div>
+            </div>
+            <div class="layui-inline search-list-item-right" data-index="{{index}}">
+                <div class="layui-inline icon-box"><i class="theme-font-color-hover iconfont eicon-location" title="定位到日历"></i></div>
+
+                <div class="layui-inline icon-box"><i class="theme-font-color-hover iconfont eicon-edit" title="编辑项目"></i></div>
+            </div>
+        </div>
+        {{# }) }}
+    
+</script>
+
+<script type="text/javascript">
+    app.base.loadApi(['apiEvent']);
+    app.defTpl('eventSearch', function (tplArg) {
+        layui.use(['layer', 'laytpl','apiEvent','dropdown'], function () {
+            var laytpl = layui.laytpl, $ = layui.$;
+
+            
+
+            app.base.layer({
+                title: "查找事件",
+                type: 1,
+                shade:false,
+                // shadeClose: true,
+                skin: "tpl-eventSearch",
+                area: ['600px', '500px'], //宽高
+                maxmin:true,
+                content: $('#tpl-event_search').html(),
+                buttons: [
+                    {
+                        title: "关闭",
+                        // onClick: function (layerIndex) {
+                        //     if(tplArg.onEditClick) tplArg.onEditClick(layerIndex);
+                        //     return false;
+                        // }
+                    },
+                ],
+                end:function(){
+                    if (tplArg.end) {
+                        tplArg.end()
+                    }
+                },
+                success: function (dom,index) {
+
+                    // 返回弹窗id
+                        if(tplArg.getLayerIndex){
+                            tplArg.getLayerIndex(index)
+                        }
+                     $('#tpl-event_search-word-input').bind('keyup', function (event) {
+                        // console.log(event.keyCode)
+                        if (event.keyCode == "13") {
+                            //回车执行查询
+                            var word= $(this).val();
+                            layui.apiEvent.searchByWord(tplArg.objId, word,function(data){
+                                // console.log(data)
+                                if(data.length==0){
+                                    layer.msg("没有查到任何内容~");
+                                    return;
+                                }
+                                app.base.tplRender('#tpl-event_search_list', {list: data}, '#search-list-box')
+                                // 监听定位按钮被单击
+                                $('.search-list-item-right .eicon-location').click(function(){
+                                    var itemId= $(this).parent().parent().data('index')
+                                    if (tplArg.onClickLocation) tplArg.onClickLocation(data[itemId])
+                                    // console.log(itemId);
+                                    // console.log(data[itemId])
+                                })
+
+                                // 监听项目被点击
+                                $('.search-list-item-left').click(function () {
+                                    var itemId = $(this).data('index')
+                                    // 事件 - 详情按钮被点击
+                                    if (tplArg.onClickInfo) tplArg.onClickInfo(data[itemId])
+                                })
+
+                                // // 监听详情被点击
+                                // $('.search-list-item-right .eicon-info').click(function () {
+                                //     var itemId = $(this).parent().parent().data('index')
+                                //     // 事件 - 详情按钮被点击
+                                //     if(tplArg.onClickInfo) tplArg.onClickInfo(data[itemId])
+                                // })
+
+                                // 监听编辑被点击
+                                $('.search-list-item-right .eicon-edit').click(function () {
+                                    var itemId = $(this).parent().parent().data('index')
+                                    // 事件 - 编辑按钮被点击
+                                    if (tplArg.onClickEdit) tplArg.onClickEdit(data[itemId])
+                                })
+
+                            },function(msg){
+                                layer.msg(msg)
+                            })
+                        }
+                    });
+                    
+                }
+            })
+
+            
+
+        })
+    })
+
+</script>

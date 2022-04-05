@@ -1,0 +1,165 @@
+<style>
+.delete-article{
+    cursor: pointer;
+}
+</style>
+
+
+<div>
+    <div class="layui-tab layui-tab-brief" lay-filter="user">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-tab layui-tab-brief" lay-filter="user">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">文章列表 </li>
+                </ul>
+                <div class="layui-form layui-tab-content"  style="padding-top:20px;padding-bottom:0;">
+                    <div class="layui-tab-item layui-show">
+                            <div class="layui-row layui-col-space15 layui-form-item">
+                                <div class="layui-col-md4">
+                                    <label class="layui-form-label">专栏</label>
+                                    <div class="layui-input-block">
+                                        <select id="anthology_list" name="anthology_id" lay-filter="column">
+                                            <option></option>
+                                            
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-col-md4">
+                                    <label for="L_title" class="layui-form-label">关键字</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="keyword" placeholder="支持标题和博客内容"
+                                            autocomplete="off" class="layui-input">
+                                        <!-- <input type="hidden" name="id" value="{{d.edit.id}}"> -->
+                                    </div>
+                                </div>
+                                <div class="layui-col-md3">
+                                    <button class="layui-btn layui-btn-sm layui-inline" lay-filter="search-btn" lay-submit>搜索</button>
+                                    <a class="layui-btn layui-inline layui-btn-normal" href="/profile/writing.html#/meditor">写文章</a>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+                <div class="layui-tab-content" style="margin-top:0;">
+                    <div class="layui-tab-item layui-show">
+                        <ul class="mine-view jie-row" id="arcicle_list">
+                
+                        </ul>
+                
+                        <div id="anthology_list_page"></div>
+                    </div>
+                
+                </div>
+            </div>
+            
+        </div>
+       
+        
+    </div>
+</div>
+
+
+
+<script>
+    //注意：选项卡 依赖 element 模块，否则无法进行功能性操作
+    layui.use(['element', 'form', 'laypage', 'jquery',  "layer"], function () {
+        var element = layui.element, laypage = layui.laypage, form = layui.form, layer = layui.layer,$=layui.$;
+        form.render()
+        app.base.ajaxGet("/api/personal/getAnthologyList",function(data){
+            console.log(data)
+            for (let i = 0; i < data.list.length; i++) {
+                const element = data.list[i];
+                $("#anthology_list").append('<option value="'+element.id+'">'+element.title+'</option>')
+            }
+             form.render()
+        })
+
+        // 搜索按钮
+        form.on('submit(search-btn)', function (data) {
+            // console.log(data.elem) //被执行事件的元素DOM对象，一般为button对象
+            // console.log(data.form) //被执行提交的form对象，一般在存在form标签时才会返回
+            // console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            getList(1, data.field.anthology_id, data.field.keyword)
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        
+        
+        getList(1)
+
+        function getList(page, anthology_id, keyword){
+            var limit=15
+
+            var postData={};
+            postData["page"]= page;
+            postData["limit"]= limit;
+            if(anthology_id){
+                postData["anthology_id"]= Number(anthology_id);
+            }
+            if(keyword){
+                postData["keyword"] = keyword;
+                
+            }
+            
+            app.base.ajaxPost("/api/personal/getArticleList", postData, function (data) {
+                console.log(data)
+                laypage.render({
+                    elem: 'anthology_list_page'
+                    , count: data.total
+                    , curr: page
+                    , limit: limit
+                    , jump: function (obj, first) {
+                        //obj包含了当前分页的所有参数，比如：
+                        // console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                        // console.log(obj.limit); //得到每页显示的条数
+                        
+                        //首次不执行
+                        if (!first) {
+                            //do something
+                            getList(obj.curr, anthology_id, keyword)
+                        }
+                    }
+                });
+                $("#arcicle_list").html("")
+                if(data.list.length!=0){
+                    for (let i = 0; i < data.list.length; i++) {
+                        const element = data.list[i];
+                        const status_html = (element.status == 0) ? '<span class="layui-badge layui-bg-red">私</span>' : "";
+                        $("#arcicle_list").append(
+                            '<li>' +
+                            status_html +
+                            '<a class="jie-title" href="/profile/writing.html/#/meditor?article_id=' + element.id +'" target="_blank" title="编辑">' + element.title + '</a>' +
+                            '<br>' +
+                            '<i>' + element.update_time + '</i>' +
+                            
+                            '<a class="mine-edit" href="/article/content/' + element.id +'">浏览</a>' +
+                            // '<a class="mine-edit" href="/profile/writing.html/#/meditor?article_id=' + element.id + '">编辑</a>' +
+                            '<a class="mine-edit layui-bg-red delete-article" data-article_id="' + element.id + '">删除</a>' +
+                            // '<a class="mine-edit" href="/jie/edit/8116">浏览</a>'+
+                            '<em>' + element.visit + '阅</em>' +
+                            '</li>'
+                        )
+                    }
+                    $(".delete-article").click(function(){
+                        var article_id= $(this).data("article_id")
+                        var that= $(this)
+                        layer.confirm('确定删除此文章？', {
+                            btn: ['确定', '取消'] //按钮
+                        }, function () {
+                            console.log("删除文章", article_id)
+                            app.base.ajaxPost("/api/personal/deleteArticle",{id: article_id},function(res){
+                                that.parent().remove()
+                                layer.msg("删除成功")
+                            },function(msg){
+                                layer.msg(msg)
+                            })
+                        });
+                    })
+                }else{
+                    $("#arcicle_list").html("<h3 style='color:#c2c2c2;margin-bottom:20px'>-暂时没有文章-</h3>")
+                }
+                
+                form.render()
+            })
+        }
+
+    });
+</script>

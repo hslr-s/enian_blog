@@ -1,0 +1,76 @@
+.fileManagerParent{
+	height: 100%;
+}
+
+
+.fileManager img {
+	height: 50px;
+	/*width: 50px;*/
+	margin: auto;
+}
+
+.fileManager li div{
+	cursor: pointer;
+	margin: 1px;
+	/*background:red;*/
+}
+/*文字内容*/
+.fileManager li div p{
+	/*background: black;*/
+	height: 20px;
+}
+
+.fileManagerParent a:hover {
+	cursor: pointer;
+	color: royalblue;
+}
+
+.fileManagerParent .line {
+	color: darkgray;
+}
+.fileManagerParent .path-bar{
+	height: 28px;
+	line-height:28px ;
+	width: calc(100% - 83px);
+	border: 1px solid #c9c9c9;
+}
+
+body{
+	height: 100%;
+}
+
+/*文件列表内容*/
+.fileManagerParent .file-body{
+	overflow-y:auto ;
+	overflow-x:hidden;
+	/*height: 400px;*/
+	height: calc(100% - 100px);
+	border: 1px solid gainsboro;
+	padding: 10px;
+	margin-top: 10px;
+}
+
+.fileManager-menu-list{
+	padding: 10px;
+	width: 150px;
+}
+/*菜单列表中按钮*/
+.fileManager-menu-list button{
+	margin-left: 0px !important;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	width: 100%;
+}
+/*多选遮罩*/
+.fileManagerParent .more-Mask{
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	padding-top:20px;
+	/*background: rgba(0,0,0,0.5);*/
+	top: 0;
+}
+
+.fileManagerParent .more-Mask .layui-form-checkbox .layui-icon-ok{
+	box-shadow: 0 0 40px #000;
+}

@@ -1,0 +1,77 @@
+<html>
+    <head>
+        <style>
+            html,
+            body {
+                overflow: hidden;
+                /* overflow-x:auto; */
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        
+        <link rel="stylesheet" href="/static/editormd/css/editormd.css" />
+        <div id="editormd">
+            <textarea id="content" name="content" style="display:none;"></textarea>
+        </div>
+        <script src="/static/editormd/jquery.min.js"></script>
+        <script src="/static/editormd/editormd.min.js"></script>
+        <script>
+
+            var $E={};
+            
+            var editor = editormd("editormd", {
+                width: "calc(100% - 2px)",
+                height: $(document).height() - 2+'px',
+                syncScrolling: true,
+                codeFold: true,
+                saveHTMLToTextarea :true,
+                placeholder:"请尽情的书写吧...",
+                toolbarIcons: function () {
+                    // Or return editormd.toolbarModes[name]; // full, simple, mini
+                    // Using "||" set icons align right.
+                    return [
+                        "undo", "redo", "|",
+                        "bold", "del", "italic", "quote", "|",
+                        "h1", "h2", "h3", "h4", "h5", "h6", "|",
+                        "list-ul", "list-ol", "hr", "|",
+                        "link", "reference-link", "image", "code", "preformatted-text", "code-block", "table", "pagebreak", "|",
+                        "goto-line", "watch", "preview", "search", "|",
+                        "help"
+                    ]
+                },
+                //imageUpload : true,
+                imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                //imageUploadURL : "/index/test.html",
+                //			theme: "dark",//工具栏主题
+                //			editorTheme: "pastel-on-dark",//编辑主题
+                //			previewTheme: "dark",//预览主题
+                path: "/static/editormd/lib/" //修改文件目录引用的路径  mode, codemirror, marked... dependents libs path
+            });
+
+            $E.editor= editor
+
+
+
+            // 赋值
+            $E.setContent = function (content) {
+                editor.setValue(content)
+            }
+
+            // 获取渲染内容
+            $E.getContentRender = function (content) {
+                return editor.getHTML()
+            }
+
+            // 取原始内容
+            $E.getContent = function (content) {
+                return editor.getMarkdown()
+            }
+
+            // 上传文件
+
+        </script>
+    </body>
+</html>

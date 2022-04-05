@@ -1,0 +1,112 @@
+<!--高级搜索框模板-->
+<script id="search_best" type="text/html" >
+	<form class="layui-form" style="margin: 3px;" >
+		<div id="search_best_group">
+			
+		</div>
+		<div class="layui-form-item" style="margin-top: 5px;">
+			<div class="layui-btn"  lay-submit lay-filter="search_best_add" >添加条件</div>
+			<button class="layui-btn" lay-submit lay-filter="search_best" style="float: right;">搜素</button>
+		</div>
+	</form>
+
+</script>
+
+<script id='search_best_group_text' type="text/html">
+	<div class="layui-card" id='search_best_group{{d.index}}'>
+		
+		<div class="layui-card-header">
+			搜索条件 {{d.index+1}}
+			<div id="search_best_delgroup" index='{{d.index}}' style="float: right;cursor: pointer;">
+				<i class="layui-icon" style="font-size: 20px; color: red;">&#xe640;</i>
+			</div>
+		</div>
+		<div class="layui-card-body">
+			<div class="layui-form-item">
+				<select name="field{{d.index}}" lay-verify="" lay-filter="search_best_field_select">
+					<option value="" type='empty'>请选择搜索字段</option>
+					{{# for(var key in d.data){ }}
+						{{# if(d.data[key].type=='switch'){ }}
+							<option value="{{d.data[key].field}}" type='switch' index='{{d.index}}' text='{{ JSON.stringify(d.data[key].typedata) }}'>{{d.data[key].name}}</option>
+						{{# }else if(d.data[key].type=='select'){ }}
+							<option value="{{d.data[key].field}}" type='select'  index='{{d.index}}' text='{{ JSON.stringify(d.data[key].typedata) }}'>{{d.data[key].name}}</option>
+						{{# }else if(d.data[key].type=='select_request'){ }}
+							<option value="{{d.data[key].field}}" type='select_request'  index='{{d.index}}' text='{{ JSON.stringify(d.data[key].typedata) }}'>{{d.data[key].name}}</option>
+						{{# }else if(d.data[key].type=='input_btn'){ }}
+							<option value="{{d.data[key].field}}" type='input_btn'  index='{{d.index}}' text='{{ JSON.stringify(d.data[key].typedata) }}'>{{d.data[key].name}}</option>
+						{{# }else{ }}
+							<option value="{{d.data[key].field}}" type='input'   index='{{d.index}}' >{{d.data[key].name}}</option>
+						{{# } }}
+						
+					{{# } }}
+				</select>
+			</div>
+	
+			<div id='search_best_text{{d.index}}' class="layui-form-item">
+				<!--存放字段类型的内容-->
+			</div>
+		</div>
+		<!--<hr class="layui-bg-black">-->
+	</div>
+		
+</script>
+
+<script id="search_switch_text" type="text/html" >
+				<select name="value{{d.index}}" lay-verify="" lay-search>
+					<option value="{{d.data.on.data}}">{{d.data.on.name}}</option>
+					<option value="{{d.data.off.data}}">{{d.data.off.name}}</option>
+				</select>
+</script>
+
+<script id='search_input_text' type="text/html">
+			<div class="layui-form-item">
+				<input type="text" name="value{{d.index}}" required lay-verify="" placeholder="搜索内容" autocomplete="off" class="layui-input">
+			</div>
+
+			<div class="layui-form-item">
+				<input type="checkbox" name="vague{{d.index}}" title="模糊匹配" checked>
+			</div>
+</script>
+
+<script id='search_select_text' type="text/html">
+			<select name="value{{d.index}}" lay-verify="" lay-search>
+					
+					{{# for(var key in d.data){ }}
+						
+						<option value="{{d.data[key].data}}" index='{{d.index}}' text='{{ JSON.stringify(d.data[key].typedata) }}'>{{d.data[key].name}}</option>
+						
+					{{# } }}
+			</select>
+</script>
+
+<script id='search_input_btn' type="text/html">
+			<select name="value{{d.index}}" lay-verify="" lay-search>
+					
+					{{# for(var key in d.data){ }}
+						
+						<option value="{{d.data[key].value}}" index='{{d.index}}' text='{{ JSON.stringify(d.data[key].typedata) }}'>{{d.data[key].btn_name}}</option>
+						
+					{{# } }}
+			</select>
+</script>
+
+
+<!--<script id='search_select_text' type="text/html">
+			<select name="value[{{d.index}}]" lay-verify="">
+					{{# for(var key in d){ }}
+						{{# if(d.data[key].type=='switch'){ }}
+							<option value="{{d.data[key].field}}" type='switch' index='{{d.index}}' text='{{ JSON.stringify(d.data[key].typedata) }}'>{{d.data[key].name}}</option>
+						{{# }else if(d.data[key].type=='select'){ }}
+							<option value="{{d.data[key].field}}" type='select'  index='{{d.index}}' text='{{ JSON.stringify(d.data[key].typedata) }}'>{{d.data[key].name}}</option>
+						{{# }else{ }}
+							<option value="{{d.data[key].field}}" type='input'   index='{{d.index}}' >{{d.data[key].name}}</option>
+						{{# } }}
+						
+					{{# } }}
+					<option value="{{d.on.data}}">{{d.on.name}}</option>
+					<option value="{{d.off.data}}">{{d.off.name}}</option>
+				
+			</select>
+</script>-->
+
+

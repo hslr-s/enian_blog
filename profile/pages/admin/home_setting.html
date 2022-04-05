@@ -1,0 +1,260 @@
+<style>
+
+</style>
+
+
+
+<div class="layui-tab layui-tab-brief" lay-filter="user">
+    <ul class="layui-tab-title" id="LAY_mine">
+        <li class="layui-this" lay-id="info">首页设置</li>
+        
+    </ul>
+    <div class="layui-tab-content" style="padding: 20px 0;">
+        <blockquote class="layui-elem-quote">此页面设置项设置后会自动保存</blockquote>
+        <!-- 网站名片 -->
+        <div class="layui-form layui-form-pane layui-tab-item layui-show">
+            <div class="layui-form" lay-filter="form-user-card">
+                <!-- <div class="layui-form-item">
+                    <div class="head-image">
+                        
+                        <p><img id="user_card_head_image_img" src=""></p>
+                        <button id="upload_head_image" type="button" class="layui-btn upload-img">
+                            <i class="layui-icon">&#xe67c;</i>上传
+                        </button>
+                        <p>建议尺寸168*168，</p>
+                        <span class="loading"></span>
+                    </div>
+                </div> -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">头部图片</label>
+                    <div class="layui-input-inline">
+                        <input type="text"  id="header_image" name="header_image"required lay-verify="required" autocomplete="off"
+                            value="" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux"><a class="layui-btn layui-btn-xs" id="upload_head_image">上传</a> <a class="layui-btn layui-btn-xs" id="preview_head_image">预览</a>（建议尺寸168*168）。支持jpg、png、gif，最大不能超过1m</div>
+                </div>
+                
+                <!-- <div class="layui-form-item">
+                    <label class="layui-form-label">显示专栏</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="anthology" required lay-verify="required"
+                            autocomplete="off" value="" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">专栏模块显示的专栏</div>
+                </div> -->
+                <fieldset class="layui-elem-field layui-field-title">
+                    <legend>专栏设置</legend>
+                    <div class="layui-field-box">
+                        <button class="layui-btn layui-btn-sm" id="add_anthology_btn"> 添加一个专栏</button>
+                        
+                        <table id="anthologySettingTable" latui-filter="anthologySettingTable"></table>
+                    </div>
+                </fieldset>
+                
+               
+                <!-- <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="submit-user-card">确认保存</button>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+
+      
+    </div>
+    <script type="text/html" id="add_anthology_tpl">
+        <div class="layui-form" style="padding: 20px;">
+            <select lay-search id="add_anthology_select_list">
+            </select>
+            <br>
+            <button class="layui-btn" id="add_anthology_tpl_add_btn">添加</button>
+        </div>
+    </script>
+
+    <script type="text/html" id="add_anthology_del_tpl">
+      <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+
+</div>
+
+<script>
+    console.log("我来了！！！")
+    //注意：选项卡 依赖 element 模块，否则无法进行功能性操作
+    layui.use(['element', 'form', 'table', 'jquery',"layer","upload","soulTable"], function () {
+        var element = layui.element, 
+            table = layui.table, 
+            form = layui.form,
+            layer=layui.layer, 
+            upload=layui.upload,
+            soulTable = layui.soulTable;
+            $=layui.$;
+        
+        var anthologyDataList=[];// 专栏缓存
+        form.render()
+        // 读取
+        app.base.ajaxGet("/api/global/get/globalInfo", function(res){
+            console.log(res)
+            $("#header_image").val(res.site_background_image);
+            // form.val("form-user-card", res)
+            // form.val("form-site", res)
+            // form.val("form-tag", res)
+            // form.val("form-seo", res)
+            // form.val("form-email", res)
+            // form.val("form-register", res)
+        })
+
+        app.base.ajaxGet("/api/global/get/homeAnthology",function(datalist){
+            console.log("加载列表！", datalist)
+            if(!datalist){
+                datalist=[]
+            }
+            anthologyDataList = datalist
+            loadTable(datalist)
+            
+        })
+
+        
+      
+
+        // 上传文件
+        $("#preview_head_image").click(function(){
+            layer.open({
+                title:"预览",
+                type: 1,
+                area: ['90%', '90%'], //宽高
+                content: '<img  src="/'+ $("#header_image").val()+'" />'
+            });
+        })
+
+        
+
+        var uploadInst = upload.render({
+            elem: '#upload_head_image'
+            , url: '/api/global/uploadHeaderImage' 
+            , field:"image"
+            , headers: { "token": app.base.getUserInfo().token }
+            , done: function (res) {
+                if (res.code != 0) {
+                    return layer.msg('上传失败');
+                }
+                layer.msg('保存成功');
+                $('#header_image').val(res.data); 
+                // $("#header_image").attr("src","/"+res.data);
+            }
+        });
+
+        // 加载表格
+        function loadTable(data){
+            console.log("重读列表",data)
+            table.render({
+                elem: '#anthologySettingTable'
+                , data: data
+                , height: 500
+                , rowDrag: {/*trigger: 'row',*/ done: function (obj) {
+                    var ids = []
+                    // 完成时（松开时）触发
+                    // 如果拖动前和拖动后无变化，则不会触发此方法
+                    // console.log(obj.row) // 当前行数据
+                    // console.log(obj.cache) // 改动后全表数据
+                    // console.log(obj.oldIndex) // 原来的数据索引
+                    // console.log(obj.newIndex) // 改动后数据索引
+                    anthologyDataList= obj.cache
+                    for (const key in obj.cache) {
+                        if (Object.hasOwnProperty.call(obj.cache, key)) {
+                            const element = obj.cache[key];
+                            ids.push(element.id)
+                        }
+                    }
+                    // 保存排序功能
+                    app.base.ajaxPost("/api/global/set/homeAnthology", { ids: ids.toString() }, function () {
+                        layer.msg("已保存")
+                    })
+                    console.log(ids)
+                }
+                }
+                , cols: [[
+                    // { type: 'radio', title: '##' },
+                    { field: 'title', title: '专栏标题(上下拖拽排序)' },
+                    { field: 'user_name', title: '用户名' },
+                    { title: '操作' ,toolbar:"#add_anthology_del_tpl"},
+                ]]
+                , done: function () {
+                    soulTable.render(this)
+                }
+            });
+
+            //监听行工具事件
+            table.on('tool(anthologySettingTable)', function (obj) {
+                var data = obj.data;
+                console.log(obj)
+                if (obj.event === 'del') {
+                    console.log("删除", data.id);
+                    layer.confirm('确定要删除吗', function (index) {
+                        for (let i = 0; i < anthologyDataList.length; i++) {
+                            
+                            const element = anthologyDataList[i];
+                            console.log(element.id, data.id);
+                            if(element.id==data.id){
+                                anthologyDataList.splice(i, 1); 
+                            }
+                        }
+                       
+                        // console.log("删除", index, anthologyDataList);
+                        saveAnthologyDataList(anthologyDataList)
+                        loadTable(anthologyDataList)
+                        // obj.del();
+                        layer.close(index);
+                    });
+                } 
+            });
+        }
+
+        // 添加新专栏
+        $("#add_anthology_btn").click(function () {
+
+            layer.open({
+                title: "添加专栏",
+                type: 1,
+                area: ['300px', '300px'], //宽高
+                content: $("#add_anthology_tpl").html(),
+                success: function () {
+
+                    app.base.ajaxGet("/api/global/get/anthologyList", function (data) {
+
+                        for (let i = 0; i < data.list.length; i++) {
+                            const element = data.list[i];
+                            $("#add_anthology_select_list").append('<option value="' + i + '">' + element.title + " (" + element.user_name + ')</option>');
+                        }
+                        form.render();
+
+                        $("#add_anthology_tpl_add_btn").click(function () {
+                            var options = $("#add_anthology_select_list option:selected");//获取当前选择项.
+                            console.log(data.list[options.val()]);//获取当前选择项的值.
+                            anthologyDataList.push(data.list[options.val()])
+                            loadTable(anthologyDataList)
+                            saveAnthologyDataList(anthologyDataList)
+                            
+                        })
+                    })
+                    form.render();
+                }
+            });
+        })
+        
+
+        // 保存专栏列表
+        function saveAnthologyDataList(anthologyDataList){
+            var ids = []
+            for (const key in anthologyDataList) {
+                if (Object.hasOwnProperty.call(anthologyDataList, key)) {
+                    const element = anthologyDataList[key];
+                    ids.push(element.id)
+                }
+            }
+            // 保存排序功能
+            app.base.ajaxPost("/api/global/set/homeAnthology", { ids: ids.toString() }, function () {
+                layer.msg("已保存")
+            })
+        }
+    });
+</script>

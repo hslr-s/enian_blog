@@ -1,0 +1,18 @@
+<script type="text/html" id="tpl-footer">
+    <div class="fly-footer">
+        <!-- <p><a href="http://fly.layui.com/" target="_blank">Fly社区</a> 2017 &copy; <a href="http://www.layui.com/"
+                target="_blank">enianTeam</a></p> -->
+        <p>
+            <a href="http://www.enianteam.com" target="_blank">Powered By EnianBlog</a>
+            <!-- <a href="http://www.layui.com/template/fly/" target="_blank">获取Fly社区模版</a> -->
+            <!-- <a href="http://fly.layui.com/jie/2461/" target="_blank">微信公众号</a> -->
+        </p>
+    </div>
+</script>
+<script type="text/javascript">
+    app.defTpl('footer', function (tplArg) {
+        app.base.tplRender('#tpl-footer', {}, null, function (html) {
+            layui.$(tplArg.elem).html(html)
+        })
+    })
+</script>

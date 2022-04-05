@@ -1,0 +1,10 @@
+/* 
+    此文件css仅针对于后台管理
+*/
+
+/* 大屏适配最大的宽度 */
+@media screen and (min-width: 1200px){
+    .layui-container {
+        width: 90%;
+    }
+}

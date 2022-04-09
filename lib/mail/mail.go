@@ -74,7 +74,7 @@ func (m *Mail_Connect_Info) SendMailOfRegister(mailTo, key string) error {
 	fromUrl := cmn.InterfaceToString(global_site["domain"])
 	teamName := cmn.InterfaceToString(global_site["title"])
 	content := "您正在注册，点击以下链接完成注册，以下链接有效期48小时。"
-	return m.SendMailOfLink(mailTo, "欢迎注册"+teamName, content, "点此前往注册", fromUrl+"/profile/login.html#/linkRegister?code="+key)
+	return m.SendMailOfLink(mailTo, "欢迎注册"+teamName, content, "点此前往注册", fromUrl+"/profile/auth.html#/linkRegister?code="+key)
 }
 
 func sendMail(mail_connect_info *Mail_Connect_Info, mailTo []string, send_name, title, body string) error {

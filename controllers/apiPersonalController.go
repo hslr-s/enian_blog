@@ -351,7 +351,7 @@ func (c *PersonalController) UpdateMail() {
 		"name":     c.UserInfo.Name,
 	}
 	cache.CachePut("updateMail"+token, saveData, 2*time.Hour) // 2小时过期
-	callbackUrl := cmn.InterfaceToString(siteInfo["domain"]) + "/profile/login.html/#/updateMail?code=" + token
+	callbackUrl := cmn.InterfaceToString(siteInfo["domain"]) + "/profile/auth.html/#/updateMail?code=" + token
 	// fmt.Println("token", token)
 	// 下发邮件
 	mailObj := mail.NewMail(cmn.InterfaceToString(mailInfo["address"]), cmn.InterfaceToString(mailInfo["password"]), cmn.InterfaceToString(mailInfo["host"]), port)
@@ -369,7 +369,7 @@ func (c *PersonalController) UpdatePassword() {
 	}
 	token := cmn.CreateRandomString(64)
 	cache.CachePut("updatePassword"+token, c.UserInfo, 2*time.Hour) // 2小时过期
-	callbackUrl := cmn.InterfaceToString(siteInfo["domain"]) + "/profile/login.html/#/updatePassword?code=" + token
+	callbackUrl := cmn.InterfaceToString(siteInfo["domain"]) + "/profile/auth.html/#/updatePassword?code=" + token
 	mailObj := mail.NewMail(cmn.InterfaceToString(mailInfo["address"]), cmn.InterfaceToString(mailInfo["password"]), cmn.InterfaceToString(mailInfo["host"]), port)
 	mailObj.SendMailOfLink(c.UserInfo.Mail, "修改密码", "点击下方链接去修改密码(2小时内有效)", "点此去修改密码", callbackUrl)
 	c.ApiOk()

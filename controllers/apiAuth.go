@@ -312,7 +312,7 @@ func (c *AuthController) ForgetPassword() {
 	}
 	token := cmn.CreateRandomString(64)
 	cache.CachePut("updatePassword"+token, models.User{Mail: userInfo.Mail}, 2*time.Hour) // 2小时过期
-	callbackUrl := cmn.InterfaceToString(siteInfo["domain"]) + "/profile/login.html/#/updatePassword?code=" + token
+	callbackUrl := cmn.InterfaceToString(siteInfo["domain"]) + "/profile/auth.html/#/updatePassword?code=" + token
 	mailObj := mail.NewMail(cmn.InterfaceToString(mailInfo["address"]), cmn.InterfaceToString(mailInfo["password"]), cmn.InterfaceToString(mailInfo["host"]), port)
 	mailObj.SendMailOfLink(param["mail"], "修改密码", "点击下方链接去修改密码(2小时内有效)", "点此去修改密码", callbackUrl)
 	c.ApiOk()

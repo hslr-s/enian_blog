@@ -46,7 +46,7 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label">简介</label>
                             <div class="layui-input-block">
-                                <textarea id="description" name="description" required lay-verify="required" placeholder="（选填）请输入文章简介" class="layui-textarea"></textarea>
+                                <textarea id="description" name="description"  placeholder="（选填）请输入文章简介" class="layui-textarea"></textarea>
                             </div>
                         </div>
                         <div class="layui-form-item">
@@ -93,9 +93,40 @@
     </div>
 </div>
 
+<script type="text/html" id="upload_file_tpl">
+    <div class="layui-form" style="padding: 10px;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">图片地址</label>
+            <div class="layui-input-inline">
+                <input type="text"  required lay-verify="required" id="upload_file_url" placeholder="图片地址..." 
+                    class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+                <div class="layui-btn layui-btn-sm layui-btn-primary" id="upload_file_btn">本地上传</div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">图片描述</label>
+            <div class="layui-input-inline">
+                <input type="text" name="text" id="upload_file_alt" placeholder="图片的描述..." 
+                    class="layui-input">
+            </div>
+            
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">图片链接</label>
+            <div class="layui-input-inline">
+                <input type="text" name="text" id="upload_file_click_url" placeholder="点击图片跳转的链接" 
+                    class="layui-input">
+            </div>
+        
+        </div>
+    </div>
+</script>
+
 <script>
-    layui.use(["jquery","form"],function(){
-        var $=layui.$,form=layui.form
+    layui.use(["jquery","form","upload"],function(){
+        var $=layui.$,form=layui.form,upload=layui.upload
 
         var editor={}
         var tag_select, anthology_select2, anthology_select
@@ -107,12 +138,16 @@
         var iframeEditor= $("#editor");
         iframeEditor.load(function(){
             editor = iframeEditor[0].contentWindow.$E;
+            editor.uploadFile = function () {
+                uploadFileLayer()
+            }
             if(article_id){
                 // 读取配置
                 app.base.ajaxPost("/api/personal/getArticleInfoAndConfig", { article_id: article_id }, function (data) {
                     form.val("article-config", data)
                     $("#article_title").val(data.title)
                     editor.setContent(data.content)
+                    
 
                     var anthologysIds = objectToArrayById(data.anthologys)
                     var tags = objectToArrayById(data.tags)
@@ -131,6 +166,7 @@
             $(document).bind("keydown", save_keydown);
             
         })
+        
         
         layui.jquery("#editor").css("height", layui.jquery(document).height()-300+"px")
         layui.form.render()
@@ -173,7 +209,6 @@
         // 对象数组转数组
         function objectToArrayById(objArr){
             var arr=[];
-            console.log(objArr)
             for (let i = 0; i < objArr.length; i++) {
                 const element = objArr[i];
                 arr.push(element.id)
@@ -436,6 +471,72 @@
                     save_article()
                 }
             }, 1000*30);
+        }
+        
+        // 上传文件弹窗
+        function uploadFileLayer(){
+            // 弹窗按钮
+            layerButtons = [
+                {
+                    title: '确定',
+                    type: 'primary',// warm,danger,primary
+                    onClick: function (layer_index) {
+                        layer.close(layer_index)
+
+                        var url = $("#upload_file_url").val();
+                        var alt = $("#upload_file_alt").val();
+                        var link = $("#upload_file_click_url").val();
+
+                        if (url === "") {
+                            alert(imageLang.imageURLEmpty);
+                            return false;
+                        }
+
+                        var altAttr = (alt !== "") ? " \"" + alt + "\"" : "";
+
+                        if (link === "" || link === "http://") {
+                            editor.insertValue("![" + alt + "](" + url + altAttr + ")");
+                        }
+                        else {
+                            editor.insertValue("[![" + alt + "](" + url + altAttr + ")](" + link + altAttr + ")");
+                        }
+                        return false;//阻止默认事件
+                    }
+                },
+            ];
+            app.base.layer({
+                type: 1,
+                shade: 0.5,
+                // skin: 'content-info-layer',// 按钮有样式必须要定义skin
+                title: "上传图片",
+                content: $('#upload_file_tpl').html(),
+                buttons: layerButtons,
+                success: function () {
+                    //执行实例
+                    var uploadInst = upload.render({
+                        elem: '#upload_file_btn' //绑定元素
+                        , url: '/api/personal/uploadArticleFile?article_id='+ article_id //上传接口
+                        , headers: { "token": app.base.getUserInfo().token }
+                        , done: function (res) {
+                            //上传完毕回调
+                            // upload_file_click_url
+                            console.log()
+                            if(res.code==0){
+                                $("#upload_file_url").val(res.data)
+                            }else{
+                                layer.msg("上传失败，请重试")
+                            }
+                        }
+                        , error: function () {
+                            //请求异常回调
+                            layer.msg("上传失败，请重试")
+                        }
+                    });
+                    // $("#upload_file_btn").click(function(){
+
+                    // })
+                }
+            })     
         }
     })
 

@@ -21,41 +21,10 @@
         <script>
 
             var $E={};
+            var updateUrl=""
+            var cursorInput
             
-            var editor = editormd("editormd", {
-                width: "calc(100% - 2px)",
-                height: $(document).height() - 2+'px',
-                syncScrolling: true,
-                codeFold: true,
-                saveHTMLToTextarea :true,
-                placeholder:"请尽情的书写吧...",
-                toolbarIcons: function () {
-                    // Or return editormd.toolbarModes[name]; // full, simple, mini
-                    // Using "||" set icons align right.
-                    return [
-                        "undo", "redo", "|",
-                        "bold", "del", "italic", "quote", "|",
-                        "h1", "h2", "h3", "h4", "h5", "h6", "|",
-                        "list-ul", "list-ol", "hr", "|",
-                        "link", "reference-link", "image", "code", "preformatted-text", "code-block", "table", "pagebreak", "|",
-                        "goto-line", "watch", "preview", "search", "|",
-                        "help"
-                    ]
-                },
-                //imageUpload : true,
-                imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
-                //imageUploadURL : "/index/test.html",
-                //			theme: "dark",//工具栏主题
-                //			editorTheme: "pastel-on-dark",//编辑主题
-                //			previewTheme: "dark",//预览主题
-                path: "/static/editormd/lib/" //修改文件目录引用的路径  mode, codemirror, marked... dependents libs path
-            });
-
-            $E.editor= editor
-
-
-
-            // 赋值
+            // 赋值/设置内容
             $E.setContent = function (content) {
                 editor.setValue(content)
             }
@@ -69,6 +38,67 @@
             $E.getContent = function (content) {
                 return editor.getMarkdown()
             }
+
+            // 光标处插入内容
+            $E.insertValue=function(content){
+                // console.log("危害", cursorInput)
+                editor.insertValue(content);
+                editor.getCursor()
+            }
+
+            var editor = editormd("editormd", {
+                    width: "calc(100% - 2px)",
+                    height: $(document).height() - 2 + 'px',
+                    syncScrolling: true,
+                    codeFold: true,
+                    saveHTMLToTextarea: true,
+                    placeholder: "请尽情的书写吧...",
+                    toolbarIcons: function () {
+                        // Or return editormd.toolbarModes[name]; // full, simple, mini
+                        // Using "||" set icons align right.
+                        return [
+                            "undo", "redo", "|",
+                            "bold", "del", "italic", "quote", "|",
+                            "h1", "h2", "h3", "h4", "h5", "h6", "|",
+                            "list-ul", "list-ol", "hr", "|",
+                            "link", "reference-link", "imageCustom", "code", "preformatted-text", "code-block", "table", "pagebreak", "|",
+                            "goto-line", "watch", "preview", "search", "|",
+                            "help"
+                        ]
+                    },
+                    toolbarIconsClass: {
+                        imageCustom: "fa fa-picture-o"  // 指定一个FontAawsome的图标类
+                    },
+                    toolBarCustomIcons:{
+                        imageCustom:'<i class="" name="image" unselectable="on"></i>',
+                    },
+                    toolbarHandlers: {
+                        /**
+                         * @param {Object}      cm         CodeMirror对象
+                         * @param {Object}      icon       图标按钮jQuery元素对象
+                         * @param {Object}      cursor     CodeMirror的光标对象，可获取光标所在行和位置
+                         * @param {String}      selection  编辑器选中的文本
+                         */
+                        imageCustom: function (cm, icon, cursor, selection) {
+                            console.log("上传图片")
+                            cursorInput= cursor
+                            // 获取光标位置
+                            $E.uploadFile()
+                           
+                        },
+
+                      
+                    },
+                    imageUpload: true,
+                    imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                    imageUploadURL: updateUrl,
+                    //			theme: "dark",//工具栏主题
+                    //			editorTheme: "pastel-on-dark",//编辑主题
+                    //			previewTheme: "dark",//预览主题
+                    path: "/static/editormd/lib/" //修改文件目录引用的路径  mode, codemirror, marked... dependents libs path
+                });
+
+                $E.editor = editor
 
             // 上传文件
 

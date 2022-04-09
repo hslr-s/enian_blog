@@ -185,8 +185,7 @@ func (c *AuthController) JoinConfirm() {
 	if err != nil {
 		c.ApiError(-1, err.Error())
 	}
-	// mailObj := cmn.NewMail("demo_admin@enianteam.com", "Sun95302870.", "smtp.mxhichina.com", 465)
-	// mailObj.SendMailOfRegister([]string{registerInfo.Mail}, key)
+
 	// 发送成功，下发邮件
 	c.ApiSuccess("")
 }

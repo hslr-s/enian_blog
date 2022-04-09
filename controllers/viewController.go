@@ -3,7 +3,6 @@ package controllers
 import (
 	"enian_blog/lib/cache"
 	"enian_blog/lib/cmn"
-	"enian_blog/lib/mail"
 	"enian_blog/models"
 	"fmt"
 	"strconv"
@@ -392,28 +391,9 @@ func (c *ViewController) Error404() {
 
 // 测试
 func (c *ViewController) Test() {
-	// cache.ConfigCacheGroupSet("home", cmn.Mss{
-	// 	"head_image": "",
-	// 	"autograph":  "社会组织",
-	// 	"name":       "enianTeam",
-	// 	"anthology":  "",
-	// })
-	fmt.Println(cache.ConfigCacheGroupGet("home"))
-	mArticle := models.Article{}
-	mArticle.GetInfoAndTag(5)
-	c.TplName = "index/test.html"
+
 }
 
 func (c *ViewController) Test1() {
-	mailObj := mail.NewMail("demo_admin@enianteam.com", "Sun95302870.", "smtp.mxhichina.com", 465)
-	fmt.Println(mailObj.SendMail("95302870@qq.com", "测试邮件", "内容"))
-	// cache.ConfigCacheGroupSet("home", cmn.Mss{
-	// 	"head_image": "/static/image/logo.jpg",
-	// 	"autograph":  "社会组织",
-	// 	"name":       "enianTeam",
-	// 	"anthology":  "",
-	// })
-	// mArticle := models.Article{}
-	// mArticle.GetInfoAndTag(5)
-	// c.TplName = "index/home.html"
+
 }

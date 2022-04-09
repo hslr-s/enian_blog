@@ -1,8 +1,14 @@
 package controllers
 
 import (
+	"crypto/md5"
 	"enian_blog/lib/cmn"
 	"enian_blog/models"
+	"fmt"
+	"math/rand"
+	"os"
+	"path"
+	"time"
 )
 
 // =========
@@ -221,4 +227,49 @@ func (c *PersonalController) getSaveArticleInfo(params cmn.Msi) (data map[string
 	updateData["anthologys"] = anthologys
 	updateData["tags"] = tags
 	return updateData
+}
+
+// 上传附件
+func (c *PersonalController) UploadArticleFile() {
+
+	article_id, _ := c.GetInt("article_id", 0)
+	if article_id == 0 {
+		c.ApiError(-1, "文章参数不正确")
+	}
+	f, h, err := c.GetFile("file")
+	ext := path.Ext(h.Filename)
+	defer f.Close()
+	if err != nil {
+		// fmt.Println("getfile err ", err)
+		c.ApiError(-1, err.Error())
+	} else {
+		uploadDir := "static/upload/" + time.Now().Format("2006/01/02/")
+		err := os.MkdirAll(uploadDir, 0777)
+		if err != nil {
+			c.ApiError(-1, err.Error())
+			return
+		}
+		rand.Seed(time.Now().UnixNano())
+		randNum := fmt.Sprintf("%d", rand.Intn(9999)+1000)
+		hashName := md5.Sum([]byte(time.Now().Format("2006_01_02_15_04_05_") + randNum))
+
+		fileName := uploadDir + fmt.Sprintf("%x", hashName) + ext
+		db := models.Db
+		db.Create(&models.File{
+			Name:      h.Filename,
+			Ext:       ext,
+			Path:      fileName,
+			UserId:    c.UserInfo.ID,
+			ArticleId: uint(article_id),
+		})
+
+		err = c.SaveToFile("file", fileName)
+		if err != nil {
+			c.ApiError(-1, err.Error())
+		} else {
+			c.ApiSuccess("/" + fileName)
+		}
+
+	}
+
 }

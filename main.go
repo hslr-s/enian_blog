@@ -26,6 +26,7 @@ func main() {
 		&models.Config{},
 		&models.Anthology{},
 		&models.Tag{},
+		&models.File{},
 	)
 	mUser := models.User{}
 	err := db.Where("id=?", 1).First(&mUser).Error

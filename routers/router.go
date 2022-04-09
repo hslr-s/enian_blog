@@ -118,6 +118,7 @@ func init() {
 	beego.Router("/api/personal/getAnthologyList", &controllers.PersonalController{}, "get:GetAnthologyList")                          // 专栏列表
 	beego.Router("/api/personal/editAnthology", &controllers.PersonalController{}, "post:EditAnthology")                               // 专栏列表
 	beego.Router("/api/personal/deleteAnthologyByAnthologyId", &controllers.PersonalController{}, "post:DeleteAnthologyByAnthologyId") // 删除专栏
+	beego.Router("/api/personal/uploadArticleFile", &controllers.PersonalController{}, "post:UploadArticleFile")                       // 删除专栏
 
 	beego.Router("/api/personal/updateUserInfoCurrent", &controllers.PersonalController{}, "post:UpdateUserInfoCurrent") // 修改个人信息
 	beego.Router("/api/personal/updateMail", &controllers.PersonalController{}, "post:UpdateMail")                       // 修改邮箱

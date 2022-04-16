@@ -16,8 +16,8 @@
         <div id="editormd">
             <textarea id="content" name="content" style="display:none;"></textarea>
         </div>
-        <script src="/static/editormd/jquery.min.js"></script>
-        <script src="/static/editormd/editormd.min.js"></script>
+        <script src="/static/editormd/jquery.min.js?v=version_0.1"></script>
+        <script src="/static/editormd/editormd.min.js?v=version_0.1"></script>
         <script>
 
             var $E={};
@@ -49,6 +49,7 @@
             var editor = editormd("editormd", {
                     width: "calc(100% - 2px)",
                     height: $(document).height() - 2 + 'px',
+                    taskList: true,
                     syncScrolling: true,
                     codeFold: true,
                     saveHTMLToTextarea: true,

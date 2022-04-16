@@ -132,7 +132,7 @@ func (c *GlobalController) SetGlobalSetting() {
 		field, err := c.MssKeyExistCheck(
 			param,
 			// 注册相关
-			"register_email_suffix",
+			// "register_email_suffix",
 			"register_method",
 		)
 
@@ -142,8 +142,8 @@ func (c *GlobalController) SetGlobalSetting() {
 		}
 
 		cache.ConfigCacheGroupSet("global_register", cmn.Mss{
-			"email_suffix": param["register_email_suffix"],
-			"method":       param["register_method"],
+			// "email_suffix": param["register_email_suffix"],
+			"method": param["register_method"],
 		})
 
 	case "tag":

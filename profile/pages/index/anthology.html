@@ -28,7 +28,8 @@
                 </div>
                 <div class="layui-form-mid layui-word-aux">允许管理员推荐此专栏展示在全局首页</div>
             </div>
-            <div class="layui-form-item">
+            <!-- 此版本暂未开发此功能 -->
+            <!-- <div class="layui-form-item">
                 <label class="layui-form-label">接收文章</label>
                 <div class="layui-input-block">
                     <input type="radio" name="accept_article" value=1 title="开放" >
@@ -36,7 +37,10 @@
                     <input type="radio" name="accept_article" value=3 title="需审核">
                 </div>
                 <div class="layui-form-mid layui-word-aux">允许其他用户将文章添加到此专栏</div>
-            </div>
+            </div> -->
+            <!-- 临时定死，后续修改 -->
+            <input class="layui-hide" type="text" name="accept_article" value=1 title="开放">
+
             <div class="layui-form-item layui-form-text">
                 <label for="L_sign" class="layui-form-label">描述</label>
                 <div class="layui-input-block">
@@ -50,7 +54,7 @@
 
     <blockquote class="layui-elem-quote layui-quote-nm">说明：
         <p>公开到全局：允许管理员推荐指定专栏展示在全局首页</p>
-        <p>接收文章：允许其他用户将文章添加到指定专栏</p>
+        <!-- <p>接收文章：允许其他用户将文章添加到指定专栏</p> -->
     </blockquote>
 
 
@@ -109,7 +113,7 @@
                 // { field: 'id', width: 80, title: 'ID', sort: true }
                 { field: 'title',  title: '标题' }
                 , { field: 'golbal_open',  title: '公开到全局', toolbar: '#bar_golbal_open' , align:"center"}
-                , { field: 'accept_article', title: '接收文章', toolbar: '#bar_accept_article', align: "center" }
+                // , { field: 'accept_article', title: '接收文章', toolbar: '#bar_accept_article', align: "center" }
                 , { field: 'description', title: '描述',  minWidth: 100 } //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
                 , { field: 'create_time', title: '创建时间',  sort: true } 
                 , { title: '操作',toolbar:"#bar_anthology_table_tool"} 

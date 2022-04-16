@@ -5,6 +5,7 @@ import (
 	"enian_blog/lib/cmn"
 	"enian_blog/models"
 	"fmt"
+	"net/url"
 	"strconv"
 	"time"
 )
@@ -16,10 +17,8 @@ type ViewController struct {
 // 首页
 func (c *ViewController) Home() {
 
-	// global_user_card := cache.ConfigCacheGroupGet("global_user_card")
 	global_seo := cache.ConfigCacheGroupGet("global_seo")
 	global_site := cache.ConfigCacheGroupGet("global_site")
-	fmt.Print("网站设置", global_site)
 	// ==== 头板块数据 ====
 	background_image, _ := global_site["background_image"].(string)
 	c.UsePartHeaderData(
@@ -27,7 +26,7 @@ func (c *ViewController) Home() {
 		cmn.InterfaceToString(global_seo["site_description"]),
 		cmn.InterfaceToString(global_seo["site_keywords"]),
 		cmn.InterfaceToString("/"+background_image),
-		cmn.InterfaceToString(global_site["about_article"]),
+		cmn.InterfaceToString(global_site["about_url"]),
 	)
 	c.SetPartHeaderMenuCheck("home")
 
@@ -97,6 +96,9 @@ func (c *ViewController) Home() {
 	c.UsePartArticleListData("最近更新", pArticleListData, page, limit, count, "/list/page/")
 	c.UsePartFooterData(FooterData{
 		Team_name: cmn.InterfaceToString(global_site["title"]),
+		// Name:      info.User.Name,
+		Team_url: "/",
+		Icp:      cmn.InterfaceToString(global_site["icp"]),
 	})
 	c.TplName = "index/home.html"
 }
@@ -119,7 +121,7 @@ func (c *ViewController) Content() {
 		cmn.InterfaceToString(global_seo["site_description"]),
 		cmn.InterfaceToString(global_seo["site_keywords"]),
 		cmn.InterfaceToString(global_site["background_image"]),
-		cmn.InterfaceToString(global_site["about_article"]),
+		cmn.InterfaceToString(global_site["about_url"]),
 	)
 	// 用户卡片
 	c.UsePartUserCardData("/"+info.User.Head_image, info.User.Name, "/u/"+info.User.Username, info.User.Autograph)
@@ -135,6 +137,7 @@ func (c *ViewController) Content() {
 		Team_name: siteTitle,
 		Name:      info.User.Name,
 		Team_url:  "/",
+		Icp:       cmn.InterfaceToString(global_site["icp"]),
 	})
 }
 
@@ -159,7 +162,7 @@ func (c *ViewController) UserHome() {
 		cmn.InterfaceToString(global_seo["site_description"]),
 		cmn.InterfaceToString(global_seo["site_keywords"]),
 		cmn.InterfaceToString(global_site["background_image"]),
-		cmn.InterfaceToString(global_site["about_article"]),
+		cmn.InterfaceToString(global_site["about_url"]),
 	)
 	// 用户卡片
 	c.UsePartUserCardData("/"+userInfo.Head_image, userInfo.Name, "/u/"+userInfo.Username, userInfo.Autograph)
@@ -221,6 +224,7 @@ func (c *ViewController) UserHome() {
 		Team_name: cmn.InterfaceToString(global_site["title"]),
 		Name:      userInfo.Name,
 		Team_url:  "/",
+		Icp:       cmn.InterfaceToString(global_site["icp"]),
 	})
 
 	c.TplName = "index/user_home.html"
@@ -256,7 +260,7 @@ func (c *ViewController) AnthologyHome() {
 		cmn.InterfaceToString(global_seo["site_description"]),
 		cmn.InterfaceToString(global_seo["site_keywords"]),
 		cmn.InterfaceToString(global_site["background_image"]),
-		cmn.InterfaceToString(global_site["about_article"]),
+		cmn.InterfaceToString(global_site["about_url"]),
 	)
 
 	articleListItem := []ArticleListItem{}
@@ -301,17 +305,66 @@ func (c *ViewController) AnthologyHome() {
 
 // 按标签搜索
 func (c *ViewController) SearchTag() {
-	// global_user_card := cache.ConfigCacheGroupGet("global_user_card")
+	page := c.Ctx.Input.Param(":page")
+	if page == "" {
+		page = "1"
+	}
+	pageInt, _ := strconv.Atoi(page)
+
 	global_seo := cache.ConfigCacheGroupGet("global_seo")
 	global_site := cache.ConfigCacheGroupGet("global_site")
-	c.UsePartHeaderData(
-		"页面不存在",
-		cmn.InterfaceToString(global_seo["site_description"]),
-		cmn.InterfaceToString(global_seo["site_keywords"]),
-		cmn.InterfaceToString(global_site["background_image"]),
-		cmn.InterfaceToString(global_site["about_article"]),
-	)
-	c.TplName = "index/search.html"
+	tagId := c.Ctx.Input.Param(":tag_id")
+	searchUrl := "/search/tag/" + tagId + "/p/"
+	mTag := models.Tag{}
+	tagIdInt, err := strconv.Atoi(tagId)
+	if err != nil {
+		c.Ctx.Redirect(302, "/404")
+	}
+	tagInfo, err := mTag.GetOneById(uint(tagIdInt))
+	if err != nil || tagInfo.ID == 0 {
+		c.Ctx.Redirect(302, "/404")
+	} else {
+		searchTitle := tagInfo.Title + " - 标签查找 - " + cmn.InterfaceToString(global_site["title"])
+		c.UsePartHeaderData(
+			searchTitle,
+			cmn.InterfaceToString(global_seo["site_description"]),
+			cmn.InterfaceToString(global_seo["site_keywords"]),
+			cmn.InterfaceToString(global_site["background_image"]),
+			cmn.InterfaceToString(global_site["about_url"]),
+		)
+		mArticle := models.Article{}
+		articleList, articleCount := mArticle.GetListByTagId(pageInt, 15, uint(tagIdInt))
+		articleListItem := []ArticleListItem{}
+		for _, v := range articleList {
+			latest_html_label := false
+			if time.Now().Unix()-v.UpdatedAt.Unix() < 432000 {
+				latest_html_label = true
+			}
+			// 获取标签
+			tags := []TagItem{}
+			for _, v := range v.Tags {
+				tags = append(tags, TagItem{
+					Name: v.Title,
+					ID:   int(v.ID),
+				})
+			}
+
+			articleListItem = append(articleListItem, ArticleListItem{
+				ID:                v.ID,
+				Title:             v.Title,
+				Visit_times:       v.Visit,
+				Update_time:       v.UpdatedAt.Format("2006-01-02 15:04:05"),
+				Latest_html_label: latest_html_label,
+				User_name:         v.User.Name,
+				Tags:              tags,
+				Usernametag:       v.User.Username,
+			})
+		}
+		c.Data["SearchTitle"] = "包含标签“" + tagInfo.Title + "”的结果："
+		c.UsePartArticleListData("共计 "+strconv.FormatInt(articleCount, 10)+" 条", articleListItem, pageInt, 15, articleCount, searchUrl)
+		c.TplName = "index/search.html"
+	}
+
 }
 
 // 关键字搜索
@@ -322,11 +375,11 @@ func (c *ViewController) SearchKeyWord() {
 	}
 	pageInt, _ := strconv.Atoi(page)
 
-	// global_user_card := cache.ConfigCacheGroupGet("global_user_card")
 	global_seo := cache.ConfigCacheGroupGet("global_seo")
 	global_site := cache.ConfigCacheGroupGet("global_site")
-	keyword := c.GetString("wd")
-	// keyword, err := url.QueryUnescape(keyword)
+	keyword := c.Ctx.Input.Param(":wd")
+	searchUrl := "/search/keyword/" + keyword + "/p/"
+	keyword, _ = url.QueryUnescape(keyword) // 解码
 
 	// fmt.Println("搜索关键字：", keyword)
 	searchTitle := keyword + " - 关键字搜索 - " + cmn.InterfaceToString(global_site["title"])
@@ -335,7 +388,7 @@ func (c *ViewController) SearchKeyWord() {
 		cmn.InterfaceToString(global_seo["site_description"]),
 		cmn.InterfaceToString(global_seo["site_keywords"]),
 		cmn.InterfaceToString(global_site["background_image"]),
-		cmn.InterfaceToString(global_site["about_article"]),
+		cmn.InterfaceToString(global_site["about_url"]),
 	)
 	mArticle := models.Article{}
 	articleList, articleCount := mArticle.GetListByCondition(pageInt, 15, keyword, []uint{}, mArticle)
@@ -365,8 +418,8 @@ func (c *ViewController) SearchKeyWord() {
 			Usernametag:       v.User.Username,
 		})
 	}
-
-	c.UsePartArticleListData("搜索关键字：“"+keyword+"” ，共计 "+strconv.FormatInt(articleCount, 10)+" 条", articleListItem, pageInt, 15, articleCount, "/search/keyword/p/")
+	c.Data["SearchTitle"] = "搜索关键字“" + keyword + "”的结果："
+	c.UsePartArticleListData("共计 "+strconv.FormatInt(articleCount, 10)+" 条", articleListItem, pageInt, 15, articleCount, searchUrl)
 	c.TplName = "index/search.html"
 }
 
@@ -383,7 +436,7 @@ func (c *ViewController) Error404() {
 		cmn.InterfaceToString(global_seo["site_description"]),
 		cmn.InterfaceToString(global_seo["site_keywords"]),
 		cmn.InterfaceToString(global_site["background_image"]),
-		cmn.InterfaceToString(global_site["about_article"]),
+		cmn.InterfaceToString(global_site["about_url"]),
 	)
 	c.Data["Error_msg"] = "你成功解锁了一个不存在的页面"
 	c.TplName = "index/404.html"
@@ -391,7 +444,10 @@ func (c *ViewController) Error404() {
 
 // 测试
 func (c *ViewController) Test() {
-
+	fmt.Println(cache.ConfigCacheGroupGet("home"))
+	mArticle := models.Article{}
+	mArticle.GetInfoAndTag(5)
+	c.TplName = "index/test.html"
 }
 
 func (c *ViewController) Test1() {

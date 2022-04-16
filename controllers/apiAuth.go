@@ -51,6 +51,7 @@ func (c *AuthController) Login() {
 			} else {
 				token = userInfo.Token
 			}
+			c.SetSession("userId", userInfo.ID)
 			cache.UserTokenSet(token, userInfo)
 			c.ApiSuccess(cmn.Msi{
 				"token":      token,
@@ -70,6 +71,8 @@ func (c *AuthController) Login() {
 				} else {
 					token = userInfo.Token
 				}
+				c.SetSession("userId", userInfo.ID)
+				// cache.UserTokenSet(token, userInfo)
 				c.ApiSuccess(cmn.Msi{
 					"token":      token,
 					"name":       userInfo.Name,
@@ -92,9 +95,17 @@ func (c *AuthController) Login() {
 
 // 开放注册提交
 func (c *AuthController) JoinOpenSubmit() {
+
 	params, err := c.ParseBodyJsonToMsiAndKeyExistCheck("mail", "username", "pass", "name")
 	if err != nil {
 		c.ApiError(-1, "参数不完整")
+	}
+
+	// 判断是否开放注册
+	global_register := cache.ConfigCacheGroupGet("global_register")
+	register_method, ok := global_register["method"].(string)
+	if !ok || register_method != "1" {
+		c.ApiError(-1, "不开放注册")
 	}
 
 	mail := cmn.InterfaceToString(params["mail"])
@@ -185,7 +196,6 @@ func (c *AuthController) JoinConfirm() {
 	if err != nil {
 		c.ApiError(-1, err.Error())
 	}
-
 	// 发送成功，下发邮件
 	c.ApiSuccess("")
 }
@@ -319,7 +329,7 @@ func (c *AuthController) ForgetPassword() {
 
 // 退出
 func (c *AuthController) Logout() {
-
+	c.DestroySession()
 	token := c.Ctx.Input.Header("Token")
 	cache.UserLoginTokenDel(token)
 	c.ApiSuccess(nil)

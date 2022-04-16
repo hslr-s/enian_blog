@@ -1,10 +1,10 @@
 package models
 
 import (
-	"enian_blog/lib/cmn"
 	"fmt"
 	"time"
 
+	"github.com/astaxie/beego"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	_ "gorm.io/driver/sqlite"
@@ -32,7 +32,7 @@ func calcPage(page_size, limit_size int) (offset, limit int) {
 var Db *gorm.DB
 
 func GetDb() (*gorm.DB, error) {
-	dbDrive := cmn.AppConf.DefaultString("database::drive", "sqlite")
+	dbDrive := beego.AppConfig.DefaultString("database::drive", "sqlite")
 	var db *gorm.DB
 	var err error
 
@@ -43,11 +43,11 @@ func GetDb() (*gorm.DB, error) {
 		// }
 
 		// db, _ := gorm.Open("mysql", "root:root@tcp(127.0.0.1:3306)/enian_blog?charset=utf8mb4&parseTime=True&loc=Local")
-		host := cmn.AppConf.DefaultString("database::host", "127.0.0.1")
-		port := cmn.AppConf.DefaultString("database::port", "3306")
-		db_name := cmn.AppConf.DefaultString("database::database_name", "enian_blog")
-		username := cmn.AppConf.DefaultString("database::username", "root")
-		password := cmn.AppConf.DefaultString("database::password", "")
+		host := beego.AppConfig.DefaultString("database::host", "127.0.0.1")
+		port := beego.AppConfig.DefaultString("database::port", "3306")
+		db_name := beego.AppConfig.DefaultString("database::database_name", "enian_blog")
+		username := beego.AppConfig.DefaultString("database::username", "root")
+		password := beego.AppConfig.DefaultString("database::password", "")
 		dsn := username + ":" + password + "@tcp(" + host + ":" + port + ")/" + db_name + "?charset=utf8mb4&parseTime=True&loc=Local"
 		// fmt.Println("链接信息", dsn)
 		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{

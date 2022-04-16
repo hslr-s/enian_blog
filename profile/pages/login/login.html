@@ -7,7 +7,7 @@
     <ul class="layui-tab-title">
         <li class="layui-this">登入</li>
         <li>邮箱登入</li>
-        <li>注册</li>
+        <li id="tab_register" class="layui-hide">注册</li>
     </ul>
     <div class="layui-tab-content" style="padding: 20px 0;">
         <div class="layui-tab-item layui-show">
@@ -172,6 +172,10 @@
     layui.use(['layer', 'jquery', "form"], function () {
         var $ = layui.jquery, form = layui.form
             , layer = layui.layer;
+        var callBackUrl= app.parseUrl().params.back
+        if(callBackUrl){
+            layer.msg("请先登录，再进行其他操作")
+        }
             
         // 监听用户名登录
         form.on("submit(username_login_btn)", function (data) {
@@ -184,7 +188,7 @@
                 info["autograph"] = data.autograph;
                 info["head_image"] = data.head_image;
                 app.base.setUserInfo(info)
-                location.href = "/profile/"
+                location.href = callBackUrl? callBackUrl:"/profile/"
             }, function (msg) {
                 layer.msg("登录失败 原因：" + msg)
             })
@@ -207,7 +211,7 @@
                 info["autograph"] = data.autograph;
                 info["head_image"] = data.head_image;
                 app.base.setUserInfo(info)
-                location.href = "/profile/"
+                location.href = callBackUrl ? callBackUrl : "/profile/"
             }, function (msg) {
                 layer.msg("登录失败 原因：" + msg)
             })
@@ -246,6 +250,13 @@
                     layer.msg("操作失败，" + msg)
                 })
             });
+        })
+
+        // 获取注册配置信息
+        app.base.ajaxGet("/api/front/getRegisterConfig",  function (data) {
+            if(data.method==1){
+                $("#tab_register").removeClass("layui-hide")
+            }
         })
 
 

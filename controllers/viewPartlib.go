@@ -30,6 +30,7 @@ type FooterData struct {
 	Name      string // 组织名称
 	Team_name string // 团队名称
 	Team_url  string // 团队官方地址
+	Icp       string // 备案信息
 }
 
 // 分组类模块
@@ -72,6 +73,12 @@ type ArticleListItem struct {
 // 获取头部数据部分
 func (c *BaseViewController) UsePartHeaderData(Title, Description, Keywords, BackgroundUrl, about_url string) {
 	pHeaderData := HeaderData{}
+	userName := c.UserInfo.Name
+	if userName == "" {
+		userName = "登录*"
+	} else {
+		userName = "个人中心（" + userName + ")"
+	}
 
 	// ==== 头部模块 ====
 	pHeaderData.Title = Title
@@ -82,20 +89,21 @@ func (c *BaseViewController) UsePartHeaderData(Title, Description, Keywords, Bac
 		ID:   "home",
 		Html: "首页",
 		Href: "/",
-	}, /* {
-			ID:   "my_project",
-			Html: "分类专栏",
-			Href: "#aaaa",
-		},  */{
-			ID:   "profile",
-			Html: "个人中心",
-			Href: "/profile/",
-		}, {
+	}}
+
+	if about_url != "" {
+		headerTitleList = append(headerTitleList, UrlHtmlLable{
 			ID:   "about",
 			Html: "关于",
-			// Href: about_url,
-			Href: "/about",
-		}}
+			Href: about_url,
+		})
+	}
+
+	headerTitleList = append(headerTitleList, UrlHtmlLable{
+		ID:   "profile",
+		Html: userName,
+		Href: "/profile/",
+	})
 	pHeaderData.HeaderList = headerTitleList //头部板块数据
 	c.Data["HeaderData"] = &pHeaderData
 	c.Data["HeaderMenuCheck"] = ""

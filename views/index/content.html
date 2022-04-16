@@ -28,7 +28,7 @@
             <br />
             <!-- 文章标签 -->
             {{range .ArticleInfo.Tags}}
-							<span class="layui-badge fly-badge-accept blog-tags"><a href="/search/tags.html?word={{.ID}}">{{.Title}}</a></span>
+							<span class="layui-badge fly-badge-accept blog-tags"><a href="/search/tag/{{.ID}}">{{.Title}}</a></span>
             {{end}}
           </span>
         </div>
@@ -42,7 +42,7 @@
     </div>
 
 
-<script src="/static/layui/layui.js"></script>
+<script src="/static/layui/layui.js?v=version_0.1"></script>
  <script type="text/javascript">
 	layui.use(['element','laypage','jquery'],function(){
       element = layui.element,laypage = layui.laypage,$ = layui.$;

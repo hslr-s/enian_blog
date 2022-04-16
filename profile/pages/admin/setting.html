@@ -11,7 +11,7 @@
         <li lay-id="email">邮箱配置</li>
         <li lay-id="pass">注册设置</li>
         <!-- <li lay-id="bind">标签设置</li> -->
-        <li lay-id="bind">SEO设置</li>
+        <li lay-id="bind">SEO设置(开发中)</li>
         <!-- <li lay-id="bind">友情链接</li> -->
     </ul>
     <div class="layui-tab-content" style="padding: 20px 0;">
@@ -31,7 +31,7 @@
                 </div>
                 <input type="text" class="layui-hide" id="site_logo" name="site_logo">
                 <!-- <div class="layui-form-item">
-                    <label for="L_email" class="layui-form-label">邮箱</label>
+                    <label class="layui-form-label">邮箱</label>
                     <div class="layui-input-inline">
                         <input type="text" name="email" required lay-verify="email" autocomplete="off"
                             value="" class="layui-input">
@@ -53,7 +53,7 @@
                     </div> -->
                 </div>
                 <!-- <div class="layui-form-item">
-                    <label for="L_city" class="layui-form-label">城市</label>
+                    <label class="layui-form-label">城市</label>
                     <div class="layui-input-inline">
                         <input type="text" id="L_city" name="city" autocomplete="off" value="" class="layui-input">
                     </div>
@@ -84,17 +84,22 @@
                     <div class="layui-form-mid layui-word-aux"><button class="layui-btn layui-btn-xs" id="use_current_domain">使用当前网站域名</button><p>应用于外部跳转到主站，例如邮件内等</p></div>
                 </div>
             </div>
-            <!-- <div class="layui-form-item">
+            <div class="layui-form-item">
                 <label class="layui-form-label">关于链接</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="site_about_article" placeholder="点击“关于”跳转的地址" autocomplete="off" value=""
+                    <input type="text" name="site_about_url" placeholder="点击“关于”跳转的地址" autocomplete="off" value=""
                         class="layui-input">
+                    <div class="layui-form-mid layui-word-aux">
+                        <!-- <div class="layui-btn layui-btn-xs" id="select_article_btn">选择文章</div> -->
+                        <!-- <p>可以选择公开的文章或者直接添加链接，不填写将不显示关于</p> -->
+                        <p>可以设置外部链接，留空隐藏关于项</p>
+                    </div>
                 </div>
-                <div class="layui-form-mid layui-word-aux"><button class="layui-btn layui-btn-xs">选择文章</button> 作为“关于”页面跳转的地址 </div>
-            </div> -->
+                
+            </div>
       
             <!-- <div class="layui-form-item">
-                <label for="L_email" class="layui-form-label">背景图</label>
+                <label class="layui-form-label">背景图</label>
                 <div class="layui-input-inline">
                     <input type="text" name="site_background_image" placeholder="点击“关于”跳转的地址" autocomplete="off" value=""
                         class="layui-input">
@@ -180,25 +185,25 @@
         </div>
 
         <!-- 注册设置 -->
-        <div class="layui-form layui-form-pane layui-tab-item">
+        <div class="layui-form layui-tab-item">
             <form class="layui-form" lay-filter="form-register">
                 <div class="layui-form-item">
                     <label class="layui-form-label">注册方式</label>
                     <div class="layui-input-block">
                         <input type="radio" name="register_method" value="1" title="开放">
-                        <input type="radio" name="register_method" value="2" title="邀请码注册" >
+                        <!-- <input type="radio" name="register_method" value="2" title="邀请码注册" > -->
                         <input type="radio" name="register_method" value="3" title="关闭" checked>
                     </div>
                 </div>
 
-                <div class="layui-form-item">
-                    <label for="L_email" class="layui-form-label">邮箱后缀</label>
+                <!-- <div class="layui-form-item">
+                    <label class="layui-form-label">邮箱后缀</label>
                     <div class="layui-input-inline">
                         <input type="text" name="register_email_suffix" placeholder="例如：@abc.com" autocomplete="off" value=""
                             class="layui-input">
                     </div>
                     <div class="layui-form-mid layui-word-aux">限制邮箱的后缀，一般用于企业邮箱，可不填 </div>
-                </div>
+                </div> -->
 
                 <div class="layui-form-item">
                     <div class="layui-input-block">
@@ -269,31 +274,6 @@
                 </div>
             </form>
         </div>
-
-
-        <!-- <div class="layui-form layui-form-pane layui-tab-item">
-            <ul class="app-bind">
-                <li class="fly-msg app-havebind">
-                    <i class="iconfont icon-qq"></i>
-                    <span>已成功绑定，您可以使用QQ帐号直接登录Fly社区，当然，您也可以</span>
-                    <a href="javascript:;" class="acc-unbind" type="qq_id">解除绑定</a>
-        
-                    <a href="" onclick="layer.msg('正在绑定微博QQ', {icon:16, shade: 0.1, time:0})" class="acc-bind" type="qq_id">立即绑定</a>
-                        <span>，即可使用QQ帐号登录Fly社区</span>
-                </li>
-                <li class="fly-msg">
-                    <i class="iconfont icon-weibo"></i>
-                    <span>已成功绑定，您可以使用微博直接登录Fly社区，当然，您也可以</span>
-                        <a href="javascript:;" class="acc-unbind" type="weibo_id">解除绑定</a>
-        
-                    <a href="" class="acc-weibo" type="weibo_id"
-                        onclick="layer.msg('正在绑定微博', {icon:16, shade: 0.1, time:0})">立即绑定</a>
-                    <span>，即可使用微博帐号登录Fly社区</span>
-                </li>
-            </ul>
-        </div> -->
-
-
     </div>
 
 
@@ -394,6 +374,11 @@
             layer.alert("获取到的域名为："+ domian+"。请人为判断域名的准确性。<br>否则可能导致邮件中链接无法打开")
             return false
         })
+
+        // 选择文章
+        // $("#select_article_btn").click(function(){
+        //     app.runTpl("searchArticle")
+        // })
 
 
         // 上传文件

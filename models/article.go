@@ -73,6 +73,25 @@ func (m *Article) GetListByAnthologyId(page, limit int, AnthologyId uint) (artic
 	return
 }
 
+// 根标签获取文章
+func (m *Article) GetListByTagId(page, limit int, tagId uint) (articleList []Article, count int64) {
+	offset, limit := calcPage(page, limit)
+	mTag := Tag{}
+	mTag.ID = tagId
+	err := Db.Model(&mTag).
+		Preload("User").Preload("Tags").
+		Offset(offset).Limit(limit).
+		Association("Articles").
+		Find(&articleList)
+		// Offset(-1).Limit(-1).
+		// Count(&count)
+	count = Db.Model(&mTag).
+		Preload("User").
+		Association("Articles").Count()
+	_ = err
+	return
+}
+
 // 按页获取文章列表
 func (m *Article) GetListByCondition(page, limit int, keyword string, AnthologyIds []uint, article Article) (articleList []Article, count int64) {
 	db := Db.Debug().Order("updated_at Desc")

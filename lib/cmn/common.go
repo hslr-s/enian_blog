@@ -33,22 +33,10 @@ const (
 var AppConf config.Configer
 
 // 运行模式，1.团队版 2.个人版
-var RUN_MODE int = 0
+var RUN_MODE int = 1
 
 func init() {
-	// 查询运行模式
-	iniconf, err := config.NewConfig("ini", "conf/app.conf")
-	if err != nil {
-		// 运行错误
-	}
-	AppConf = iniconf
-	team_version := AppConf.DefaultBool("common::team_version", false)
-	if team_version {
-		RUN_MODE = 1
-	} else {
-		RUN_MODE = 2
-	}
-
+	// 查询运行模式(暂时取消)
 }
 
 // 函数

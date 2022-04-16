@@ -1,24 +1,32 @@
 <div class="fly-footer">
-  <p> Copyright &copy; 2021 <a href="{{.FooterData.Team_url}}" target="_blank">{{.FooterData.Team_name}}</a>{{if .FooterData.Name}}·<a>{{.FooterData.Name}}</a>{{end}}</p>
+  <p> Copyright &copy; <span id="foot-copyright-year"></span><a href="{{.FooterData.Team_url}}" target="_blank">{{.FooterData.Team_name}}</a>{{if .FooterData.Name}}·<a>{{.FooterData.Name}}</a>{{end}}</p>
+
+  
 
   <!-- 
     您可以一直使用或进行二次开发本开源项目，全站只有一处带有版权且不可自定义的标签。
     俗话说得好：吃水不忘挖井人，希望您保留下段标签内容，开源不易，感谢您的理解！ 
-  -->
+    -->
   <p>
-    <a href="http://enianteam.com/enian_admin.html" target="_blank">Powered By EnianBlog</a>
+    Powered By<a href="https://gitee.com/hslr/enian_blog" target="_blank" title="E念博客（EnianBlog）">EnianBlog</a>
   </p>
   <!-- 
     如果您想参与和作者一同开发，欢迎联系我，加入进来，让此项目更加完美！
     如果您在做二次开发，希望您在开源的同时，注明原作者出处，感谢您，我的宝🌈。
   -->
+
+  {{if .FooterData.Icp}}
+  <p>
+    <a href="http://beian.miit.gov.cn" target="_blank" style="font-size: 13px;">{{.FooterData.Icp}}</a>
+  </p>
+  {{end}}
 </div>
  
 
 <script>
 
 layui.config({
-  version: "3.0.0"
+  version: "version_0.1"
   ,base: '/static/mods/' //这里实际使用时，建议改成绝对路径
 }).extend({
   fly: 'index'
@@ -34,6 +42,8 @@ layui.config({
     ,anim: 'fade' //切换动画方式
   });
 
+  $("#foot-copyright-year").text(new Date().getFullYear())
+
   // 搜索
   $('#search').bind('keypress', function (event) { 
     if (event.keyCode == "13") { 
@@ -41,7 +51,7 @@ layui.config({
       if(wd==''){
       	layui.layer.alert("搜索关键字不能为空");
       }else{
-      	location.href="/search/keyword?wd="+wd;
+      	location.href="/search/keyword/"+wd;
       }
       
     }

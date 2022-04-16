@@ -8,7 +8,10 @@ import (
 	"os"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/session"
 )
+
+var globalSessions *session.Manager
 
 func main() {
 	// 创建表
@@ -46,5 +49,6 @@ func main() {
 		fmt.Println("===============================================")
 	}
 
+	beego.BConfig.WebConfig.Session.SessionOn = true
 	beego.Run()
 }

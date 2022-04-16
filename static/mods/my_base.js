@@ -220,14 +220,13 @@ layui.define(['jquery','layer','laytpl',"app"],function(exports){
     // =================
     app.systemEvents('loadBeforeBefore',function(obj){
         var trouteObj = getTransRoute(obj.url.path);
-        // console.log('--', trouteObj, obj.url.path)
         if (trouteObj){
             // 读取模板缓存，不再去读取加载
             if (trouteObj.html) {
                 obj.html = trouteObj.html
             } else {
                 $.ajax({
-                    url: trouteObj.url,
+                    url: trouteObj.url+"?v=version_0.1" + Date.parse(new Date()),
                     async: false,
                     success: function (res) {
                         trouteObj.html = res; // 首次读取后缓存模板
@@ -236,7 +235,7 @@ layui.define(['jquery','layer','laytpl',"app"],function(exports){
                 });
             }
         }else{
-            obj.html = '<h1 style="font-weight:900;"> 404 页面不存在</h1>';
+            obj.html = '<h1 style="font-weight:900;"> 404 页面不存在或正在开发中（<a href="https://gitee.com/hslr/enian_blog" style="color:blue">点此可查看进度</a>）</h1>';
         }
         
         return false;

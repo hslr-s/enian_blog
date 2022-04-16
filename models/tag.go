@@ -23,8 +23,13 @@ func (m *Tag) GetAll() (list []Tag, err error) {
 	return
 }
 
-func (m *Tag) GetMoreById(ids string) (list []Tag, err error) {
-	err = Db.Where("status=1").Find(&list).Error
+// func (m *Tag) GetMoreById(ids string) (list []Tag, err error) {
+// 	err = Db.Where("status=1").Find(&list).Error
+// 	return
+// }
+
+func (m *Tag) GetOneById(id uint) (info Tag, err error) {
+	err = Db.Where("status=1").Where("id=?", id).Find(&info).Error
 	return
 }
 

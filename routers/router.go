@@ -23,7 +23,6 @@ func init() {
 	RunCodeExecByPerson(func() {
 		beego.Router("/", &controllers.ViewController{}, "*:Home")                    // 主用户首页
 		beego.Router("/list/:group_id", &controllers.ViewController{}, "*:GroupList") // 首页
-		beego.Router("/test", &controllers.MainController{}, "*:Test")                // 首页
 	})
 
 	// beego.Router("/list/:group_id", &controllers.BlogController{}, "get:GetListByGroupId") // 分组下的文章列表
@@ -56,9 +55,10 @@ func init() {
 		// beego.Router("/group/:group_id/info", &controllers.ViewController{}, "*:Home")              // 专栏介绍
 
 		// 搜索
-		beego.Router("/search/tag/:tag_id", &controllers.ViewController{}, "*:SearchTag")         // 标签方式
-		beego.Router("/search/keyword", &controllers.ViewController{}, "*:SearchKeyWord")         // 关键字方式
-		beego.Router("/search/keyword/p/:page", &controllers.ViewController{}, "*:SearchKeyWord") // 关键字方式
+		beego.Router("/search/tag/:tag_id/", &controllers.ViewController{}, "*:SearchTag")            // 标签方式
+		beego.Router("/search/tag/:tag_id/p/:page", &controllers.ViewController{}, "*:SearchTag")     // 标签方式
+		beego.Router("/search/keyword/:wd", &controllers.ViewController{}, "*:SearchKeyWord")         // 关键字方式
+		beego.Router("/search/keyword/:wd/p/:page", &controllers.ViewController{}, "*:SearchKeyWord") // 关键字方式
 
 		//
 		beego.Router("/about", &controllers.ViewController{}, "*:Development") // 关于...
@@ -92,7 +92,10 @@ func init() {
 	beego.Router("/api/profile/auth/getUpdatePasswordInfo/:key", &controllers.AuthController{}, "get:GetUpdatePasswordInfo")  // 获取修改密码的基本信息
 	beego.Router("/api/profile/auth/getUpdateMailInfo/:key", &controllers.AuthController{}, "get:GetUpdateMailInfo")          // 获取修改邮箱的基本信息
 	beego.Router("/api/profile/auth/forgetPassword", &controllers.AuthController{}, "post:ForgetPassword")                    // 忘记密码
-	beego.Router("/api/statistics/webpage", &controllers.StatisticsController{}, "post:Webpage")                              // 统计
+
+	// 前端使用接口
+	beego.Router("/api/statistics/webpage", &controllers.StatisticsController{}, "post:Webpage")          // 统计
+	beego.Router("/api/front/getRegisterConfig", &controllers.FrontController{}, "get:GetRegisterConfig") // 获取注册配置
 
 	beego.Router("/api/test", &controllers.AuthController{}, "*:Test") // 测试
 

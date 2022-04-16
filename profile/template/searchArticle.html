@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/static/eicon/iconfont.css">
+<!-- <link rel="stylesheet" href="/static/eicon/iconfont.css"> -->
 <style>
   
     .search-box {
@@ -55,8 +55,13 @@
 
 <script type="text/html" id="tpl-event_search">
     <div class='search-box'>
-        <input type="text" name="search_word" id="tpl-event_search-word-input" required lay-verify="required" placeholder="请输入关键字,回车搜索" autocomplete="off"
+        <input type="text" name="search_word" id="tpl-event_search-word-input" required lay-verify="required" placeholder="请输入文章或标题关键字,回车搜索" autocomplete="off"
             class="layui-input">
+
+        <!-- 事件主题 -->
+        <div class="object-event-subject" style="margin-bottom:20px;">
+           
+        </div>
         <div id="search-list-box"></div>
     </div>
 </script>
@@ -86,21 +91,18 @@
 </script>
 
 <script type="text/javascript">
-    app.base.loadApi(['apiEvent']);
-    app.defTpl('eventSearch', function (tplArg) {
-        layui.use(['layer', 'laytpl','apiEvent','dropdown'], function () {
-            var laytpl = layui.laytpl, $ = layui.$;
-
-            
+    app.defTpl('searchArticle', function (tplArg) {
+        layui.use(['layer', 'laytpl','dropdown'], function () {
+            var laytpl = layui.laytpl, $ = layui.$, apiObject=layui.apiObject;
 
             app.base.layer({
-                title: "查找事件",
+                title: "查找文章",
                 type: 1,
-                shade:false,
+                shade: [0.8, '#393D49'],
                 // shadeClose: true,
                 skin: "tpl-eventSearch",
-                area: ['600px', '500px'], //宽高
-                maxmin:true,
+                area: ['300px', '500px'], //宽高
+                // maxmin:true,
                 content: $('#tpl-event_search').html(),
                 buttons: [
                     {
@@ -119,10 +121,10 @@
                 success: function (dom,index) {
 
                     // 返回弹窗id
-                        if(tplArg.getLayerIndex){
-                            tplArg.getLayerIndex(index)
-                        }
-                     $('#tpl-event_search-word-input').bind('keyup', function (event) {
+                    if(tplArg.getLayerIndex){
+                        tplArg.getLayerIndex(index)
+                    }
+                    $('#tpl-event_search-word-input').bind('keyup', function (event) {
                         // console.log(event.keyCode)
                         if (event.keyCode == "13") {
                             //回车执行查询
@@ -168,6 +170,24 @@
                             })
                         }
                     });
+
+                    // 渲染事件主题
+                    apiObject.getSubjectList(tplArg.objId, function (data) {
+
+                        $(".object-event-subject-setting").click(function () {
+                            layer.close(editLayerIndex)
+                            app.runTpl("object_event_subject", { objId: tplArg.objId })
+                        })
+                        for (let i = 0; i < data.length; i++) {
+                            const element = data[i];
+                            $(".object-event-subject").append('<button class="layui-btn layui-btn-xs layui-btn-normal"  style="margin-bottom:5px;margin-top:5px;">#' + element.title + '#</button>')
+                        }
+                        // 监听事件主题按钮被点击
+                        $(".object-event-subject button").click(function () {
+                            $("#tpl-event_search-word-input").val($(this).html())
+                            $("#tpl-event_search-word-input").focus();
+                        })
+                    })
                     
                 }
             })

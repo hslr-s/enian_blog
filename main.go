@@ -8,10 +8,13 @@ import (
 	"os"
 
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/session"
 )
 
-var globalSessions *session.Manager
+func init() {
+	// beego.BConfig.WebConfig.Session.SessionOn = true
+	// beego.BConfig.WebConfig.Session.SessionProvider = "file"
+	// beego.BConfig.WebConfig.Session.SessionProviderConfig = "./tmp"
+}
 
 func main() {
 	// 创建表
@@ -28,9 +31,11 @@ func main() {
 		&models.User{},
 		&models.Config{},
 		&models.Anthology{},
+		&models.Message{},
 		&models.Tag{},
 		&models.File{},
 	)
+
 	mUser := models.User{}
 	err := db.Where("id=?", 1).First(&mUser).Error
 	if err != nil {
@@ -49,6 +54,5 @@ func main() {
 		fmt.Println("===============================================")
 	}
 
-	beego.BConfig.WebConfig.Session.SessionOn = true
 	beego.Run()
 }

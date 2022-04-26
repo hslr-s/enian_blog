@@ -65,34 +65,50 @@ func (c *ViewController) Home() {
 	}
 	page, _ = strconv.Atoi(pageString)
 	limit := 15 // 默认20条
-	mArticle := models.Article{}
-	list, count := mArticle.GetList(page, limit)
-	pArticleListData := []ArticleListItem{}
-	for _, v := range list {
-		latest_html_label := false
-		if time.Now().Unix()-v.UpdatedAt.Unix() < 432000 {
-			latest_html_label = true
-		}
-		// 获取标签
-		tags := []TagItem{}
-		for _, v := range v.Tags {
-			tags = append(tags, TagItem{
-				Name: v.Title,
-				ID:   int(v.ID),
+
+	condition := cmn.Mss{
+		"status": "1",
+		// "only_release": "1",
+	}
+	var (
+		list  []models.Article
+		count int64
+	)
+	// 缓存读取
+	cache_pArticleListData := cache.CacheGet("home_article_list")
+	pArticleListData, ok := cache_pArticleListData.([]ArticleListItem)
+	if !ok {
+		// fmt.Println("非缓存读取")
+		mArticle := models.Article{}
+		list, count, _ = mArticle.GetListByCondition(page, limit, condition)
+		for _, v := range list {
+			latest_html_label := false
+			if time.Now().Unix()-v.UpdatedAt.Unix() < 432000 {
+				latest_html_label = true
+			}
+			// 获取标签
+			tags := []TagItem{}
+			for _, v := range v.Tags {
+				tags = append(tags, TagItem{
+					Name: v.Title,
+					ID:   int(v.ID),
+				})
+			}
+
+			pArticleListData = append(pArticleListData, ArticleListItem{
+				ID:                v.ID,
+				Title:             v.Title,
+				Visit_times:       v.Visit,
+				Update_time:       v.UpdatedAt.Format("2006-01-02 15:04:05"),
+				Latest_html_label: latest_html_label,
+				User_name:         v.User.Name,
+				Tags:              tags,
+				Usernametag:       v.User.Username,
 			})
 		}
-
-		pArticleListData = append(pArticleListData, ArticleListItem{
-			ID:                v.ID,
-			Title:             v.Title,
-			Visit_times:       v.Visit,
-			Update_time:       v.UpdatedAt.Format("2006-01-02 15:04:05"),
-			Latest_html_label: latest_html_label,
-			User_name:         v.User.Name,
-			Tags:              tags,
-			Usernametag:       v.User.Username,
-		})
+		cache.CachePut("home_article_list", pArticleListData, 10*time.Second)
 	}
+
 	c.UsePartArticleListData("最近更新", pArticleListData, page, limit, count, "/list/page/")
 	c.UsePartFooterData(FooterData{
 		Team_name: cmn.InterfaceToString(global_site["title"]),
@@ -391,7 +407,11 @@ func (c *ViewController) SearchKeyWord() {
 		cmn.InterfaceToString(global_site["about_url"]),
 	)
 	mArticle := models.Article{}
-	articleList, articleCount := mArticle.GetListByCondition(pageInt, 15, keyword, []uint{}, mArticle)
+	condition := cmn.Mss{
+		"keyword": keyword,
+		"status":  "1",
+	}
+	articleList, articleCount, _ := mArticle.GetListByCondition(pageInt, 15, condition)
 	articleListItem := []ArticleListItem{}
 	for _, v := range articleList {
 		latest_html_label := false

@@ -6,13 +6,29 @@ import (
 	"errors"
 	"time"
 
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/cache"
+	_ "github.com/astaxie/beego/cache/redis"
 )
 
 var Cache cache.Cache
 
 func init() {
-	bm, _ := cache.NewCache("file", `{"CachePath":"./cache","FileSuffix":".cache","DirectoryLevel":"2","EmbedExpiry":"120"}`)
+	drive := beego.AppConfig.DefaultString("cache_drive", "file")
+	var bm cache.Cache
+	var err error
+	if drive == "file" {
+		bm, _ = cache.NewCache("file", `{"CachePath":"./cache","FileSuffix":".cache","DirectoryLevel":"2","EmbedExpiry":"120"}`)
+	} else {
+		conn := beego.AppConfig.DefaultString("redis::conn", ":6379")
+		auth := beego.AppConfig.DefaultString("redis::auth", "")
+		name := beego.AppConfig.DefaultString("redis::name", "")
+		bm, err = cache.NewCache("redis", `{"key":"`+name+`","conn":"`+conn+`","dbNum":"0","auth":"`+auth+`"}`)
+		if err != nil {
+			panic("Redis 连接失败")
+		}
+	}
+
 	Cache = bm
 }
 

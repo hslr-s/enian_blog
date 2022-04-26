@@ -133,9 +133,13 @@ func init() {
 	// beego.Router("/api/personal/getTagListSearchAndCreate", &controllers.PersonalController{}, "post:GetTagListSearchAndCreate") // 根据模糊搜索获取标签列表,如果不存在则会自动创建
 	beego.Router("/api/personal/getArticleConfig", &controllers.PersonalController{}, "post:GetArticleConfig")               // 获取文章配置
 	beego.Router("/api/personal/getArticleInfoAndConfig", &controllers.PersonalController{}, "post:GetArticleInfoAndConfig") // 获取文章和文章配置
-	beego.Router("/api/personal/saveArticle", &controllers.PersonalController{}, "post:SaveArticle")                         // 添加文章
-	beego.Router("/api/personal/updateArticle", &controllers.PersonalController{}, "post:UpdateArticle")                     // 更新文章
+	beego.Router("/api/personal/saveArticle", &controllers.PersonalController{}, "post:SaveArticle")                         // 保存文章
 	beego.Router("/api/personal/deleteArticle", &controllers.PersonalController{}, "post:DeleteArticle")                     // 删除文章
+
+	// 消息相关
+	beego.Router("/api/personal/message/getList", &controllers.MeeagePersonalController{}, "post:GetList")   // 获取消息列表
+	beego.Router("/api/personal/message/feedback", &controllers.MeeagePersonalController{}, "post:Feedback") // 消息处理反馈
+	beego.Router("/api/personal/message/read", &controllers.MeeagePersonalController{}, "post:Read")         // 读取消息
 
 	// =============
 	// 管理员

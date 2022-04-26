@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"os"
 	"path"
+	"strconv"
 	"time"
 )
 
@@ -55,74 +56,73 @@ func (c *PersonalController) SaveArticle() {
 	if err != nil {
 		return
 	}
-	update_data := c.getSaveArticleInfo(params)
 
+	// 生成保存数据
+	saveData, applyAnthotogyIds := c.getSaveArticleInfo(params)
 	mArticle := models.Article{}
-	mArticle.Title = update_data["title"].(string)
-	mArticle.Content = update_data["content"].(string)
-	mArticle.Visit = c.GetValueByMsiKeyIntDefault(params, "visit", 0)
-	mArticle.Status = c.GetValueByMsiKeyIntDefault(params, "status", 0)
-	mArticle.Description = c.GetValueByMsiKeyStringDefault(params, "description", "")
-	mArticle.Editor = c.GetValueByMsiKeyIntDefault(params, "editor", 0)
-	mArticle.AutoRelease = c.GetValueByMsiKeyIntDefault(params, "auto_release", 0)
-	mArticle.UserId = c.UserInfo.ID
 
-	mArticle.Anthologys, _ = update_data["anthologys"].([]models.Anthology)
-	mArticle.Tags, _ = update_data["tags"].([]models.Tag)
-	if _, err := c.MsiKeyExistCheck(params, "content_render"); err == nil {
-		mArticle.ContentRender = c.GetValueByMsiKeyStringDefault(params, "content_render", "")
-	}
-
-	info, err := mArticle.AddOne(mArticle)
-
-	if err != nil {
-		c.ApiError(1, "文章添加失败")
+	article_id := c.GetValueByMsiKeyIntDefault(params, "id", 0)
+	if article_id != 0 {
+		// 更新
+		info, err := mArticle.GetInfo(uint(article_id))
+		if err != nil {
+			c.ApiErrorEasy("文章不存在")
+			return
+		}
+		if info.UserId != c.UserInfo.ID {
+			c.ApiErrorEasy("无权限")
+			return
+		}
+		if title, _ := c.GetValueByMsiKeyString(params, "title"); title == "" {
+			c.ApiErrorEasy("标题不可为空")
+			return
+		}
+		errUpdate := mArticle.UpdateByArticleId(uint(article_id), saveData)
+		if errUpdate != nil {
+			c.ApiErrorEasy("文章更新失败")
+		} else {
+			c.pushArticleToAnthotogyApply(info.ID, applyAnthotogyIds, saveData["title"].(string))
+			c.ApiSuccess(cmn.Msi{"id": info.ID})
+		}
 	} else {
-		c.ApiSuccess(cmn.Msi{"id": info.ID})
-	}
+		// 新建
+		mArticle.Title = saveData["title"].(string)
+		mArticle.Content = saveData["content"].(string)
+		mArticle.Visit = c.GetValueByMsiKeyIntDefault(params, "visit", 0)
+		mArticle.Status = c.GetValueByMsiKeyIntDefault(params, "status", 0)
+		mArticle.Description = c.GetValueByMsiKeyStringDefault(params, "description", "")
+		mArticle.Editor = c.GetValueByMsiKeyIntDefault(params, "editor", 0)
+		mArticle.AutoRelease = c.GetValueByMsiKeyIntDefault(params, "auto_release", 0)
+		mArticle.UserId = c.UserInfo.ID
 
+		mArticle.Anthologys, _ = saveData["anthologys"].([]models.Anthology)
+		mArticle.Tags, _ = saveData["tags"].([]models.Tag)
+		if saveData["content_render"] != "" {
+			mArticle.ContentRender, _ = saveData["content_render"].(string)
+			mArticle.ReleaseTime, _ = saveData["release_time"].(string)
+		}
+		info, err := mArticle.AddOne(mArticle)
+		if err != nil {
+			c.ApiError(1, "文章添加失败")
+		} else {
+			c.pushArticleToAnthotogyApply(info.ID, applyAnthotogyIds, mArticle.Title)
+			c.ApiSuccess(cmn.Msi{"id": info.ID})
+		}
+	}
 }
 
-// 保存文章配置
-func (c *PersonalController) UpdateArticle() {
-	// 标题，内容，渲染内容，编辑器，简介，设为私密，保存即发布，专栏列表（不区分自己还是公开），标签列表
-	params, err := c.ParseBodyJsonToMsiAndKeyExistCheck("id", "title", "content", "editor", "description", "auto_release", "tags", "anthologys")
-	if err != nil {
-		return
+// 推送文章至专栏申请
+func (c *PersonalController) pushArticleToAnthotogyApply(artcileId uint, anthotogyInfos []models.Anthology, article_title string) {
+	for _, v := range anthotogyInfos {
+		mMessage := models.Message{}
+		fmt.Println(v)
+		messageContent := "<a>" + c.UserInfo.Name + "</a>的文章标题为<a href='/article/content/" + strconv.Itoa(int(artcileId)) + "'>[" + article_title + "]</a>正在申请推送到你的专栏<a href='/u/li/anthology/" + strconv.Itoa(int(v.ID)) + "'>[" + v.Title + "]</a>"
+		extendParam := cmn.Msi{}
+		extendParam["type"] = 1
+		extendParam["article_id"] = artcileId
+		extendParam["anthology_id"] = v.ID
+		mMessage.CreateOneMessage("有文章推送至专栏，需审核", messageContent, extendParam, 2, v.UserId, c.UserInfo.ID)
 	}
-
-	article_id := c.GetValueByMsiKeyIntDefault(params, "id", -1)
-	if article_id == -1 {
-		c.ApiErrorEasy("文章不存在")
-	}
-	mArticle := models.Article{}
-	info, err := mArticle.GetInfo(uint(article_id))
-	if err != nil {
-		c.ApiErrorEasy("文章不存在")
-		return
-	}
-	if info.UserId != c.UserInfo.ID {
-		c.ApiErrorEasy("无权限")
-		return
-	}
-	if title, _ := c.GetValueByMsiKeyString(params, "title"); title == "" {
-		c.ApiErrorEasy("标题不可为空")
-		return
-	}
-
-	update_data := c.getSaveArticleInfo(params)
-	if _, err := c.MsiKeyExistCheck(params, "content_render"); err == nil {
-		update_data["content_render"] = c.GetValueByMsiKeyStringDefault(params, "content_render", "")
-	}
-
-	errUpdate := mArticle.UpdateByArticleId(uint(article_id), update_data)
-
-	if errUpdate != nil {
-		c.ApiErrorEasy("文章更新失败")
-	} else {
-		c.ApiSuccess(cmn.Msi{"id": info.ID})
-	}
-
 }
 
 // 删除文章
@@ -155,13 +155,16 @@ func (c *PersonalController) DeleteArticle() {
 }
 
 // 获得保存文章的所有信息
-func (c *PersonalController) getSaveArticleInfo(params cmn.Msi) (data map[string]interface{}) {
+func (c *PersonalController) getSaveArticleInfo(params cmn.Msi) (updateData map[string]interface{}, needCheckAnthotogyInfoSplice []models.Anthology) {
 	title := c.GetValueByMsiKeyStringDefault(params, "title", "")
 	content := c.GetValueByMsiKeyStringDefault(params, "content", "")
+	content_render := c.GetValueByMsiKeyStringDefault(params, "content_render", "")
 	description := c.GetValueByMsiKeyStringDefault(params, "description", "")
 	editor := c.GetValueByMsiKeyIntDefault(params, "editor", 1)
 	auto_release := c.GetValueByMsiKeyIntDefault(params, "auto_release", 1)
 	status := c.GetValueByMsiKeyIntDefault(params, "status", 0)
+	articleId := c.GetValueByMsiKeyIntDefault(params, "id", 0)
+
 	var (
 		anthologyIds []interface{}
 		tagIds       []interface{}
@@ -177,12 +180,40 @@ func (c *PersonalController) getSaveArticleInfo(params cmn.Msi) (data map[string
 		newTags = v
 	}
 	anthologys := []models.Anthology{}
+	mAthology := models.Anthology{}
+
 	for _, v := range anthologyIds {
 		item := models.Anthology{}
 		if v1, ok := v.(float64); ok {
 			item.ID = uint(v1)
 		}
-		anthologys = append(anthologys, item)
+		info, _ := mAthology.GetInfoById(item.ID)
+		switch {
+		case info.UserId == c.UserInfo.ID:
+			// fmt.Println("当前作者直接绑定")
+			// 是当前作者创建的标签，将自动绑定
+			anthologys = append(anthologys, item)
+		default:
+			// fmt.Println("发布文章", item.ID, uint(articleId))
+			// 发布文章
+			if info.Accept_article == 1 { // 允许直接添加文章
+				// fmt.Println("直接添加")
+				anthologys = append(anthologys, item)
+			} else if info.Accept_article == 3 { // 需要审核后可添加文章
+				// 查询关联请求
+				if mAthology.FindRelation(item.ID, uint(articleId)) {
+					// fmt.Println("有关联")
+					anthologys = append(anthologys, item)
+				} else {
+					// 发送审核请求
+					if content_render != "" {
+						needCheckAnthotogyInfoSplice = append(needCheckAnthotogyInfoSplice, info)
+					} //else { }// 普通保存忽略申请
+
+				}
+			}
+			// 非发布文章将忽略
+		}
 	}
 	tags := []models.Tag{}
 	for _, v := range tagIds {
@@ -212,21 +243,23 @@ func (c *PersonalController) getSaveArticleInfo(params cmn.Msi) (data map[string
 
 		}
 	}
-
-	updateData := map[string]interface{}{}
+	updateData = map[string]interface{}{}
 	updateData["title"] = title
 	updateData["content"] = content
 	updateData["editor"] = editor
 	updateData["description"] = description
 	updateData["auto_release"] = auto_release
-
+	if content_render != "" {
+		updateData["content_render"] = content_render
+		updateData["release_time"] = time.Now().Format(cmn.TIMEMODE_1)
+	}
 	updateData["user_id"] = c.UserInfo.ID
 	updateData["status"] = status
 
 	// 关联
 	updateData["anthologys"] = anthologys
 	updateData["tags"] = tags
-	return updateData
+	return
 }
 
 // 上传附件

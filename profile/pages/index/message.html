@@ -1,0 +1,109 @@
+<style>
+    .message-list .message-list-item{
+        margin-bottom: 10px;
+    }
+
+    .message-list-item a{
+        color: rgb(0, 106, 255);
+    }
+
+    .view-details{
+        color: rgb(187, 187, 187);
+        cursor: pointer;
+    }
+</style>
+
+
+
+<div class="layui-tab layui-tab-brief" lay-filter="user">
+    <!-- <button class="layui-btn layui-btn-sm" id="add_anthology_btn">添加新专栏</button> -->
+    <div class="message-list">
+        <h2>- 暂无消息 -</h2>
+    </div>
+    
+    
+
+    
+</div>
+
+<script>
+    layui.use([ 'form', 'element', 'jquery',"layer"], function () {
+        var  element = layui.element, form = layui.form,layer=layui.layer,$=layui.$;
+        element.render()
+        var param={}
+        param["page"]=1;
+        param["limit"]=10
+        app.base.ajaxPost("/api/personal/message/getList",param,function(data){
+            if(data.list.length>1){
+                $(".message-list").html("")
+                for (let i = 0; i < data.list.length; i++) {
+                    const element = data.list[i];
+
+                    // 审核类的消息
+                    if (element.message_type == 2) {
+                        if (element.extend_param.status == 1) {
+                            if (element.extend_param.value == 1) {
+                                var btn_html = '已通过';
+                            } else {
+                                var btn_html = '已忽略';
+                            }
+                        } else {
+                            var btn_html = '<button id="message-extendbtn' + element.id + '-pass" class="layui-btn layui-btn-xs">通过</button> <button id="message-extendbtn' + element.id + '-ignore" class="layui-btn layui-btn-xs">忽略</button>';
+                        }
+
+                        var read_status = '<span class="read-status layui-badge-dot"></span>'
+                        if (element.read == 1) {
+                            read_status = ""
+                        }
+                        var html = '<div class="layui-col-md12 message-list-item">  <div class="layui-panel">' +
+                            '<div style="padding: 10px;"> <p>' + read_status + ' <a style="color: #a4a5a4;" title="' + element.create_time + '">' + element.create_time.substring(5, 16) + '</a> ' + element.title + ' <span class="view-details" data-id="' + element.id + '">详情</span></p><div class="layui-hide"> <hr> <p>' + element.content + '</p> <hr> <p data-id="' + element.id + '">' + btn_html + '</p></div></div></div></div>';
+                        // console.log(html);
+                        $(".message-list").append(html);
+
+                        // 扩展的按钮点击
+                        // 通过按钮
+                        $('#message-extendbtn' + element.id + '-pass').click(function () {
+                            var that = this
+                            app.base.ajaxPost("/api/personal/message/feedback", { message_id: $(this).parent().data("id"), value: 1 }, function (data) {
+                                $(that).parent().html("已通过")
+                            })
+                            // 发送通过请求
+                            return false
+                        })
+                        // 忽略按钮
+                        $('#message-extendbtn' + element.id + '-ignore').click(function () {
+                            var that = this
+                            app.base.ajaxPost("/api/personal/message/feedback", { message_id: $(this).parent().data("id"), value: 0 }, function (data) {
+                                $(that).parent().html("已忽略")
+                            })
+                            // 发送忽略请求
+                            return false
+                        })
+                    }
+
+
+                }
+
+                // 详情按钮点击展开或者收起
+                $(".view-details").click(function () {
+                    var infoView = $(this).parent().next()
+                    var readLable = $(this).parent().children(".read-status")
+                    if (infoView.hasClass("layui-hide")) {
+                        infoView.removeClass("layui-hide")
+                        if (readLable.hasClass("layui-badge-dot")) {
+                            // 发送读取请求
+                            readLable.remove()
+                            app.base.ajaxPost("/api/personal/message/read", { message_id: $(this).data("id") }, function (data) { })
+                        }
+                    } else {
+                        infoView.addClass("layui-hide")
+                    }
+                })
+            }   
+            
+            
+
+        })
+        
+    });
+</script>

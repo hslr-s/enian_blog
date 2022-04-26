@@ -22,21 +22,11 @@ type Anthology struct {
 	Articles []Article `gorm:"many2many:article_anthologys"`
 }
 
-// 首页专栏(用户首页，站首页)
-// type HomeAnthology struct {
-// 	BaseModel
-// 	Order       int `gorm:"type:int(11)" json:"order"` // 排序
-// 	UserId      uint
+// 专栏关联文章
+// type ArticleAnthologys struct {
 // 	AnthologyID uint
-// }
-
-// // 专栏关联文章
-// type AnthologyRelArticle struct {
-// 	Model
-// 	TagID       uint
-// 	AnthologyID uint
-// 	Tag         []Tag       `gorm:"-"`
-// 	Anthology   []Anthology `gorm:"-"`
+// 	ArticleID   uint
+// 	Allow       int `gorm:"type:tinyint(1)"` // 审核通过
 // }
 
 func (m *Anthology) GetMoreById(ids string) (list []Anthology, err error) {
@@ -91,10 +81,15 @@ func (m *Anthology) GetList(condition cmn.Msi) (list []Anthology, err error) {
 // }
 
 // 获取专栏列表
-// 支持条件 uer_id golbal_open Accept_article
 func (m *Anthology) GetListByIds(ids string) (list []Anthology, err error) {
 
 	err = Db.Debug().Preload("User").Where("id in (" + ids + ")").Order("field(id ," + ids + ")").Find(&list).Error
+	return
+}
+
+// 获取专栏列表
+func (m *Anthology) GetListByIdsUint(ids []uint) (list []Anthology, err error) {
+	err = Db.Debug().Preload("User").Where("id in ?", ids).Find(&list).Error
 	return
 }
 
@@ -120,4 +115,16 @@ func (m *Anthology) Edit(newAnthology Anthology) (returnData Anthology, err erro
 func (m *Anthology) DeleteById(ids []int) (err error) {
 	err = Db.Delete(&Anthology{}, ids).Error
 	return
+}
+
+// 查找关联
+func (m *Anthology) FindRelation(anthologyId, articleId uint) bool {
+	mAntology := Anthology{}
+	mAntology.ID = anthologyId
+	count := Db.Model(&mAntology).Where("article_id = ?", articleId).Association("Articles").Count()
+	if count > 0 {
+		return true
+	} else {
+		return false
+	}
 }

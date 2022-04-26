@@ -34,11 +34,13 @@ func (c *GlobalController) GetAnthologyList() {
 		resList := []cmn.Msi{}
 		for _, v := range list {
 			resList = append(resList, cmn.Msi{
-				"create_time": v.CreatedAt.Format(cmn.TIMEMODE_1),
-				"id":          v.ID,
-				"title":       v.Title,
-				"user_name":   v.User.Name,
-				"user_id":     v.User.ID,
+				"create_time":    v.CreatedAt.Format(cmn.TIMEMODE_1),
+				"id":             v.ID,
+				"title":          v.Title,
+				"username":       v.User.Username,
+				"name":           v.User.Name,
+				"accept_article": v.Accept_article,
+				"user_id":        v.User.ID,
 			})
 		}
 		c.ApiListData(resList, int64(len(resList)))

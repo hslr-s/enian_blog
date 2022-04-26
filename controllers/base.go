@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"enian_blog/lib/cache"
 	"enian_blog/lib/cmn"
 	"enian_blog/models"
 
@@ -19,14 +20,12 @@ func (c *BaseViewController) Prepare() {
 	c.Data["RUN_MODE"] = cmn.RUN_MODE
 
 	// 仅登录用户访问
-	sessionUserId := c.GetSession("userId")
-	if sessionUserId != nil {
-		userId, ok := sessionUserId.(uint)
-		if ok && userId != 0 {
-			mUser := models.User{}
-			userInfo := mUser.GetUserInfoByUid(userId)
-			if userInfo != nil {
-				c.UserInfo = *userInfo
+	token := c.GetSession("token")
+	if token != nil {
+		if v, ok := token.(string); ok {
+			userInfo, err := cache.UserTokenGet(v)
+			if err == nil {
+				c.UserInfo = userInfo
 			}
 		} else {
 			if onlyInsideUse {

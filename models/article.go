@@ -1,6 +1,7 @@
 package models
 
 import (
+	"enian_blog/lib/cmn"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -19,6 +20,7 @@ type Article struct {
 	Editor        int    `gorm:"type:tinyint(1)"`   // 编辑器类型
 	AutoRelease   int    `gorm:"type:tinyint(1)"`   // 自动发布 0.否 1.是
 	UserId        uint   `gorm:""`                  // 用户id
+	ReleaseTime   string `gorm:"type:datetime()"`   // 发布时间
 
 	// 关联
 	User User
@@ -33,26 +35,26 @@ func (m *Article) Group() *Article {
 	return m
 }
 
-// 按页获取文章列表
-func (m *Article) GetList(page, limit int) ([]Article, int64) {
+// // 按页获取文章列表
+// func (m *Article) GetList(page, limit int) ([]Article, int64) {
 
-	db := Db.Order("updated_at Desc")
-	var count int64
+// 	db := Db.Order("updated_at Desc")
+// 	var count int64
 
-	offset, limit := calcPage(page, limit)
+// 	offset, limit := calcPage(page, limit)
 
-	articleList := []Article{}
+// 	articleList := []Article{}
 
-	// err := db.Debug().Table("article").Joins("LEFT JOIN `blog_user` ON blog_article.u_id=blog_user.id").Offset(offset).Limit(limit).Find(&articleList).Offset(-1).Limit(-1).Count(&count).Error
-	err := db.Debug().Model(&Article{}).Preload("User").Preload("Tags").Offset(offset).Limit(limit).Find(&articleList).Offset(-1).Limit(-1).Count(&count).Error
+// 	// err := db.Debug().Table("article").Joins("LEFT JOIN `blog_user` ON blog_article.u_id=blog_user.id").Offset(offset).Limit(limit).Find(&articleList).Offset(-1).Limit(-1).Count(&count).Error
+// 	err := db.Debug().Model(&Article{}).Preload("User").Preload("Tags").Offset(offset).Limit(limit).Find(&articleList).Offset(-1).Limit(-1).Count(&count).Error
 
-	// fmt.Println(articleList)
-	if err != nil {
-		return nil, 0
-	} else {
-		return articleList, count
-	}
-}
+// 	// fmt.Println(articleList)
+// 	if err != nil {
+// 		return nil, 0
+// 	} else {
+// 		return articleList, count
+// 	}
+// }
 
 // 根据专栏获取文章
 func (m *Article) GetListByAnthologyId(page, limit int, AnthologyId uint) (articleList []Article, count int64) {
@@ -79,6 +81,7 @@ func (m *Article) GetListByTagId(page, limit int, tagId uint) (articleList []Art
 	mTag := Tag{}
 	mTag.ID = tagId
 	err := Db.Model(&mTag).
+		Where("status=1").
 		Preload("User").Preload("Tags").
 		Offset(offset).Limit(limit).
 		Association("Articles").
@@ -87,41 +90,47 @@ func (m *Article) GetListByTagId(page, limit int, tagId uint) (articleList []Art
 		// Count(&count)
 	count = Db.Model(&mTag).
 		Preload("User").
+		Where("status=1").
 		Association("Articles").Count()
 	_ = err
 	return
 }
 
-// 按页获取文章列表
-func (m *Article) GetListByCondition(page, limit int, keyword string, AnthologyIds []uint, article Article) (articleList []Article, count int64) {
-	db := Db.Debug().Order("updated_at Desc")
-	if article.UserId != 0 {
-		db = db.Where("user_id=?", article.UserId)
+// 按页获取文章列表(筛选条件)
+// userId anthologys userId keyword only_release status
+func (m *Article) GetListByCondition(page, limit int, condition cmn.Mss) (articleList []Article, count int64, err error) {
+	db := Db.Order("release_time Desc").Preload("Tags").Preload("User")
+	if v, ok := condition["userId"]; ok {
+		db = db.Where("user_id=?", v)
 	}
 
-	if len(AnthologyIds) != 0 {
+	if v, ok := condition["anthologys"]; ok {
 		db = db.Preload("Article.Anthologys", func(db *gorm.DB) *gorm.DB {
-			return db.Where("id in ?", AnthologyIds)
+			return db.Where("id in ?", v)
 		})
-		// db = db.Joins("Anthologys", "id in ?", AnthologyIds)
 	}
 
-	if keyword != "" {
-		db = db.Where("title LIKE ? OR content LIKE ?", "%"+keyword+"%", "%"+keyword+"%")
+	if v, ok := condition["userId"]; ok {
+		db = db.Where("user_id=?", v)
+	}
+
+	if v, ok := condition["keyword"]; ok {
+		db = db.Where("title LIKE ? OR content LIKE ?", "%"+v+"%", "%"+v+"%")
+	}
+
+	// 仅发布
+	if _, ok := condition["only_release"]; ok {
+		db = db.Where("release_time is not null")
+	}
+
+	// 公开状态
+	if v, ok := condition["status"]; ok {
+		db = db.Where("status= ?", v)
 	}
 
 	offset, limit := calcPage(page, limit)
-	err := db.Model(&Article{}).Offset(offset).Limit(limit).Find(&articleList).Offset(-1).Limit(-1).Count(&count).Error
-	fmt.Println("查询错误", err)
+	err = db.Model(&Article{}).Offset(offset).Limit(limit).Find(&articleList).Offset(-1).Limit(-1).Count(&count).Error
 	return
-	// fmt.Println("查询错误", err)
-	// if err != nil {
-	// 	fmt.Println("22")
-	// 	return nil, 0
-	// } else {
-	// 	fmt.Println("11---", count)
-	// 	return
-	// }
 }
 
 // 按分类和用户id获取文章列表
@@ -187,7 +196,7 @@ func (m *Article) GetInfoAndTag(id uint) (article Article, err error) {
 
 // 获取详情和标签
 func (m *Article) GetInfo(id uint) (article Article, err error) {
-	err = Db.Debug().Where("id=? ", id).First(&article).Error
+	err = Db.Where("id=? ", id).First(&article).Error
 	return
 }
 
@@ -199,6 +208,7 @@ func (m *Article) GetConfig(article_id uint) (article_config Article, err error)
 	Anthologys := []Anthology{}
 	err = Db.Model(&mArticle).Association("Tags").Find(&tags)
 	err = Db.Model(&mArticle).Association("Anthologys").Find(&Anthologys)
+
 	article_config.Tags = tags
 	article_config.Anthologys = Anthologys
 	return
@@ -206,7 +216,12 @@ func (m *Article) GetConfig(article_id uint) (article_config Article, err error)
 
 // 添加一个
 func (m *Article) AddOne(article Article) (info Article, err error) {
-	err = Db.Create(&article).Error
+	if article.ReleaseTime == "" {
+		err = Db.Omit("ReleaseTime").Create(&article).Error
+	} else {
+		err = Db.Create(&article).Error
+	}
+
 	// // 添加关联
 	// Db.Debug().Model(&article).Association("Tags").Append(tags)
 	// Db.Debug().Model(&article).Association("Anthologys").Append(anthologys)
@@ -214,21 +229,7 @@ func (m *Article) AddOne(article Article) (info Article, err error) {
 }
 
 // 更新一个文章
-// 参数-updateData 支持：title,content,content_render,visit,status,description,editor,auto_release
 func (m *Article) UpdateByArticleId(article_id uint, updateData map[string]interface{}) (err error) {
-
-	sqlUpdateData := map[string]interface{}{}
-
-	sqlUpdateData["title"] = updateData["title"]
-	sqlUpdateData["content"] = updateData["content"]
-	sqlUpdateData["content_render"] = updateData["content_render"]
-	sqlUpdateData["visit"] = updateData["visit"]
-	sqlUpdateData["status"] = updateData["status"]
-	sqlUpdateData["description"] = updateData["description"]
-	sqlUpdateData["editor"] = updateData["editor"]
-	sqlUpdateData["auto_release"] = updateData["auto_release"]
-
-	db := Db.Debug().Model(&Article{}).Where("id=?", article_id)
 	// 添加关联
 	article := Article{}
 	article.ID = article_id
@@ -237,10 +238,14 @@ func (m *Article) UpdateByArticleId(article_id uint, updateData map[string]inter
 
 	tags, _ := updateData["tags"].([]Tag)
 	anthologys, _ := updateData["anthologys"].([]Anthology)
+	// 删除原始结构
+	delete(updateData, "tags")
+	delete(updateData, "anthologys")
 
-	Db.Debug().Model(&article).Association("Tags").Append(tags)
-	Db.Debug().Model(&article).Association("Anthologys").Append(anthologys)
-	err = db.Updates(sqlUpdateData).Error
+	Db.Model(&article).Association("Tags").Append(tags)
+	Db.Model(&article).Association("Anthologys").Append(anthologys)
+
+	err = Db.Model(&Article{}).Where("id=?", article_id).Updates(updateData).Error
 	return err
 }
 
@@ -264,4 +269,13 @@ func (m *Article) ClearAnthologyAll(article_id uint) (info Article, err error) {
 func (m *Article) DeleteByArticleId(article_id uint) (err error) {
 	err = Db.Delete(&Article{}, article_id).Error
 	return err
+}
+
+func (m *Article) AddAnthology(article_id uint, anthology_id uint) (err error) {
+	article := Article{}
+	anthology := Anthology{}
+	article.ID = article_id
+	anthology.ID = anthology_id
+	err = Db.Debug().Model(&article).Association("Anthologys").Append(&anthology)
+	return
 }

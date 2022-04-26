@@ -51,7 +51,7 @@ func (c *AuthController) Login() {
 			} else {
 				token = userInfo.Token
 			}
-			c.SetSession("userId", userInfo.ID)
+			c.SetSession("token", userInfo.Token)
 			cache.UserTokenSet(token, userInfo)
 			c.ApiSuccess(cmn.Msi{
 				"token":      token,
@@ -71,7 +71,7 @@ func (c *AuthController) Login() {
 				} else {
 					token = userInfo.Token
 				}
-				c.SetSession("userId", userInfo.ID)
+				c.SetSession("token", userInfo.Token)
 				// cache.UserTokenSet(token, userInfo)
 				c.ApiSuccess(cmn.Msi{
 					"token":      token,

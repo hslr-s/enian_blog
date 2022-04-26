@@ -99,6 +99,7 @@ func (c *PersonalController) GetUserInfoCurrent() {
 	// 此处更新token
 	// cache.UserLoginTokenSet()
 	if info != nil {
+		c.SetSession("token", info.Token)
 		c.ApiSuccess(cmn.Msi{
 			"username":   info.Username,
 			"name":       info.Name,

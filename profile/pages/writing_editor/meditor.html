@@ -21,8 +21,8 @@
                         <!-- <input type="checkbox" name="" title="自动保存" checked> -->
                 
                         <button class="layui-btn layui-btn-sm" id="save-btn" lay-filter="save-btn" title="仅保存前台页面不会更新">保存</button>
-                        <!-- <button class="layui-btn layui-btn-sm" lay-filter="save-release-btn" id="save-release-btn" title="保存并发布到前台"
-                            lay-submit>保存并发布</button> -->
+                        <button class="layui-btn layui-btn-sm" lay-filter="save-release-btn" id="save-release-btn" title="保存并发布到前台"
+                            lay-submit>保存并发布</button>
                         <span id="save-status-lable"></span>
                         <!-- <input type="checkbox"  lay-filter="auto_save" title="自动保存" lay-skin="primary"> -->
                         <!-- <button class="layui-btn layui-btn-sm" data-auto_save="0" lay-filter="*" lay-submit>自动保存</button> -->
@@ -56,13 +56,13 @@
                                 <input type="radio" name="status" value="1" title="公开" checked>
                             </div>
                         </div>
-                        <div class="layui-form-item">
+                        <!-- <div class="layui-form-item">
                             <label class="layui-form-label">保存即发布</label>
                             <div class="layui-input-block">
                                 <input type="radio" name="auto_release" value="0" title="否" checked>
                                 <input type="radio" name="auto_release" value="1" title="是">
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="layui-form-item">
                             <label class="layui-form-label" title="收录到我的专栏">收录到专栏</label>
@@ -232,7 +232,7 @@
                 }
                 anthology_select=xmSelect.render({
                     el: '#anthology_bind',
-                    tips: '（选填）最多只能选择2个',
+                    tips: '（选填）最多只能选择1个',
                     max: 1,
                     filterable: true,
                     maxMethod(seles, item) {
@@ -246,24 +246,28 @@
         // 渲染公开专栏
         function renderOpenAnthology(selectedAnthologysIds) {
             var selectedAnthologysIds = selectedAnthologysIds || [];
-            // 我的专栏
             app.base.ajaxGet("/api/global/get/anthologyList?exclude_myself=1", function (data) {
                 var retrunData = []
                 for (let i = 0; i < data.list.length; i++) {
                     const element = data.list[i];
+                    element.title+=" ["+ element.name+"]"
                     if (inArray(element.id, selectedAnthologysIds)) {
                         retrunData.push({ name: element.title, value: element.id, selected: true })
                     } else {
+                        // 需要审核的专栏
+                        if(element.accept_article==3){
+                            element.title+=" (需审核通过后展示)"
+                        }
                         retrunData.push({ name: element.title, value: element.id })
                     }
                 }
                 anthology_select2=xmSelect.render({
                     el: '#anthology_bind2',
-                    tips: '（选填）最多只能选择2个',
-                    max: 1,
+                    tips: '（选填）最多只能选择2个。此项仅在发布时生效！',
+                    max: 2,
                     filterable: true,
                     maxMethod(seles, item) {
-                        layer.msg("最多只能选择1个")
+                        layer.msg("最多只能选择2个")
                     },
                     data: retrunData
                 })
@@ -324,6 +328,8 @@
             var config={};
             auto_release=cfg.auto_release// 判断是否自动发布
             cfg.anthologys= anthology_select.getValue("value")
+
+            
             cfg.anthologys.push.apply(cfg.anthologys, anthology_select2.getValue("value"))
             var tags = tag_select.getValue()
             config.tags=[];
@@ -419,7 +425,7 @@
             if (article_id) {
                 // 更新
                 data.id = article_id
-                app.base.ajaxPost("/api/personal/updateArticle", data, function (res) {
+                app.base.ajaxPost("/api/personal/saveArticle", data, function (res) {
                     // layer.msg("保存成功")
                     $("#save-status-lable").html("已保存")
                     setTimeout(function () {
@@ -463,14 +469,14 @@
 
         // 定时保存
         function open_timing_save(params) {
-            setInterval(function () {
-                // 自动发布
-                if (auto_release) {
-                    save_article(true)
-                } else {
-                    save_article()
-                }
-            }, 1000*30);
+            // setInterval(function () {
+            //     // 自动发布
+            //     if (auto_release) {
+            //         save_article(true)
+            //     } else {
+            //         save_article()
+            //     }
+            // }, 1000*30);
         }
         
         // 上传文件弹窗

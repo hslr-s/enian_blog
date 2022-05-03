@@ -7,6 +7,7 @@
 <div class="layui-tab layui-tab-brief" lay-filter="user">
     <ul class="layui-tab-title" id="LAY_mine">
         <li class="layui-this" lay-id="info">首页设置</li>
+        <li >更多功能请期待...</li>
         
     </ul>
     <div class="layui-tab-content" style="padding: 20px 0;">
@@ -31,7 +32,7 @@
                         <input type="text"  id="header_image" name="header_image"required lay-verify="required" autocomplete="off"
                             value="" class="layui-input">
                     </div>
-                    <div class="layui-form-mid layui-word-aux"><a class="layui-btn layui-btn-xs" id="upload_head_image">上传</a> <a class="layui-btn layui-btn-xs" id="preview_head_image">预览</a>（建议尺寸168*168）。支持jpg、png、gif，最大不能超过1m</div>
+                    <div class="layui-form-mid layui-word-aux"><a class="layui-btn layui-btn-xs" id="upload_head_image">上传</a> <a class="layui-btn layui-btn-xs" id="preview_head_image">预览</a></div>
                 </div>
                 
                 <!-- <div class="layui-form-item">
@@ -78,7 +79,6 @@
 </div>
 
 <script>
-    console.log("我来了！！！")
     //注意：选项卡 依赖 element 模块，否则无法进行功能性操作
     layui.use(['element', 'form', 'table', 'jquery',"layer","upload","soulTable"], function () {
         var element = layui.element, 
@@ -130,7 +130,7 @@
 
         var uploadInst = upload.render({
             elem: '#upload_head_image'
-            , url: '/api/global/uploadHeaderImage' 
+            , url: '/api/admin/setting/uploadHeaderImage' 
             , field:"image"
             , headers: { "token": app.base.getUserInfo().token }
             , done: function (res) {
@@ -166,7 +166,7 @@
                         }
                     }
                     // 保存排序功能
-                    app.base.ajaxPost("/api/global/set/homeAnthology", { ids: ids.toString() }, function () {
+                    app.base.ajaxPost("/api/admin/setting/setHomeAnthology", { ids: ids.toString() }, function () {
                         layer.msg("已保存")
                     })
                     console.log(ids)
@@ -218,12 +218,11 @@
                 area: ['300px', '300px'], //宽高
                 content: $("#add_anthology_tpl").html(),
                 success: function () {
-
-                    app.base.ajaxGet("/api/global/get/anthologyList", function (data) {
+                    app.base.ajaxGet("/api/global/get/anthologyList?golbal_open=1", function (data) {
 
                         for (let i = 0; i < data.list.length; i++) {
                             const element = data.list[i];
-                            $("#add_anthology_select_list").append('<option value="' + i + '">' + element.title + " (" + element.user_name + ')</option>');
+                            $("#add_anthology_select_list").append('<option value="' + i + '">' + element.title + " (" + element.username + ')</option>');
                         }
                         form.render();
 
@@ -252,7 +251,7 @@
                 }
             }
             // 保存排序功能
-            app.base.ajaxPost("/api/global/set/homeAnthology", { ids: ids.toString() }, function () {
+            app.base.ajaxPost("/api/admin/setting/setHomeAnthology", { ids: ids.toString() }, function () {
                 layer.msg("已保存")
             })
         }

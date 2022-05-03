@@ -2,6 +2,17 @@
 .delete-article{
     cursor: pointer;
 }
+.operation-btn{
+    float: right;
+    margin-right: 100px;
+}
+.operation-btn .mine-edit{
+    border-radius: 5px;
+}
+
+.mine-view{
+    max-width: 600px;
+}
 </style>
 
 
@@ -34,7 +45,7 @@
                                 </div>
                                 <div class="layui-col-md3">
                                     <button class="layui-btn layui-btn-sm layui-inline" lay-filter="search-btn" lay-submit>搜索</button>
-                                    <a class="layui-btn layui-inline layui-btn-normal" href="/profile/writing.html#/meditor">写文章</a>
+                                    <a class="layui-btn layui-inline layui-btn-normal" href="/profile/writing.html/#/editor">写文章</a>
                                 </div>
                             </div>
                     </div>
@@ -121,18 +132,25 @@
                 $("#arcicle_list").html("")
                 if(data.list.length!=0){
                     for (let i = 0; i < data.list.length; i++) {
-                        const element = data.list[i];
-                        const status_html = (element.status == 0) ? '<span class="layui-badge layui-bg-red">私</span>' : "";
+                        var element = data.list[i];
+                        var status_html = (element.status == 0) ? '<span class="layui-badge layui-bg-red">私</span>' : "";
+                        var release_status = (element.release_time != "") ? '<span class="layui-badge layui-bg-blue">已发布</span>' : "";
+                        var browseBtn="";
+                        if(element.status == 0 || element.release_time != ""){
+                            browseBtn = '<a class="mine-edit" style="background-color:#84b6f7" href="/u/'+element.user_username+'/content/' + element.id + '">浏览</a>';
+                        }else{
+                            browseBtn = '<a class="mine-edit" href="/u/'+element.user_username+'/preview/' + element.id + '">预览</a>';
+                        }
                         $("#arcicle_list").append(
-                            '<li>' +
-                            status_html +
-                            '<a class="jie-title" href="/profile/writing.html/#/meditor?article_id=' + element.id +'" target="_blank" title="编辑">' + element.title + '</a>' +
+                            '<li>' + release_status+ status_html +
+                           
+                            '<a class="jie-title" href="/profile/writing.html/#/editor?article_id=' + element.id +'" target="_blank" title="编辑">' + element.title + '</a>' +
                             '<br>' +
-                            '<i>' + element.update_time + '</i>' +
-                            
-                            '<a class="mine-edit" href="/article/content/' + element.id +'">浏览</a>' +
-                            // '<a class="mine-edit" href="/profile/writing.html/#/meditor?article_id=' + element.id + '">编辑</a>' +
+                            '<i title="'+ element.update_time +'">' + app.base.timeFormat(element.update_time,false,true) + '</i>' +
+                            '<div class="operation-btn">'+ browseBtn+
+                            // '<a class="mine-edit" href="/profile/writing.html/#/editor?article_id=' + element.id + '">编辑</a>' +
                             '<a class="mine-edit layui-bg-red delete-article" data-article_id="' + element.id + '">删除</a>' +
+                            '</div>' +
                             // '<a class="mine-edit" href="/jie/edit/8116">浏览</a>'+
                             '<em>' + element.visit + '阅</em>' +
                             '</li>'
@@ -146,7 +164,7 @@
                         }, function () {
                             console.log("删除文章", article_id)
                             app.base.ajaxPost("/api/personal/deleteArticle",{id: article_id},function(res){
-                                that.parent().remove()
+                                that.parent().parent().remove()
                                 layer.msg("删除成功")
                             },function(msg){
                                 layer.msg(msg)

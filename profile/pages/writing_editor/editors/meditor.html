@@ -1,21 +1,19 @@
 <html>
     <head>
         <style>
-            html,
-            body {
-                overflow: hidden;
-                /* overflow-x:auto; */
-                margin: 0;
-                padding: 0;
-            }
+            html,body { overflow: hidden; margin: 0; padding: 0;  }
+            #render-container{display: none;}
         </style>
     </head>
     <body>
         
         <link rel="stylesheet" href="/static/editormd/css/editormd.css" />
+        
         <div id="editormd">
             <textarea id="content" name="content" style="display:none;"></textarea>
         </div>
+        <!-- 用作的渲染容器 -->
+        <div id="render-container"></div>
         <script src="/static/editormd/jquery.min.js?v=version_0.1"></script>
         <script src="/static/editormd/editormd.min.js?v=version_0.1"></script>
         <script>
@@ -31,7 +29,8 @@
 
             // 获取渲染内容
             $E.getContentRender = function (content) {
-                return editor.getHTML()
+                return getRenderContainer($E.getContent())
+                // return editor.getHTML()
             }
 
             // 取原始内容
@@ -87,8 +86,6 @@
                             $E.uploadFile()
                            
                         },
-
-                      
                     },
                     imageUpload: true,
                     imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
@@ -100,8 +97,27 @@
                 });
 
                 $E.editor = editor
-
-            // 上传文件
+            
+            
+            // 获取渲染内容
+            function getRenderContainer(markdown_content){
+                var params = {
+                    markdown: markdown_content,
+                    htmlDecode: "style,script,iframe", // you can filter tags decode
+                    emoji: true,
+                    taskList: true,
+                    tex: true, // 默认不解析
+                    // flowChart: true, // 默认不解析
+                    // sequenceDiagram: true, // 默认不解析
+                    // tocContainer: ".article-menu",
+                    // tocDropdown: true,
+                }
+                var renderView = editormd.markdownToHTML("render-container", params);
+                var html= $("#render-container").html();
+                $("#render-container").html("")
+                return html
+            }
+            
 
         </script>
     </body>

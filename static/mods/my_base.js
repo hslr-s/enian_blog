@@ -241,6 +241,71 @@ layui.define(['jquery','layer','laytpl',"app"],function(exports){
         return false;
     })
 
+    // 时间戳转时间
+    o.timeToTimeStamp=function(str){
+        return Date.parse(str)
+    }
+
+    // 时间戳格式化
+    // type:0 => 2021-09-12 10:34:12
+    // type:1 => 2021-09-12 10:34
+    o.timeStampFormat = function (stamp,type){
+        var type=type||0;
+        let str = stamp
+        if (stamp && stamp.indexOf('-') > 0) {
+            str = new Date(stamp.replace(/-/g, '/')).getTime()
+        }
+        let date = new Date(str)
+        let y = date.getFullYear();
+        let m = (date.getMonth() + 1 + '').padStart(2, '0');
+        let d = (date.getDate() + '').padStart(2, '0');
+        let hh = (date.getHours() + '').padStart(2, '0')
+        let mm = (date.getMinutes() + '').padStart(2, '0')
+        let ss = (date.getSeconds() + '').padStart(2, '0')
+        let time;
+        switch (type) {
+            case 0:
+                time = `${y}-${m}-${d}`;
+                break;
+            case 1:
+                time = `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+                break;
+           
+        }
+        return time;
+    }
+
+    // 时间格式化（在有效的识别范围内，实现最短的显示）
+    o.timeFormat = function (time,display_second,display_today){
+        var display_second = display_second || false
+        var display_today = display_today || false
+        
+        var date = new Date(time)
+        let y = date.getFullYear();
+        let m = (date.getMonth() + 1 + '').padStart(2, '0');
+        let d = (date.getDate() + '').padStart(2, '0');
+        let hh = (date.getHours() + '').padStart(2, '0')
+        let mm = (date.getMinutes() + '').padStart(2, '0')
+        let ss = (date.getSeconds() + '').padStart(2, '0')
+
+        var tdate = new Date();
+        var tyear = tdate.getFullYear() 
+        var tmonth = (tdate.getMonth() + 1 + '').padStart(2, '0');
+        var tday = (tdate.getDate() + '').padStart(2, '0');
+        var strTime = hh + ":" + mm + ((display_second == true) ? (":"+ss):"");
+        var newTime=""
+        if(y==tyear){
+            if(m+d==tmonth+tday){
+                newTime = ((display_today==true)?"今天 ":"")+strTime
+            }else{
+                newTime =  m + "-" + d + " " + strTime
+            }
+        }else{
+            newTime = y + "-" + m + "-" + d + " " + strTime
+        }
+        return newTime;
+    }
+
     
 
     exports('my_base', o);

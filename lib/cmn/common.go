@@ -6,9 +6,10 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"math/big"
-
-	"github.com/astaxie/beego/config"
+	"os"
 )
 
 // =================
@@ -29,8 +30,6 @@ type Mss map[string]string
 const (
 	TIMEMODE_1 = "2006-01-02 15:04:05"
 )
-
-var AppConf config.Configer
 
 // 运行模式，1.团队版 2.个人版
 var RUN_MODE int = 1
@@ -117,6 +116,27 @@ func CreateRandomStringByKeyString(keystring string, len int) string {
 	return container
 }
 
-// func DumpStruct(inter) {
+// 验证邮箱配置是否完整
+func CheckMailConfigComplete(mailInfo Msi) error {
+	if _, ok := mailInfo["address"]; !ok {
+		return errors.New("邮件信息不完整")
+	}
+	if _, ok := mailInfo["password"]; !ok {
+		return errors.New("邮件信息不完整")
+	}
+	if _, ok := mailInfo["host"]; !ok {
+		return errors.New("邮件信息不完整")
+	}
+	if _, ok := mailInfo["port"]; !ok {
+		return errors.New("邮件信息不完整")
+	}
+	if _, ok := mailInfo["address"]; ok {
+		return errors.New("邮件信息不完整")
+	}
+	return nil
+}
 
-// }
+func FatalError(msg string) {
+	fmt.Printf("\n %c[1;40;31m%s%c[0m\n\n", 0x1B, "ERROR："+msg, 0x1B)
+	os.Exit(1)
+}

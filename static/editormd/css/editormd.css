@@ -3837,11 +3837,11 @@
 }
 .editormd-preview-container blockquote, .editormd-html-preview blockquote {
   color: #666;
-  border-left: 4px solid #ddd;
-  padding-left: 20px;
+  border-left: 4px solid #009fff;
+  background-color: #d8f0ff;
   margin-left: 0;
   font-size: 14px;
-  font-style: italic;
+  padding: 10px 10px 10px 20px;
 }
 .editormd-preview-container p code, .editormd-html-preview p code {
   margin-left: 5px;
@@ -3877,7 +3877,7 @@
   padding: 0;
 }
 .editormd-preview-container pre, .editormd-preview-container code, .editormd-preview-container kbd, .editormd-html-preview pre, .editormd-html-preview code, .editormd-html-preview kbd {
-  font-family: "YaHei Consolas Hybrid", Consolas, "Meiryo UI", "Malgun Gothic", "Segoe UI", "Trebuchet MS", Helvetica, monospace, monospace;
+  font-family: "YaHei Consolas Hybrid", Consolas, "Meiryo UI";
 }
 .editormd-preview-container table thead tr, .editormd-html-preview table thead tr {
   background-color: #F8F8F8;
@@ -4038,13 +4038,13 @@ li.L8 {
 }
 
 /* Alternate shading for lines */
-li.L1,
+/* li.L1,
 li.L3,
 li.L5,
 li.L7,
 li.L9 {
   background: #eee;
-}
+} */
 
 .editormd-preview-container pre.prettyprint, .editormd-html-preview pre.prettyprint {
   padding: 10px;

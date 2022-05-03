@@ -7,25 +7,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/static/layui/css/layui.css?v=version_0.1">
   <link rel="stylesheet" href="/static/css/global.css?v=version_0.1">
+  <style>
+    .fly-header,.fly-nav{
+      height: 100px;
+      line-height: 100px;
+    }
+    .fly-logo{
+      top:0;
+    }
+    .fly-logo img{
+      border-radius: 50%;
+    }
+    .fly-marginTop{
+      margin-top: 65px;
+    }
+
+  </style>
 </head>
 <body>
 
 <div class="fly-header layui-bg-black">
   <div class="layui-container">
-    <a class="fly-logo" href="/">
-      <!-- <img src="/static/images/logo.png" alt="layui"> -->
-      XXX的博客
+    <a class="fly-logo layui-hide" href="/">
+      <img style="height:80px" src="" alt="layui">
     </a>
     <ul class="layui-nav fly-nav layui-hide-xs">
       <li class="layui-nav-item">
         <a href="/">首页</a>
       </li>
-      <li class="layui-nav-item layui-this">
+      <li class="layui-nav-item">
         <a href="/profile/">个人中心</a>
       </li>
-      <!-- <li class="layui-nav-item">
-        <a href="http://www.layui.com/" target="_blank"><i class="iconfont icon-ui"></i>框架</a>
-      </li> -->
+
     </ul>
 
    
@@ -97,6 +110,16 @@
         } else {
           app.go("/login");
         }
+
+        // 获取权限基本信息
+        app.base.ajaxGet("/api/front/getAuthPageInfo",function(data){
+          if(data.site){
+            $(".fly-logo img").attr("src","/"+data.site.logo)
+            $(".fly-logo img").attr("title",data.site.title)
+            $(".fly-logo").removeClass("layui-hide")
+          }
+
+        })
         
       }
     })

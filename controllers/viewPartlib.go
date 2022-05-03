@@ -64,6 +64,7 @@ type ArticleListItem struct {
 	User_id           int
 	Update_time       string // 更新时间
 	Latest_html_label bool   // 显示最新标签
+	User_username     string
 }
 
 // ===================================================
@@ -168,12 +169,13 @@ func (c *BaseViewController) UsePartArticleListData(title string, pArticleListDa
 }
 
 // 获取用户卡片数据
-func (c *BaseViewController) UsePartUserCardData(headerImg, userName, UserInfoUrl, autograph string) {
+func (c *BaseViewController) UsePartUserCardData(headerImg, userName, UserInfoUrl, autograph, gender string) {
 	c.Data["UserCardData"] = map[string]string{
 		"HeaderImg":   headerImg,   // 头像
 		"UserName":    userName,    // 用户名称
 		"Autograph":   autograph,   // 签名
 		"UserInfoUrl": UserInfoUrl, // 用户地址
+		"Gender":      gender,
 	}
 }
 

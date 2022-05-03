@@ -7,11 +7,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/astaxie/beego"
+	"github.com/beego/beego/v2/server/web"
 )
 
 type BaseApiController struct {
-	beego.Controller
+	web.Controller
 	BodyParam cmn.Msi
 	UserInfo  models.User
 }
@@ -54,7 +54,7 @@ func (c *BaseApiController) ApiError(code int, msg string) {
 }
 
 // 简单提示型错误
-func (c *BaseApiController) ApiErrorEasy(msg string) {
+func (c *BaseApiController) ApiErrorMsg(msg string) {
 	c.ApiReturn(-1, msg, nil)
 }
 
@@ -192,10 +192,6 @@ func (c *BaseApiController) GetPage() (page int, limit int) {
 		limit = 0
 	}
 	return
-}
-
-func (c *BaseApiController) UploadImage() {
-
 }
 
 func (c *BaseApiController) Test() {

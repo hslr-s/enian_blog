@@ -1,12 +1,16 @@
   {{template "template/head.html" .}}
-<link rel="stylesheet" type="text/css" href="/static/editormd/css/editormd.min.css" />
+<link rel="stylesheet" type="text/css" href="/static/editormd/css/editormd.preview.css?v=version_0.1" />
+<link rel="stylesheet" href="/static/tocbot/tocbot.css?v=version_0.1">
 
 <style type="text/css">
-	.editormd-html-preview{
-		width: auto;
-		padding: 0;
-	}
-    /*解决layui屏蔽li标签默认样式临时方案*/
+    .editormd-html-preview{
+        width: auto;
+        padding: 0;
+    }
+    .toc-list-item{
+        margin-top: 5px;
+    }
+   /*解决layui屏蔽li标签默认样式临时方案*/
   .markdown-body ul li{list-style: disc;}
   .markdown-body ul li li{list-style: circle;}
   .markdown-body ul li li li{list-style: square;}
@@ -14,48 +18,129 @@
   .markdown-body ol li li{list-style: lower-roman;}
   .markdown-body ol li li li{list-style: lower-alpha;}
 </style>
-
 <div class="layui-container" style="margin-top: 20px;">
   <div class="layui-row layui-col-space15">
     <div class="layui-col-md8">
       <div class="fly-panel detail-box">
         <h1>{{.ArticleInfo.Title}}</h1>
         <div class="fly-detail-info">
-          
-          <span class="fly-list-nums" style="color: #c2c2c2;" > 
-            <a style="color: #c2c2c2;">时间：{{.ArticleInfo.UpdatedAt}}</a>
-            <i class="iconfont" title="人气" style="color: #c2c2c2;">&#xe60b;</i>{{.ArticleInfo.Visit}}
-            <br />
-            <!-- 文章标签 -->
-            {{range .ArticleInfo.Tags}}
-							<span class="layui-badge fly-badge-accept blog-tags"><a href="/search/tag/{{.ID}}">{{.Title}}</a></span>
-            {{end}}
+
+          <span class="fly-list-nums" style="color: #c2c2c2;">
+            <a style="color: #c2c2c2;">更新时间：{{dateformat .ArticleInfo.ReleaseTime "2006-01-02 15:04:05"}}</a>
+            <i class="iconfont" title="浏览量" style="color: #c2c2c2;">&#xe60b;</i>{{.ArticleInfo.Visit}}
+            <div>
+              <span>标签：</span>
+              {{range .ArticleInfo.Tags}}
+              <span class="layui-badge fly-badge-accept blog-tags"><a href="/search/tag/{{.ID}}">{{.Title}}</a></span>
+              {{end}}
+            </div>
           </span>
         </div>
-        <br /><br /><hr />
+        <br /><br />
+        <hr />
         <div class="detail-body photos">
-            <div class="markdown-body editormd-html-preview" >
-        {{.ArticleInfo.Content}}
-			</div>
+          <div id="editormd-to-html" class="markdown-body editormd-html-preview">
+            {{str2html .ArticleInfo.ContentRender}}
+          </div>
         </div>
       </div>
+
     </div>
-
-
+    <div class="layui-col-md4">
+      {{template "template/right/user_card.html" .}}
+      {{template "template/right/search_word.html" .}}
+      <div class="fixed-panel">
+        {{template "template/right/article_menu.html" .}}
+        {{template "template/right/label.html" .}}
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/static/editormd/jquery.min.js?v=version_0.1"></script>
 <script src="/static/layui/layui.js?v=version_0.1"></script>
+<script src="/static/tocbot/tocbot.min.js?v=version_0.1"></script>
+<script src="/static/editormd/lib/marked.min.js?v=version_0.1"></script>
+<script src="/static/editormd/lib/prettify.min.js?v=version_0.1"></script>
+
+<script src="/static/editormd/lib/raphael.min.js?v=version_0.1"></script>
+<script src="/static/editormd/lib/underscore.min.js?v=version_0.1"></script>
+<script src="/static/editormd/lib/sequence-diagram.min.js?v=version_0.1"></script>
+<script src="/static/editormd/lib/flowchart.min.js?v=version_0.1"></script>
+<script src="/static/editormd/lib/jquery.flowchart.min.js?v=version_0.1"></script>
+<script src="/static/editormd/editormd.min.js?v=version_0.1"></script>
  <script type="text/javascript">
-	layui.use(['element','laypage','jquery'],function(){
+    layui.use(['element','laypage','jquery'],function(){
       element = layui.element,laypage = layui.laypage,$ = layui.$;
 //    menu.init();
+        $(document).ready(function () {
+            var menu_top = $(".fixed-panel").offset().top
+            tocbot.init({
+                // Where to render the table of contents.
+                tocSelector: '.article-menu',
+                // Where to grab the headings to build the table of contents.
+                contentSelector: '#editormd-to-html',
+                // Which headings to grab inside of the contentSelector element.
+                headingSelector: 'h1, h2, h3, h4,h5,h6',
+                collapseDepth: 5,
+                // For headings inside relative or absolute positioned containers within content.
+                // hasInnerContainers: true,
+                scrollSmooth: true,
+                // scrollSmoothDuration: 420,
+                // headingsOffset: -200,
+                // 要添加的Fixed position类，使侧栏在向下滚动到fixedSidebarOffset之后固定。
+                positionFixedClass: 'is-position-fixed',
+                // fixedSidebarOffset:-80,
+                scrollSmoothOffset: -80,
+                // scrollContainer:"80px",
+                linkClass: "toc-link-class",
+                listItemClass: 'toc-list-item',
+                // listClass:"toc-list-class",
+                headingObjectCallback: function (object, HTMLElement) {
+                    // 有目录，显示结构
+                    $(".article-menu-panel").removeClass("layui-hide")
+                    return object
+                },
+                // scrollEndCallback: function (e) { //回调函数
+                // 	window.scrollTo(window.scrollX, window.scrollY - 80);
+                // //修正滚动后页面的位置，80 是自己顶部栏的高度
+                // },
+
+            });
+
+            autoRoll(menu_top)
+            //开始监听滚动条
+            $(window).scroll(function () {
+                autoRoll(menu_top)
+            })
+        })
+
+        // 自动滚动
+        function autoRoll(menu_top) {
+            var top = $(document).scrollTop();
+            var menu_width = $(".fixed-panel").parent().width();
+            if (top > menu_top) {
+                $(".fixed-panel").css("position", "fixed")
+                $(".fixed-panel").css("top", "81px")
+                $(".fixed-panel").css("width", menu_width + "px")
+            } else if (top < menu_top) {
+                $(".fixed-panel").css("position", "relative")
+                $(".fixed-panel").css("top", 0)
+            }
+        }
+
+        setTimeout(function () {
+            $.ajax("/api/front/articleVisit?article_id="+layui.url().pathname[3])
+        }, 3000);
+
     })
+
+    
 </script>     
 
-<!-- 百度推送 -->
-<!-- {{template "third/baidu_tuisong.html" .}} -->
 
 
-<!-- 百度统计 -->
-<!-- {{template "third/baidu_tongji.html" .}} -->
+<!-- 统计 -->
+{{ if .seo.TongJi}}{{str2html .seo.TongJi}}{{end}}
 
 <!-- 自带统计 -->
 

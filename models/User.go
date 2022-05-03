@@ -8,16 +8,16 @@ import (
 // 用户表
 type User struct {
 	BaseModel
-	Username         string `gorm:"type:varchar(50)"`  // 账号
-	Password         string `gorm:"type:varchar(32)"`  // 密码
-	Name             string `gorm:"type:varchar(10)"`  // 名称
-	Autograph        string `gorm:"type:varchar(50)"`  // 签名
-	Head_image       string `gorm:"type:varchar(200)"` // 头像地址
-	Status           int    `gorm:"type:tinyint(1)"`   // 状态 1.启用 2.停用 3.未激活
-	Role             int    `gorm:"type:tinyint(1)"`   // 角色 1.管理员 2.普通用户
-	Mail             string `gorm:"type:varchar(50)"`  // 邮箱
-	About_article_id int    `gorm:"type:int(11)"`      // 绑定的关于我的ID
-	Token            string `gorm:"type:varchar(32)"`  // token 信息
+	Username   string `gorm:"type:varchar(50)"`  // 账号
+	Password   string `gorm:"type:varchar(32)"`  // 密码
+	Name       string `gorm:"type:varchar(10)"`  // 名称
+	Autograph  string `gorm:"type:varchar(50)"`  // 签名
+	Head_image string `gorm:"type:varchar(200)"` // 头像地址
+	Status     int    `gorm:"type:tinyint(1)"`   // 状态 1.启用 2.停用 3.未激活
+	Role       int    `gorm:"type:tinyint(1)"`   // 角色 1.管理员 2.普通用户
+	Mail       string `gorm:"type:varchar(50)"`  // 邮箱
+	Gender     int    `gorm:"type:tinyint(1)"`   // 性别 1.男 2.女
+	Token      string `gorm:"type:varchar(32)"`  // token 信息
 }
 
 // 获取用户信息
@@ -71,7 +71,7 @@ func (m *User) GetUserInfoByToken(userToken string) (User, error) {
 }
 
 // 更新用户基于id
-// 支持：name,autograph,header_image,status,role,mail,token,password,username
+// 支持：name,autograph,header_image,status,role,mail,token,password,username,gender
 func (m *User) UpdateUserInfoByUserId(user_id uint, updateInfo cmn.Msi) error {
 	mUser := User{}
 
@@ -91,6 +91,10 @@ func (m *User) UpdateUserInfoByUserId(user_id uint, updateInfo cmn.Msi) error {
 	if v, ok := updateInfo["role"]; ok {
 		data["role"] = v
 	}
+	if v, ok := updateInfo["gender"]; ok {
+		data["gender"] = v
+	}
+
 	if v, ok := updateInfo["mail"]; ok {
 		hasUser := User{}
 		count := Db.Where("mail=?", updateInfo["mail"]).First(&hasUser).RowsAffected

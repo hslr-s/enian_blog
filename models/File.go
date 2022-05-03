@@ -10,6 +10,5 @@ type File struct {
 	UserId    uint   `gorm:"type:int(11)" json:"user_id"`    // 用户id
 	ArticleId uint   `gorm:"type:int(11)" json:"article_id"` // 文章id
 	// 关系模型
-	User     User
-	Articles []Article `gorm:"many2many:article_anthologys"`
+	User User
 }

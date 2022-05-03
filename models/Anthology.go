@@ -2,15 +2,12 @@ package models
 
 import (
 	"enian_blog/lib/cmn"
-	"fmt"
 )
 
 // 专栏
 type Anthology struct {
 	BaseModel
-	Title string `gorm:"type:varchar(20)" json:"title"` // 标题
-	// Title_en          string `gorm:"type:varchar(50)"` // 标题英文标识
-	Order          int    `gorm:"type:int(11)" json:"order"`             // 排序
+	Title          string `gorm:"type:varchar(20)" json:"title"`         // 标题
 	Golbal_open    int    `gorm:"type:tinyint(1)" json:"golbal_open"`    // 公开到全局：1.公开（管理员可以添加专栏展示在团队首页） 2.不公开（专栏仅显示在个人首页）
 	Accept_article int    `gorm:"type:tinyint(1)" json:"accept_article"` // 接收文章：1.接受 2. 不接受（新文章不可再向此专栏推送，已推送的不受影响） 3.需要审核
 	UserId         uint   `gorm:"type:int(11)" json:"user_id"`           // 用户id
@@ -21,13 +18,6 @@ type Anthology struct {
 	User     User
 	Articles []Article `gorm:"many2many:article_anthologys"`
 }
-
-// 专栏关联文章
-// type ArticleAnthologys struct {
-// 	AnthologyID uint
-// 	ArticleID   uint
-// 	Allow       int `gorm:"type:tinyint(1)"` // 审核通过
-// }
 
 func (m *Anthology) GetMoreById(ids string) (list []Anthology, err error) {
 	err = Db.Where("id in (" + ids + ")").Find(&list).Error
@@ -63,33 +53,16 @@ func (m *Anthology) GetList(condition cmn.Msi) (list []Anthology, err error) {
 }
 
 // 获取专栏列表
-// 支持条件 uer_id golbal_open Accept_article
-// func (m *Anthology) GetList(condition Anthology) (list []Anthology, err error) {
-// 	db := Db.Debug().Model(&Anthology{}).Order("updated_at DESC")
-// 	if condition.UserId != 0 {
-// 		db = db.Where("user_id=?", condition.UserId)
-// 	}
-// 	if condition.Golbal_open != 0 {
-// 		db = db.Where("golbal_open=?", condition.Golbal_open)
-// 	}
-// 	if condition.Accept_article != 0 {
-// 		db = db.Where("accept_article=?", condition.Accept_article)
-// 	}
-
-// 	err = db.Preload("User").Find(&list).Error
-// 	return
-// }
-
-// 获取专栏列表
 func (m *Anthology) GetListByIds(ids string) (list []Anthology, err error) {
-
-	err = Db.Debug().Preload("User").Where("id in (" + ids + ")").Order("field(id ," + ids + ")").Find(&list).Error
+	if ids != "" {
+		err = Db.Preload("User").Where("id in (" + ids + ")").Order("field(id ," + ids + ")").Find(&list).Error
+	}
 	return
 }
 
 // 获取专栏列表
 func (m *Anthology) GetListByIdsUint(ids []uint) (list []Anthology, err error) {
-	err = Db.Debug().Preload("User").Where("id in ?", ids).Find(&list).Error
+	err = Db.Preload("User").Where("id in ?", ids).Find(&list).Error
 	return
 }
 
@@ -98,7 +71,7 @@ func (m *Anthology) Edit(newAnthology Anthology) (returnData Anthology, err erro
 	if newAnthology.ID == 0 {
 		err = Db.Create(&newAnthology).Error
 	} else {
-		fmt.Println("更新记录", newAnthology)
+		// fmt.Println("更新记录", newAnthology)
 		err = Db.Model(Anthology{}).Where("id=?", newAnthology.ID).Updates(map[string]interface{}{
 			"user_id":        newAnthology.UserId,
 			"title":          newAnthology.Title,

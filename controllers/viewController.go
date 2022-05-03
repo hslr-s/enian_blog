@@ -31,29 +31,31 @@ func (c *ViewController) Home() {
 	c.SetPartHeaderMenuCheck("home")
 
 	logo, _ := global_site["logo"].(string)
-	c.UsePartUserCardData(cmn.InterfaceToString("/"+logo), cmn.InterfaceToString(global_site["title"]), "/", cmn.InterfaceToString(global_site["autograph"]))
+	c.UsePartUserCardData(cmn.InterfaceToString("/"+logo), cmn.InterfaceToString(global_site["title"]), "/", cmn.InterfaceToString(global_site["autograph"]), "")
 	authologyViewData := []cmn.Msi{}
 	cmn.JsonDecode(cmn.InterfaceToString(global_site["anthology"]), &authologyViewData)
 
 	{
 		// ==== 专栏模块 开始 ====
 		anthologyIds := cache.ConfigCacheGetOneToString("home_anthology")
-		anthology := cache.CalcGet("home_anthology")
-		anthologyList, ok := anthology.([]cmn.Msi)
-		if !ok {
+		// fmt.Println(anthologyIds)
+		anthologyList := []cmn.Msi{}
+		if err := cache.CacheGet("home_anthology", &anthologyList); err != nil {
 			mAnthology := models.Anthology{}
 			list, err := mAnthology.GetListByIds(anthologyIds)
+			// fmt.Println(list)
 			if err == nil {
 				for _, v := range list {
+					// fmt.Println(v.User)
 					anthologyList = append(anthologyList, cmn.Msi{
 						"title": v.Title,
 						"url":   "/u/" + v.User.Username + "/anthology/" + strconv.Itoa(int(v.ID)),
 					})
 				}
-
-				cache.CalcSet("home_anthology", anthologyList, 20)
+				cache.CachePut("home_anthology", anthologyList, 20*time.Second)
 			}
 		}
+
 		c.UsePartAnthologyTitleData(anthologyList)
 		// ==== 专栏模块 结束 ====
 	}
@@ -67,49 +69,44 @@ func (c *ViewController) Home() {
 	limit := 15 // 默认20条
 
 	condition := cmn.Mss{
-		"status": "1",
-		// "only_release": "1",
+		"status":       "1",
+		"only_release": "1",
 	}
 	var (
 		list  []models.Article
 		count int64
 	)
-	// 缓存读取
-	cache_pArticleListData := cache.CacheGet("home_article_list")
-	pArticleListData, ok := cache_pArticleListData.([]ArticleListItem)
-	if !ok {
-		// fmt.Println("非缓存读取")
-		mArticle := models.Article{}
-		list, count, _ = mArticle.GetListByCondition(page, limit, condition)
-		for _, v := range list {
-			latest_html_label := false
-			if time.Now().Unix()-v.UpdatedAt.Unix() < 432000 {
-				latest_html_label = true
-			}
-			// 获取标签
-			tags := []TagItem{}
-			for _, v := range v.Tags {
-				tags = append(tags, TagItem{
-					Name: v.Title,
-					ID:   int(v.ID),
-				})
-			}
 
-			pArticleListData = append(pArticleListData, ArticleListItem{
-				ID:                v.ID,
-				Title:             v.Title,
-				Visit_times:       v.Visit,
-				Update_time:       v.UpdatedAt.Format("2006-01-02 15:04:05"),
-				Latest_html_label: latest_html_label,
-				User_name:         v.User.Name,
-				Tags:              tags,
-				Usernametag:       v.User.Username,
+	pArticleListData := []ArticleListItem{}
+	mArticle := models.Article{}
+	list, count, _ = mArticle.GetListByCondition(page, limit, condition, "release_time Desc")
+	for _, v := range list {
+		latest_html_label := false
+		if time.Now().Unix()-v.UpdatedAt.Unix() < 432000 {
+			latest_html_label = true
+		}
+		// 获取标签
+		tags := []TagItem{}
+		for _, v := range v.Tags {
+			tags = append(tags, TagItem{
+				Name: v.Title,
+				ID:   int(v.ID),
 			})
 		}
-		cache.CachePut("home_article_list", pArticleListData, 10*time.Second)
+
+		pArticleListData = append(pArticleListData, ArticleListItem{
+			ID:                v.ID,
+			Title:             v.Title,
+			Visit_times:       v.Visit,
+			Update_time:       v.ReleaseTime.Format(cmn.TIMEMODE_1),
+			Latest_html_label: latest_html_label,
+			User_name:         v.User.Name,
+			Tags:              tags,
+			Usernametag:       v.User.Username,
+		})
 	}
 
-	c.UsePartArticleListData("最近更新", pArticleListData, page, limit, count, "/list/page/")
+	c.UsePartArticleListData("最新", pArticleListData, page, limit, count, "/list/page/")
 	c.UsePartFooterData(FooterData{
 		Team_name: cmn.InterfaceToString(global_site["title"]),
 		// Name:      info.User.Name,
@@ -119,9 +116,8 @@ func (c *ViewController) Home() {
 	c.TplName = "index/home.html"
 }
 
-// 内容页面
-func (c *ViewController) Content() {
-	// global_user_card := cache.ConfigCacheGroupGet("global_user_card")
+// 预览
+func (c *ViewController) Preview() {
 	global_seo := cache.ConfigCacheGroupGet("global_seo")
 	global_site := cache.ConfigCacheGroupGet("global_site")
 
@@ -130,6 +126,12 @@ func (c *ViewController) Content() {
 	id, _ := strconv.Atoi(articleId)
 
 	info, err := mArticle.GetInfoAndTag(uint(id))
+
+	// 判断是否为当前用户文章
+	if c.UserInfo.ID != info.UserId {
+		c.Ctx.Redirect(302, "/404")
+	}
+
 	siteTitle := cmn.InterfaceToString(global_site["title"])
 	// ==== 头板块数据 ====
 	c.UsePartHeaderData(
@@ -140,7 +142,7 @@ func (c *ViewController) Content() {
 		cmn.InterfaceToString(global_site["about_url"]),
 	)
 	// 用户卡片
-	c.UsePartUserCardData("/"+info.User.Head_image, info.User.Name, "/u/"+info.User.Username, info.User.Autograph)
+	c.UsePartUserCardData("/"+info.User.Head_image, info.User.Name, "/u/"+info.User.Username, info.User.Autograph, strconv.Itoa(info.User.Gender))
 
 	if err == nil {
 		c.Data["ArticleInfo"] = info
@@ -148,6 +150,59 @@ func (c *ViewController) Content() {
 	} else {
 		c.Data["Error_msg"] = "没有找到那个页面"
 		c.TplName = "index/404.html"
+	}
+	c.Data["seo"] = map[string]interface{}{
+		"TongJi": global_seo["tongji"],
+	}
+	c.UsePartFooterData(FooterData{
+		Team_name: siteTitle,
+		Name:      info.User.Name,
+		Team_url:  "/",
+		Icp:       cmn.InterfaceToString(global_site["icp"]),
+	})
+}
+
+// 内容页面
+func (c *ViewController) Content() {
+
+	global_seo := cache.ConfigCacheGroupGet("global_seo")
+	global_site := cache.ConfigCacheGroupGet("global_site")
+
+	articleId := c.Ctx.Input.Param(":article_id")
+	mArticle := models.Article{}
+	id, _ := strconv.Atoi(articleId)
+	info, err := mArticle.GetInfoAndTag(uint(id))
+	if info.ReleaseTime.IsZero() {
+		c.Ctx.Redirect(302, "/404")
+	}
+	keyWords := ""
+	for i := 0; i < len(info.Tags); i++ {
+		keyWords += "," + info.Tags[i].Title
+	}
+	if len(keyWords) > 1 {
+		keyWords = keyWords[1:]
+	}
+	siteTitle := cmn.InterfaceToString(global_site["title"])
+	// ==== 头板块数据 ====
+	c.UsePartHeaderData(
+		info.Title+" - "+siteTitle,
+		info.Description,
+		keyWords,
+		cmn.InterfaceToString(global_site["background_image"]),
+		cmn.InterfaceToString(global_site["about_url"]),
+	)
+	// 用户卡片
+	c.UsePartUserCardData("/"+info.User.Head_image, info.User.Name, "/u/"+info.User.Username, info.User.Autograph, strconv.Itoa(info.User.Gender))
+
+	if err == nil {
+		c.Data["ArticleInfo"] = info
+		c.TplName = "index/content.html"
+	} else {
+		c.Data["Error_msg"] = "没有找到那个页面"
+		c.TplName = "index/404.html"
+	}
+	c.Data["seo"] = map[string]interface{}{
+		"TongJi": global_seo["tongji"],
 	}
 	c.UsePartFooterData(FooterData{
 		Team_name: siteTitle,
@@ -181,7 +236,7 @@ func (c *ViewController) UserHome() {
 		cmn.InterfaceToString(global_site["about_url"]),
 	)
 	// 用户卡片
-	c.UsePartUserCardData("/"+userInfo.Head_image, userInfo.Name, "/u/"+userInfo.Username, userInfo.Autograph)
+	c.UsePartUserCardData("/"+userInfo.Head_image, userInfo.Name, "/u/"+userInfo.Username, userInfo.Autograph, strconv.Itoa(userInfo.Gender))
 
 	// 文章列表
 	page := 0
@@ -191,7 +246,14 @@ func (c *ViewController) UserHome() {
 		page = 1
 	}
 	page, _ = strconv.Atoi(pageString)
-	articleList, count, _ := mArticle.GetListByUserIdAndPage(page, limit, int(userInfo.ID))
+	// articleList, count, _ := mArticle.GetListByUserIdAndPage(page, limit, int(userInfo.ID))
+	condition := cmn.Mss{
+		"status":       "1",
+		"user_id":      strconv.Itoa(int(userInfo.ID)),
+		"only_release": "1",
+	}
+
+	articleList, count, _ := mArticle.GetListByCondition(page, limit, condition, "release_time Desc")
 
 	{
 		// 专栏列表
@@ -270,7 +332,10 @@ func (c *ViewController) AnthologyHome() {
 
 	// }
 	pageInt, _ := strconv.Atoi(page)
-	articleList, articleCount := mArticle.GetListByAnthologyId(pageInt, 15, uint(anthologyIdInt))
+	condition := cmn.Mss{}
+	condition["only_release"] = "1"
+	condition["status"] = "1"
+	articleList, articleCount, _ := mArticle.GetListByAnthologyId(pageInt, 15, uint(anthologyIdInt), condition)
 	c.UsePartHeaderData(
 		anthologyInfo.Title+" - 专栏 - "+cmn.InterfaceToString(global_site["title"]),
 		cmn.InterfaceToString(global_seo["site_description"]),
@@ -313,6 +378,9 @@ func (c *ViewController) AnthologyHome() {
 		"description": anthologyInfo.Description,
 		"username":    anthologyInfo.User.Username,
 	}
+	c.Data["seo"] = map[string]interface{}{
+		"TongJi": global_seo["tongji"],
+	}
 	// fmt.Println(anthologyId, articleList, articleListItem, articleCount, "页码", page)
 	// mArticle := models.Article{}
 	// mArticle.GetInfoAndTag(5)
@@ -349,7 +417,10 @@ func (c *ViewController) SearchTag() {
 			cmn.InterfaceToString(global_site["about_url"]),
 		)
 		mArticle := models.Article{}
-		articleList, articleCount := mArticle.GetListByTagId(pageInt, 15, uint(tagIdInt))
+		article_condition := cmn.Mss{}
+		article_condition["only_release"] = "1"
+		article_condition["status"] = "1"
+		articleList, articleCount, _ := mArticle.GetListByTagId(pageInt, 15, uint(tagIdInt), article_condition)
 		articleListItem := []ArticleListItem{}
 		for _, v := range articleList {
 			latest_html_label := false
@@ -408,10 +479,11 @@ func (c *ViewController) SearchKeyWord() {
 	)
 	mArticle := models.Article{}
 	condition := cmn.Mss{
-		"keyword": keyword,
-		"status":  "1",
+		"keyword":      keyword,
+		"status":       "1",
+		"only_release": "1",
 	}
-	articleList, articleCount, _ := mArticle.GetListByCondition(pageInt, 15, condition)
+	articleList, articleCount, _ := mArticle.GetListByCondition(pageInt, 15, condition, "release_time Desc")
 	articleListItem := []ArticleListItem{}
 	for _, v := range articleList {
 		latest_html_label := false

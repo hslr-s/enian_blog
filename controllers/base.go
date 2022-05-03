@@ -5,16 +5,16 @@ import (
 	"enian_blog/lib/cmn"
 	"enian_blog/models"
 
-	"github.com/astaxie/beego"
+	"github.com/beego/beego/v2/server/web"
 )
 
 type BaseViewController struct {
-	beego.Controller
+	web.Controller
 	UserInfo models.User
 }
 
 func (c *BaseViewController) Prepare() {
-	onlyInsideUse := beego.AppConfig.DefaultBool("only_inside_use", false)
+	onlyInsideUse := web.AppConfig.DefaultBool("only_inside_use", false)
 
 	// 全局数据
 	c.Data["RUN_MODE"] = cmn.RUN_MODE

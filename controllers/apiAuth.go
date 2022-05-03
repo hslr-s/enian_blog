@@ -3,6 +3,7 @@ package controllers
 import (
 	"enian_blog/lib/cache"
 	"enian_blog/lib/cmn"
+	"enian_blog/lib/initialize"
 	"enian_blog/lib/mail"
 	mailLib "enian_blog/lib/mail"
 	"enian_blog/models"
@@ -153,6 +154,9 @@ func (c *AuthController) JoinOpenSubmit() {
 		c.ApiError(-1, err.Error())
 	}
 	mailInfo := cache.ConfigCacheGroupGet("global_email")
+	if err := cmn.CheckMailConfigComplete(mailInfo); err != nil {
+		c.ApiErrorMsg("网站邮箱配置信息尚不完善，请联系网站管理员完善，才能使用下发邮件功能")
+	}
 	port, ok := mailInfo["port"].(int)
 	if !ok {
 		port = 0
@@ -171,25 +175,26 @@ func (c *AuthController) JoinConfirm() {
 		c.ApiError(-1, "找不到key")
 	}
 	// fmt.Println(cache.CacheGet(key))
-	registerInfo, ok := cache.CacheGet(key).(RegisterInfoCache)
+	registerInfo := RegisterInfoCache{}
+
+	// 删除该缓存
+	cache.CacheDelete(key)
+	if err := cache.CacheGet(key, &registerInfo); err != nil {
+		c.ApiError(-1, "key 过期")
+	}
 
 	mUser := models.User{
-		Password: cmn.PasswordEncryption(registerInfo.Password),
-		Username: registerInfo.Username,
-		Mail:     registerInfo.Mail,
-		Name:     registerInfo.Name,
-		Status:   1,
+		Password:   cmn.PasswordEncryption(registerInfo.Password),
+		Username:   registerInfo.Username,
+		Mail:       registerInfo.Mail,
+		Name:       registerInfo.Name,
+		Head_image: initialize.DefaultHeadImage,
+		Status:     1,
 	}
 
 	// 判断邮箱和用户名是否存在
 	if err := mUser.CheckMailAndUsername(mUser.Mail, mUser.Name); err != nil {
 		c.ApiError(-1, err.Error())
-	}
-
-	// 删除该缓存
-	cache.CacheDelete(key)
-	if !ok {
-		c.ApiError(-1, "key 过期")
 	}
 
 	_, err := mUser.AddOne(mUser)
@@ -204,7 +209,12 @@ func (c *AuthController) JoinConfirm() {
 func (c *AuthController) UpdateMailConfirm() {
 	key := c.Ctx.Input.Param(":key")
 	cacheKey := "updateMail" + key
-	cacheParam, ok := cache.CacheGet(cacheKey).(cmn.Mss)
+	cacheParam := cmn.Mss{}
+	err := cache.CacheGet(cacheKey, &cacheParam)
+	if err != nil {
+		c.ApiError(-1, "链接不存在或者已过期 key 过期")
+	}
+
 	param, err := c.ParseBodyJsonToMssAndKeyExistCheck("password")
 
 	if err != nil {
@@ -213,11 +223,6 @@ func (c *AuthController) UpdateMailConfirm() {
 
 	password := cmn.PasswordEncryption(param["password"])
 
-	// fmt.Println("修改的缓存信息", cacheParam)
-
-	if !ok {
-		c.ApiError(-1, "key 过期")
-	}
 	var mUser models.User
 	// 验证邮箱
 	findUser := mUser.GetUserInfoByMail(cacheParam["new_mail"])
@@ -242,7 +247,10 @@ func (c *AuthController) UpdateMailConfirm() {
 func (c *AuthController) UpdatePasswordConfirm() {
 	key := c.Ctx.Input.Param(":key")
 	cacheKey := "updatePassword" + key
-	userInfo, ok := cache.CacheGet(cacheKey).(models.User)
+	userInfo := models.User{}
+	if err := cache.CacheGet(cacheKey, &userInfo); err != nil {
+		c.ApiError(-1, "key 过期")
+	}
 	param, err := c.ParseBodyJsonToMssAndKeyExistCheck("password")
 
 	if err != nil {
@@ -251,11 +259,6 @@ func (c *AuthController) UpdatePasswordConfirm() {
 
 	password := cmn.PasswordEncryption(param["password"])
 
-	// fmt.Println("修改的缓存信息", userInfo)
-
-	if !ok {
-		c.ApiError(-1, "key 过期")
-	}
 	var mUser models.User
 
 	findUser := mUser.GetUserInfoByMail(userInfo.Mail)
@@ -276,11 +279,11 @@ func (c *AuthController) UpdatePasswordConfirm() {
 // 获取修改密码的基本信息
 func (c *AuthController) GetUpdatePasswordInfo() {
 	key := c.Ctx.Input.Param(":key")
-	userInfo, ok := cache.CacheGet("updatePassword" + key).(models.User)
-
-	if !ok {
+	userInfo := models.User{}
+	if err := cache.CacheGet("updatePassword"+key, &userInfo); err != nil {
 		c.ApiError(-1, "key 过期")
 	}
+
 	c.ApiSuccess(cmn.Msi{
 		"mail": userInfo.Mail,
 	})
@@ -289,11 +292,11 @@ func (c *AuthController) GetUpdatePasswordInfo() {
 // 获取修改邮箱的基本信息
 func (c *AuthController) GetUpdateMailInfo() {
 	key := c.Ctx.Input.Param(":key")
-	cacheParam, ok := cache.CacheGet("updateMail" + key).(cmn.Mss)
-
-	if !ok {
+	cacheParam := cmn.Mss{}
+	if err := cache.CacheGet("updateMail"+key, &cacheParam); err != nil {
 		c.ApiError(-1, "key 过期")
 	}
+
 	c.ApiSuccess(cmn.Msi{
 		"new_mail": cacheParam["new_mail"],
 		"old_mail": cacheParam["old_mail"],
@@ -309,6 +312,9 @@ func (c *AuthController) ForgetPassword() {
 		return
 	}
 	mailInfo := cache.ConfigCacheGroupGet("global_email")
+	if err := cmn.CheckMailConfigComplete(mailInfo); err != nil {
+		c.ApiErrorMsg("网站邮箱配置信息尚不完善，请联系网站管理员完善，才能使用下发邮件功能")
+	}
 	siteInfo := cache.ConfigCacheGroupGet("global_site")
 	port, ok := mailInfo["port"].(int)
 	if !ok {

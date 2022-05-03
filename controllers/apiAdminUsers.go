@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"enian_blog/lib/cmn"
+	"enian_blog/lib/initialize"
 	"enian_blog/models"
 	"strconv"
 )
@@ -96,6 +97,8 @@ func (c *AdminUsersController) Edit() {
 		mUser.Mail = param["mail"]
 		mUser.Status, _ = strconv.Atoi(param["status"])
 		mUser.Role, _ = strconv.Atoi(param["role"])
+		mUser.Head_image = initialize.DefaultHeadImage
+		mUser.Name = initialize.DefaultUserNickName
 		_, err = mUser.AddOne(mUser)
 	}
 	if err != nil {

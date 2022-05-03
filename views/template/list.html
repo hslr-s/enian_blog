@@ -11,7 +11,7 @@
               </a>-->
       <h2>
   
-        <a href="/article/content/{{.ID}}">{{.Title}}</a>
+        <a href="/u/{{.Usernametag}}/content/{{.ID}}">{{.Title}}</a>
       </h2>
       <div class="fly-list-info">
         {{if .User_name}}
@@ -28,7 +28,7 @@
       </div>
       {{if .Latest_html_label}}
       <div class="fly-list-badge">
-        <span class="layui-badge layui-bg-red">最新</span>
+        <span class="layui-badge layui-bg-red">最近</span>
       </div>
       {{end}}
     </li>

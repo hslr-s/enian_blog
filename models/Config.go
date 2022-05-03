@@ -7,15 +7,14 @@ import (
 // 配置
 type Config struct {
 	ID    uint
-	Key   string `gorm:"type:varchar(50)"`  // 键名（支持组，请使用下划线进行分段。eg:sys_mail,表示：系统配置下的邮箱自配置）
-	Value string `gorm:"type:varchar(255)"` // 值
+	Key   string `gorm:"type:varchar(50)"` // 键名（支持组，请使用下划线进行分段。eg:sys_mail,表示：系统配置下的邮箱自配置）
+	Value string `gorm:"type:text"`        // 值
 }
 
 // 获取配置
 func (m *Config) Get(key string) (string, error) {
 	cfg := Config{}
 	err := Db.Where("`key` = ?", key).First(&cfg).Error
-
 	return cfg.Value, err
 }
 

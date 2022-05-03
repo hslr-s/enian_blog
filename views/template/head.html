@@ -4,17 +4,10 @@
   <meta charset="utf-8">
   <title>{{.HeaderData.Title}}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
   <!-- 网页介绍 文章的介绍-->
-  {{if .HeaderData.Description }}
-  <meta name="description" content="{{.HeaderData.Description}}"/>
-  {{end}}
-
+  {{if .HeaderData.Description }} <meta name="description" content="{{.HeaderData.Description}}"/> {{end}}
   <!-- 网页关键字 文章的关键字 加入标签-->
-  {{if .HeaderData.Keywords }}
-  <meta name="keywords" content="{{.HeaderData.Keywords}}" />
-  {{end}}
-
+  {{if .HeaderData.Keywords }} <meta name="keywords" content="{{.HeaderData.Keywords}}" /> {{end}}
   <link rel="stylesheet" href="/static/layui/css/layui.css?v=version_0.1">
   <link rel="stylesheet" href="/static/css/global.css?v=version_0.1">
   <!-- <link rel="stylesheet" href="/static/css/main.css?v=version_0.1"> -->

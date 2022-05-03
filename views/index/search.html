@@ -17,4 +17,6 @@
     			{{template "template/right/user_card.html" .}} -->
     
     </div>
+    <!-- 统计 -->
+    {{ if .seo.TongJi}}{{str2html .seo.TongJi}}{{end}}
 {{template "template/foot.html" .}}

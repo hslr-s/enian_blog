@@ -46,9 +46,6 @@
 			{{template "template/right/user_card.html" .}} -->
 
 		</div>
-		
-		
-		<!-- {include file="../application/blog_/view/template/right.html" /} -->
-		<!-- {include file="../application/viewTpl/baidu_tuisong.html" /}
-		{include file="../application/viewTpl/baidu_tongji.html" /} -->
+<!-- 统计 -->
+{{ if .seo.TongJi}}{{str2html .seo.TongJi}}{{end}}
 		{{template "template/foot.html" .}}

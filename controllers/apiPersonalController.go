@@ -1,11 +1,16 @@
 package controllers
 
 import (
+	"crypto/md5"
 	"enian_blog/lib/cache"
 	"enian_blog/lib/cmn"
 	"enian_blog/lib/mail"
 	"enian_blog/models"
 	"fmt"
+	"math/rand"
+	"os"
+	"path"
+	"strconv"
 	"time"
 )
 
@@ -107,6 +112,7 @@ func (c *PersonalController) GetUserInfoCurrent() {
 			"head_image": info.Head_image,
 			"role":       info.Role,
 			"mail":       info.Mail,
+			"gender":     strconv.Itoa(info.Gender),
 		})
 	} else {
 		c.ApiError(1000, "未登录或者无此用户")
@@ -127,6 +133,7 @@ func (c *PersonalController) UpdateUserInfoCurrent() {
 			"autograph":  c.GetValueByMsiKeyStringDefault(params, "autograph", "这个人很懒，啥也没留下"),
 			"head_image": c.GetValueByMsiKeyStringDefault(params, "head_image", ""),
 			"name":       c.GetValueByMsiKeyStringDefault(params, "name", ""),
+			"gender":     c.GetValueByMsiKeyStringDefault(params, "gender", "0"),
 		},
 	)
 	if err != nil {
@@ -237,7 +244,7 @@ func (c *PersonalController) GetArticleConfig() {
 		c.ApiError(-1, "无文章查询权限")
 		return
 	}
-	articleConfig, err := mArticle.GetConfig(uint(articleId))
+	articleConfig, _ := mArticle.GetConfig(uint(articleId))
 
 	if err != nil {
 		c.ApiError(-1, err.Error())
@@ -310,7 +317,7 @@ func (c *PersonalController) GetArticleInfoAndConfig() {
 		returnData["title"] = articleInfo.Title
 		returnData["status"] = articleInfo.Status
 		returnData["description"] = articleInfo.Description
-		returnData["auto_release"] = articleInfo.AutoRelease
+		// returnData["auto_release"] = articleInfo.AutoRelease
 		returnData["tags"] = tags
 		returnData["anthologys"] = anthologys
 		returnData["content"] = articleInfo.Content
@@ -339,6 +346,9 @@ func (c *PersonalController) UpdateMail() {
 
 	mailInfo := cache.ConfigCacheGroupGet("global_email")
 	siteInfo := cache.ConfigCacheGroupGet("global_site")
+	if err := cmn.CheckMailConfigComplete(mailInfo); err != nil {
+		c.ApiErrorMsg("网站邮箱配置信息尚不完善，请联系网站管理员完善，才能使用下发邮件功能")
+	}
 	port, ok := mailInfo["port"].(int)
 	if !ok {
 		port = 0
@@ -364,6 +374,9 @@ func (c *PersonalController) UpdateMail() {
 func (c *PersonalController) UpdatePassword() {
 	mailInfo := cache.ConfigCacheGroupGet("global_email")
 	siteInfo := cache.ConfigCacheGroupGet("global_site")
+	if err := cmn.CheckMailConfigComplete(mailInfo); err != nil {
+		c.ApiErrorMsg("网站邮箱配置信息尚不完善，请联系网站管理员完善，才能使用下发邮件功能")
+	}
 	port, ok := mailInfo["port"].(int)
 	if !ok {
 		port = 0
@@ -374,4 +387,44 @@ func (c *PersonalController) UpdatePassword() {
 	mailObj := mail.NewMail(cmn.InterfaceToString(mailInfo["address"]), cmn.InterfaceToString(mailInfo["password"]), cmn.InterfaceToString(mailInfo["host"]), port)
 	mailObj.SendMailOfLink(c.UserInfo.Mail, "修改密码", "点击下方链接去修改密码(2小时内有效)", "点此去修改密码", callbackUrl)
 	c.ApiOk()
+}
+
+// 上传附件
+func (c *PersonalController) UploadFile() {
+
+	f, h, err := c.GetFile("file")
+	ext := path.Ext(h.Filename)
+	defer f.Close()
+	if err != nil {
+		// fmt.Println("getfile err ", err)
+		c.ApiError(-1, err.Error())
+	} else {
+		uploadDir := "static/upload/" + time.Now().Format("2006/01/02/")
+		err := os.MkdirAll(uploadDir, 0777)
+		if err != nil {
+			c.ApiError(-1, err.Error())
+			return
+		}
+		rand.Seed(time.Now().UnixNano())
+		randNum := fmt.Sprintf("%d", rand.Intn(9999)+1000)
+		hashName := md5.Sum([]byte(time.Now().Format("2006_01_02_15_04_05_") + randNum))
+
+		fileName := uploadDir + fmt.Sprintf("%x", hashName) + ext
+		db := models.Db
+		db.Create(&models.File{
+			Name:   h.Filename,
+			Ext:    ext,
+			Path:   fileName,
+			UserId: c.UserInfo.ID,
+		})
+
+		err = c.SaveToFile("file", fileName)
+		if err != nil {
+			c.ApiError(-1, err.Error())
+		} else {
+			c.ApiSuccess(fileName)
+		}
+
+	}
+
 }

@@ -36,14 +36,24 @@ func (c *PersonalController) GetArticleList() {
 	List, count := mArticle.GetListByAnthologyIdAndUserId(page, limit, keyword, uint(anthology_id), c.UserInfo.ID)
 	returnList := []cmn.Msi{}
 	for _, v := range List {
+		releaseTime := ""
+		releaseUpdateTime := ""
+		if !v.ReleaseTime.IsZero() {
+			releaseTime = v.ReleaseTime.Format(cmn.TIMEMODE_1)
+			releaseUpdateTime = v.ReleaseUpdateTime.Format(cmn.TIMEMODE_1)
+		}
 		returnList = append(returnList, cmn.Msi{
-			"id":          v.ID,
-			"title":       v.Title,
-			"content":     v.Content,
-			"visit":       v.Visit,
-			"create_time": v.CreatedAt.Format(cmn.TIMEMODE_1),
-			"update_time": v.UpdatedAt.Format(cmn.TIMEMODE_1),
-			"status":      v.Status,
+			"id":    v.ID,
+			"title": v.Title,
+			// "content":             v.Content,
+			"visit":               v.Visit,
+			"create_time":         v.CreatedAt.Format(cmn.TIMEMODE_1),
+			"update_time":         v.UpdatedAt.Format(cmn.TIMEMODE_1),
+			"release_time":        releaseTime,
+			"release_update_time": releaseUpdateTime,
+			"user_id":             v.User.ID,
+			"user_username":       v.User.Username,
+			"status":              v.Status,
 		})
 	}
 	c.ApiListData(returnList, count)
@@ -66,22 +76,27 @@ func (c *PersonalController) SaveArticle() {
 		// 更新
 		info, err := mArticle.GetInfo(uint(article_id))
 		if err != nil {
-			c.ApiErrorEasy("文章不存在")
+			c.ApiErrorMsg("文章不存在")
 			return
 		}
 		if info.UserId != c.UserInfo.ID {
-			c.ApiErrorEasy("无权限")
+			c.ApiErrorMsg("无权限")
 			return
 		}
 		if title, _ := c.GetValueByMsiKeyString(params, "title"); title == "" {
-			c.ApiErrorEasy("标题不可为空")
+			c.ApiErrorMsg("标题不可为空")
 			return
+		}
+		saveData["save_time"] = time.Now().Format(cmn.TIMEMODE_1)
+		// 非首次发布
+		if !info.ReleaseTime.IsZero() {
+			delete(saveData, "release_time")
 		}
 		errUpdate := mArticle.UpdateByArticleId(uint(article_id), saveData)
 		if errUpdate != nil {
-			c.ApiErrorEasy("文章更新失败")
+			c.ApiErrorMsg("文章更新失败")
 		} else {
-			c.pushArticleToAnthotogyApply(info.ID, applyAnthotogyIds, saveData["title"].(string))
+			c.pushArticleToAnthotogyApply(info, applyAnthotogyIds, saveData["title"].(string))
 			c.ApiSuccess(cmn.Msi{"id": info.ID})
 		}
 	} else {
@@ -92,34 +107,36 @@ func (c *PersonalController) SaveArticle() {
 		mArticle.Status = c.GetValueByMsiKeyIntDefault(params, "status", 0)
 		mArticle.Description = c.GetValueByMsiKeyStringDefault(params, "description", "")
 		mArticle.Editor = c.GetValueByMsiKeyIntDefault(params, "editor", 0)
-		mArticle.AutoRelease = c.GetValueByMsiKeyIntDefault(params, "auto_release", 0)
+		// mArticle.AutoRelease = c.GetValueByMsiKeyIntDefault(params, "auto_release", 0)
 		mArticle.UserId = c.UserInfo.ID
+		mArticle.SaveTime = time.Now()
 
 		mArticle.Anthologys, _ = saveData["anthologys"].([]models.Anthology)
 		mArticle.Tags, _ = saveData["tags"].([]models.Tag)
 		if saveData["content_render"] != "" {
 			mArticle.ContentRender, _ = saveData["content_render"].(string)
-			mArticle.ReleaseTime, _ = saveData["release_time"].(string)
+			mArticle.ReleaseUpdateTime, _ = saveData["release_update_time"].(time.Time)
+			mArticle.ReleaseTime, _ = saveData["release_time"].(time.Time)
 		}
 		info, err := mArticle.AddOne(mArticle)
 		if err != nil {
 			c.ApiError(1, "文章添加失败")
 		} else {
-			c.pushArticleToAnthotogyApply(info.ID, applyAnthotogyIds, mArticle.Title)
+			c.pushArticleToAnthotogyApply(info, applyAnthotogyIds, mArticle.Title)
 			c.ApiSuccess(cmn.Msi{"id": info.ID})
 		}
 	}
 }
 
 // 推送文章至专栏申请
-func (c *PersonalController) pushArticleToAnthotogyApply(artcileId uint, anthotogyInfos []models.Anthology, article_title string) {
+func (c *PersonalController) pushArticleToAnthotogyApply(artcileInfo models.Article, anthotogyInfos []models.Anthology, article_title string) {
 	for _, v := range anthotogyInfos {
 		mMessage := models.Message{}
 		fmt.Println(v)
-		messageContent := "<a>" + c.UserInfo.Name + "</a>的文章标题为<a href='/article/content/" + strconv.Itoa(int(artcileId)) + "'>[" + article_title + "]</a>正在申请推送到你的专栏<a href='/u/li/anthology/" + strconv.Itoa(int(v.ID)) + "'>[" + v.Title + "]</a>"
+		messageContent := "<a>" + c.UserInfo.Name + "</a>的文章标题为<a href='/u/" + artcileInfo.User.Username + "/content/" + strconv.Itoa(int(artcileInfo.ID)) + "'>[" + article_title + "]</a>正在申请推送到你的专栏<a href='/u/li/anthology/" + strconv.Itoa(int(v.ID)) + "'>[" + v.Title + "]</a>"
 		extendParam := cmn.Msi{}
 		extendParam["type"] = 1
-		extendParam["article_id"] = artcileId
+		extendParam["article_id"] = artcileInfo.ID
 		extendParam["anthology_id"] = v.ID
 		mMessage.CreateOneMessage("有文章推送至专栏，需审核", messageContent, extendParam, 2, v.UserId, c.UserInfo.ID)
 	}
@@ -161,7 +178,7 @@ func (c *PersonalController) getSaveArticleInfo(params cmn.Msi) (updateData map[
 	content_render := c.GetValueByMsiKeyStringDefault(params, "content_render", "")
 	description := c.GetValueByMsiKeyStringDefault(params, "description", "")
 	editor := c.GetValueByMsiKeyIntDefault(params, "editor", 1)
-	auto_release := c.GetValueByMsiKeyIntDefault(params, "auto_release", 1)
+	// auto_release := c.GetValueByMsiKeyIntDefault(params, "auto_release", 1)
 	status := c.GetValueByMsiKeyIntDefault(params, "status", 0)
 	articleId := c.GetValueByMsiKeyIntDefault(params, "id", 0)
 
@@ -248,10 +265,11 @@ func (c *PersonalController) getSaveArticleInfo(params cmn.Msi) (updateData map[
 	updateData["content"] = content
 	updateData["editor"] = editor
 	updateData["description"] = description
-	updateData["auto_release"] = auto_release
+	// updateData["auto_release"] = auto_release
 	if content_render != "" {
 		updateData["content_render"] = content_render
-		updateData["release_time"] = time.Now().Format(cmn.TIMEMODE_1)
+		updateData["release_update_time"] = time.Now()
+		updateData["release_time"] = time.Now()
 	}
 	updateData["user_id"] = c.UserInfo.ID
 	updateData["status"] = status
@@ -266,12 +284,16 @@ func (c *PersonalController) getSaveArticleInfo(params cmn.Msi) (updateData map[
 func (c *PersonalController) UploadArticleFile() {
 
 	article_id, _ := c.GetInt("article_id", 0)
-	if article_id == 0 {
-		c.ApiError(-1, "文章参数不正确")
-	}
+	// if article_id == 0 {
+	// 	c.ApiError(-1, "文章参数不正确")
+	// }
 	f, h, err := c.GetFile("file")
 	ext := path.Ext(h.Filename)
 	defer f.Close()
+
+	if h.Size >= 2097152 {
+		c.ApiErrorMsg("尺寸超出限制")
+	}
 	if err != nil {
 		// fmt.Println("getfile err ", err)
 		c.ApiError(-1, err.Error())

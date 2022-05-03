@@ -5,16 +5,17 @@
 大家可以去看[B站视频开发vlog](https://space.bilibili.com/27407696)。
 
 
+## 介绍
+enianBlog(E念博客)是一个支持多人使用的团队博客系统。是基于前端layui和后端go语言的beego框架开发。支持专栏、标签、SEO、markdown语法等特色功能！
+
+
 ## 演示站点信息
 
 前台地址：[点击直达](http://demoblog.enianteam.com/ "点击直达")
+
 后台地址：[点击直达](http://demoblog.enianteam.com/profile/auth.html#/login "点击直达")
 
 演示账号：admin  演示密码：111111
-
-
-## 介绍
-enianBlog(E念博客)是一个支持多人使用的团队博客系统。是基于前端layui和后端go语言的beego框架开发。支持专栏、标签、SEO、markdown语法等特色功能！
 
 ## 适合用户
 个人、开发团队、各行业人员。

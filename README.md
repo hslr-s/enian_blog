@@ -72,9 +72,11 @@ bee run
 ### 3.访问
 浏览器访问：`http://127.0.0.1:8080`
 
-## 预览版使用教程
+## 发布版使用教程
 
-**（由于未开发完，目前仅编译Windows版本）**
+地址：[直达发布版页面](https://gitee.com/hslr/enian_blog/releases)
+
+**（已编译Windows64和Linux64为版本，其他系统版本请拉取代码自行编译）**
 
 后续功能开发差不多并且时间充裕后有时间写文档再开源
 
@@ -88,7 +90,7 @@ bee run
 
 #### 第三步：下载项目及配置修改
 
-> 下载文件解压预览版（项目首页后边）
+> 下载文件解压[发布版](https://gitee.com/hslr/enian_blog/releases)
 
 
 1. 下载项目 **enian_blog_dev.zip** 解压后找到项目文件夹

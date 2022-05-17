@@ -1,0 +1,182 @@
+  {{template "template/head.html" .}}
+<link rel="stylesheet" type="text/css" href="/static/prism/css/prism.css?v=version_0.1" />
+<link rel="stylesheet" href="/static/tocbot/tocbot.css?v=version_0.1">
+
+
+<style type="text/css">
+    .toc-list-item{
+        margin-top: 5px;
+    }
+    /*解决layui屏蔽li标签默认样式临时方案*/
+    .markdown-body ul li{list-style: disc;}
+    .markdown-body ul li li{list-style: circle;}
+    .markdown-body ul li li li{list-style: square;}
+    .markdown-body ol li{list-style: decimal;}
+    .markdown-body ol li li{list-style: lower-roman;}
+    .markdown-body ol li li li{list-style: lower-alpha;}
+
+    .editor-content-view blockquote {
+        border-left: 8px solid #b8e4ff;
+        padding: 10px 10px;
+        margin: 10px 0;
+        background-color: #f5f2f0;
+    }
+
+    .editor-content-view pre>code {
+        display: block;
+        padding: 10px;
+    }
+
+    .editor-content-view table {
+        border-collapse: collapse;
+    }
+    .editor-content-view td,
+    .editor-content-view th {
+        border: 1px solid #ccc;
+        min-width: 50px;
+        height: 20px;
+    }
+    .editor-content-view th {
+        background-color: #f1f1f1;
+    }
+
+    .editor-content-view ul,
+    .editor-content-view ol {
+        padding-left: 20px;
+    }
+
+    .editor-content-view input[type="checkbox"] {
+        margin-right: 5px;
+    }
+</style>
+<div class="layui-container" style="margin-top: 20px;">
+  <div class="layui-row layui-col-space15">
+    <div class="layui-col-md8">
+      <div class="fly-panel detail-box">
+        <h1>[预览] {{.ArticleInfo.Title}}</h1>
+        <div class="fly-detail-info">
+          <span class="fly-list-nums" style="color: #c2c2c2;">
+            <div>
+              <span>标签：</span>
+              {{range .ArticleInfo.Tags}}
+              <span class="layui-badge fly-badge-accept blog-tags"><a href="/search/tag/{{.ID}}">{{.Title}}</a></span>
+              {{end}}
+            </div>
+          </span>
+        </div>
+        <br /><br />
+        <hr />
+        <div class="detail-body photos">
+          <div id="editormd-to-html" class="markdown-body editor-content-view">
+            {{str2html .ArticleInfo.Content}}
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="layui-col-md4">
+      {{template "template/right/user_card.html" .}}
+      {{template "template/right/search_word.html" .}}
+      <div class="fixed-panel">
+        {{template "template/right/article_menu.html" .}}
+        {{template "template/right/label.html" .}}
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/static/editormd/jquery.min.js?v=version_0.1"></script>
+<script src="/static/layui/layui.js?v=version_0.1"></script>
+<script src="/static/tocbot/tocbot.min.js?v=version_0.1"></script>
+
+<!-- 引入prism -->
+<script src="/static/prism/prism.js?v=version_0.1"></script>
+<script src="/static/prism/prism-core.min.js?v=version_0.1"></script>
+<!-- <script src="/static/prism/prism-autoloader.min.js?v=version_0.1"></script> -->
+
+  <!-- <script src="https://cdn.jsdelivr.net/npm/prismjs@latest/prism.min.js"></script> -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/prismjs@latest/components/prism-core.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@latest/plugins/autoloader/prism-autoloader.min.js"></script>
+
+ <script type="text/javascript">
+    layui.use(['element','laypage','jquery'],function(){
+      element = layui.element,laypage = layui.laypage,$ = layui.$;
+        $(document).ready(function () {
+            var menu_top = $(".fixed-panel").offset().top
+            // 重置id
+            $(":header").each(function (i, elem) {
+              // var id = "toc-" + Date.parse(new Date()) + Math.floor(Math.random() * 9999)
+              $(elem).attr("id", $(this).children("strong").html())
+            })
+            tocbot.init({
+                // Where to render the table of contents.
+                tocSelector: '.article-menu',
+                // Where to grab the headings to build the table of contents.
+                contentSelector: '#editormd-to-html',
+                // Which headings to grab inside of the contentSelector element.
+                headingSelector: 'h1, h2, h3, h4,h5,h6',
+                collapseDepth: 5,
+                // For headings inside relative or absolute positioned containers within content.
+                // hasInnerContainers: true,
+                scrollSmooth: true,
+                // scrollSmoothDuration: 420,
+                // headingsOffset: -200,
+                // 要添加的Fixed position类，使侧栏在向下滚动到fixedSidebarOffset之后固定。
+                positionFixedClass: 'is-position-fixed',
+                // fixedSidebarOffset:-80,
+                scrollSmoothOffset: -80,
+                // scrollContainer:"80px",
+                linkClass: "toc-link-class",
+                listItemClass: 'toc-list-item',
+                // listClass:"toc-list-class",
+                headingObjectCallback: function (object, HTMLElement) {
+                    // 有目录，显示结构
+                    $(".article-menu-panel").removeClass("layui-hide")
+                    return object
+                },
+                // scrollEndCallback: function (e) { //回调函数
+                // 	window.scrollTo(window.scrollX, window.scrollY - 80);
+                // //修正滚动后页面的位置，80 是自己顶部栏的高度
+                // },
+
+            });
+
+            autoRoll(menu_top)
+            //开始监听滚动条
+            $(window).scroll(function () {
+                autoRoll(menu_top)
+            })
+
+            // 自动滚动
+          function autoRoll(menu_top) {
+            var top = $(document).scrollTop();
+            var menu_width = $(".fixed-panel").parent().width();
+            if (top > menu_top) {
+              $(".fixed-panel").css("position", "fixed")
+              $(".fixed-panel").css("top", "81px")
+              $(".fixed-panel").css("width", menu_width + "px")
+            } else if (top < menu_top) {
+              $(".fixed-panel").css("position", "relative")
+              $(".fixed-panel").css("top", 0)
+            }
+          }
+
+          setTimeout(function () {
+            $.ajax("/api/front/articleVisit?article_id=" + layui.url().pathname[3])
+          }, 3000);
+        })
+
+        
+
+    })
+
+    Prism.highlightAll()
+</script>     
+
+
+
+<!-- 统计 -->
+{{ if .seo.TongJi}}{{str2html .seo.TongJi}}{{end}}
+
+<!-- 自带统计 -->
+
+{{template "template/foot.html" .}}

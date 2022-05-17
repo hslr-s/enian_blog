@@ -76,7 +76,6 @@
         var element = layui.element, laypage = layui.laypage, form = layui.form, layer = layui.layer,$=layui.$;
         form.render()
         app.base.ajaxGet("/api/personal/getAnthologyList",function(data){
-            console.log(data)
             for (let i = 0; i < data.list.length; i++) {
                 const element = data.list[i];
                 $("#anthology_list").append('<option value="'+element.id+'">'+element.title+'</option>')
@@ -111,7 +110,7 @@
             }
             
             app.base.ajaxPost("/api/personal/getArticleList", postData, function (data) {
-                console.log(data)
+                // console.log(data)
                 laypage.render({
                     elem: 'anthology_list_page'
                     , count: data.total
@@ -162,7 +161,7 @@
                         layer.confirm('确定删除此文章？', {
                             btn: ['确定', '取消'] //按钮
                         }, function () {
-                            console.log("删除文章", article_id)
+                            // console.log("删除文章", article_id)
                             app.base.ajaxPost("/api/personal/deleteArticle",{id: article_id},function(res){
                                 that.parent().parent().remove()
                                 layer.msg("删除成功")

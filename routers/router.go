@@ -2,6 +2,7 @@ package routers
 
 import (
 	"enian_blog/controllers"
+	"enian_blog/lib/cmn"
 	. "enian_blog/lib/cmn"
 
 	"github.com/beego/beego/v2/server/web"
@@ -30,8 +31,8 @@ func init() {
 		// web.Router("/article/content/:article_id", &controllers.ViewController{}, "get:Content") // 文章内容
 		// web.Router("/article/preview/:article_id", &controllers.ViewController{}, "get:Preview") // 文章预览
 
-		web.Router("/u/:username/content/:article_id", &controllers.ViewController{}, "get:Content")         // 文章内容
-		web.Router("/u/:username/article/preview/:article_id", &controllers.ViewController{}, "get:Preview") // 文章预览
+		web.Router("/u/:username/content/:article_id", &controllers.ViewController{}, "get:Content") // 文章内容
+		web.Router("/u/:username/preview/:article_id", &controllers.ViewController{}, "get:Preview") // 文章预览
 
 		// 用户相关
 		web.Router("/u/:username", &controllers.ViewController{}, "get:UserHome")       // 个人首页
@@ -62,7 +63,12 @@ func init() {
 	// -----
 	// 静态
 	// -----
-	web.SetStaticPath("/profile", "profile") //第一个是访问的路径，第二个是根下目录
+	if exists, _ := cmn.PathExists("profile_min"); exists {
+		// 判断压缩路径是否存在，存在则使用压缩路径
+		web.SetStaticPath("/profile", "profile_min") //第一个是访问的路径，第二个是根下目录
+	} else {
+		web.SetStaticPath("/profile", "profile")
+	}
 
 	// -----
 	// API
@@ -104,6 +110,8 @@ func init() {
 	web.Router("/api/personal/deleteAnthologyByAnthologyId", &controllers.PersonalController{}, "post:DeleteAnthologyByAnthologyId") // 删除专栏
 	web.Router("/api/personal/uploadFile", &controllers.PersonalController{}, "post:UploadFile")                                     // 上传附件（用户头像等）
 	web.Router("/api/personal/updateUserInfoCurrent", &controllers.PersonalController{}, "post:UpdateUserInfoCurrent")               // 修改个人信息
+	web.Router("/api/personal/getUserConfig", &controllers.PersonalController{}, "get:GetUserConfig")                                // 获取用户配置
+	web.Router("/api/personal/updateUserConfig", &controllers.PersonalController{}, "post:UpdateUserConfig")                         // 修改用户配置
 	web.Router("/api/personal/updateMail", &controllers.PersonalController{}, "post:UpdateMail")                                     // 修改邮箱
 	web.Router("/api/personal/updatePassword", &controllers.PersonalController{}, "post:UpdatePassword")                             // 修改密码
 
@@ -131,6 +139,7 @@ func init() {
 	web.Router("/api/admin/setting/setHomeAnthology", &controllers.AdminUsersController{}, "post:SetHomeAnthology")   // 设置首页专栏
 	web.Router("/api/admin/setting/setGlobalSetting", &controllers.AdminUsersController{}, "post:SetGlobalSetting")   // 设置全局信息
 	web.Router("/api/admin/setting/uploadLogo", &controllers.AdminUsersController{}, "post:UploadLogo")               // 上传LOGO
+	web.Router("/api/admin/setting/uploadIco", &controllers.AdminUsersController{}, "post:UploadIco")                 // 上传Ico
 	web.Router("/api/admin/setting/uploadHeaderImage", &controllers.AdminUsersController{}, "post:UploadHeaderImage") // 上传背景图
 	web.Router("/api/admin/setting/sendTestMail", &controllers.AdminUsersController{}, "post:SendTestMail")           // 发送测试邮件
 

@@ -1,0 +1,17 @@
+<div class="fly-panel part-user-card">
+    <h3 class="fly-panel-title">BLOG</h3>
+    <ul class="fly-panel-main fly-list-static">
+        <div>
+            <div class="layui-inline">
+                <img style="width: 60px;height: 60px;border-radius: 100%;" src="{{.UserCardData.HeaderImg}}" alt="博客头像" />
+            </div>
+
+            <div class="layui-inline" style="width: calc(100% - 70px);">
+                <a href="{{.UserCardData.UserInfoUrl}}"
+                    style="margin-left: 20px;font-size: 20px;">{{.UserCardData.UserName}}</a>
+                <p><span class="autograph">{{.UserCardData.Autograph}}</span></p>
+            </div>
+
+        </div>
+    </ul>
+</div>

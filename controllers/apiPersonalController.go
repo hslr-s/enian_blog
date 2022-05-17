@@ -270,6 +270,7 @@ func (c *PersonalController) GetArticleConfig() {
 		returnData["description"] = articleInfo.Description
 		returnData["tags"] = tags
 		returnData["anthologys"] = anthologys
+		returnData["editor"] = articleInfo.Editor
 		c.ApiSuccess(returnData)
 	}
 }
@@ -314,14 +315,27 @@ func (c *PersonalController) GetArticleInfoAndConfig() {
 				"id":          v.ID,
 			})
 		}
+		releaseTime := ""
+		releaseUpdateTime := ""
+		if !articleInfo.ReleaseTime.IsZero() {
+			releaseTime = articleInfo.ReleaseTime.Format(cmn.TIMEMODE_1)
+		}
+		if !articleInfo.ReleaseUpdateTime.IsZero() {
+			releaseUpdateTime = articleInfo.ReleaseUpdateTime.Format(cmn.TIMEMODE_1)
+		}
 		returnData["title"] = articleInfo.Title
+		returnData["release_time"] = releaseTime
+		returnData["release_update_time"] = releaseUpdateTime
+		returnData["create_time"] = articleInfo.CreatedAt.Format(cmn.TIMEMODE_1)
+		returnData["update_time"] = articleInfo.SaveTime.Format(cmn.TIMEMODE_1)
 		returnData["status"] = articleInfo.Status
 		returnData["description"] = articleInfo.Description
-		// returnData["auto_release"] = articleInfo.AutoRelease
+		returnData["visit"] = articleInfo.Visit
 		returnData["tags"] = tags
 		returnData["anthologys"] = anthologys
 		returnData["content"] = articleInfo.Content
 		returnData["content_render"] = articleInfo.ContentRender
+		returnData["editor"] = articleInfo.Editor
 		c.ApiSuccess(returnData)
 	}
 }
@@ -427,4 +441,36 @@ func (c *PersonalController) UploadFile() {
 
 	}
 
+}
+
+// 获取用户配置
+func (c *PersonalController) GetUserConfig() {
+	mUserConfig := models.UserConfig{}
+	userConfig, err := mUserConfig.GetConfigByUserID(c.UserInfo.ID)
+	// 默认值
+	if err != nil {
+		userConfig.Editor = 2
+	}
+	c.ApiSuccess(cmn.Msi{
+		"editor": userConfig.Editor,
+	})
+}
+
+// 修改个人配置
+func (c *PersonalController) UpdateUserConfig() {
+	params, err := c.ParseBodyJsonToMsiAndKeyExistCheck("editor")
+	if err != nil {
+		return
+	}
+	mUserConfig := models.UserConfig{}
+	if v, ok := params["editor"].(float64); ok {
+		err := mUserConfig.SetConfigByUserID(c.UserInfo.ID, map[string]interface{}{"editor": int(v)})
+		if err != nil {
+			c.ApiError(-1, err.Error())
+
+		} else {
+			c.ApiSuccess(nil)
+		}
+	}
+	c.ApiError(-1, "参数不正确")
 }

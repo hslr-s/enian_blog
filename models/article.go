@@ -13,7 +13,7 @@ type Article struct {
 	BaseModel
 	PageLimitStruct
 	Title         string `gorm:"type:varchar(100)"` // 标题
-	Content       string `gorm:"type:text"`         // 文章原始内容数据
+	Content       string `gorm:"type:longtext"`     // 文章原始内容数据
 	ContentRender string `gorm:"type:longtext"`     // 发布的渲染内容
 	Visit         int    `gorm:"type:int(11)"`      // 访问次数
 	Status        int    `gorm:"type:tinyint(1)"`   // 状态:0.私有 1.公开

@@ -1,29 +1,46 @@
+<style>
+    #article_info{
+        font-size: 25px;font-weight: 900;cursor: pointer; color: #4a7eb3;
+    }
+    #article_info:hover{
+        color: #98bce0;
+    }
+
+    .article-layer{
+        padding: 30px;
+        font-size: 18px;
+        color:#979797;
+    }
+</style>
 <div class="fly-panel" pad20 style="padding-top: 5px;">
     <!--<div class="fly-none">没有权限</div>-->
     <div class="layui-form">
         <div class="layui-tab layui-tab-brief" lay-filter="user">
             <ul class="layui-tab-title">
                 <li class="layui-this">编写文章</li>
-                <li>文章设置</li>
-                <li id="chage_editor_btn">更换编辑器</li>
+                <li>发布设置</li>
+                <li>切换编辑器</li>
             </ul>
             <div class="layui-form layui-tab-content" style="padding: 20px 0;">
                 <div class="layui-row layui-col-space15 layui-form-item layui-form-pane">
                 
                     <div class="layui-col-md9">
-                        <label class="layui-form-label">标题</label>
-                        <div class="layui-input-block">
-                            <input type="text" placeholder="标题长度不超过50个文字" id="article_title" name="title" required lay-verify="required"
+                        <input type="text" placeholder="标题 (不超过50个文字)" id="article_title" style="font-size: 20px;" name="title" required lay-verify="required"
                                 autocomplete="off" class="layui-input">
-                        </div>
                     </div>
                     <div class="layui-col-md3" style="line-height: 38px;">
+                        
                         <!-- <input type="checkbox" name="" title="自动保存" checked> -->
-                
-                        <button class="layui-btn layui-btn-sm" id="save-btn" lay-filter="save-btn" title="仅保存前台页面不会更新">保存</button>
-                        <button class="layui-btn layui-btn-sm" lay-filter="save-release-btn" id="save-release-btn" title="保存并发布到前台"
-                            lay-submit>保存并发布</button>
-                        <span id="save-status-lable"></span>
+                        <!-- <div class="layui-btn layui-btn-primary">已发布</div> -->
+                        <i class="layui-icon layui-icon-about" id="article_info"></i>
+                        <div class="layui-inline" style="float: right;">
+                            <button class="layui-btn layui-btn-sm" id="save-btn" lay-filter="save-btn" title="仅保存前台页面不会更新">保存</button>
+                            <button class="layui-btn layui-btn-sm" lay-filter="save-release-btn" id="save-release-btn" title="保存并发布到前台" lay-submit>发布</button>
+                        </div>
+                        
+                            
+                        
+                        <!-- <span id="save-status-lable"></span> -->
                         <!-- <input type="checkbox"  lay-filter="auto_save" title="自动保存" lay-skin="primary"> -->
                         <!-- <button class="layui-btn layui-btn-sm" data-auto_save="0" lay-filter="*" lay-submit>自动保存</button> -->
                     </div>
@@ -33,7 +50,7 @@
                         
                         <div class="layui-form-item">
                             <div class="layui-tab-item layui-show">
-                                <iframe id="editor" src="/profile/pages/writing_editor/editors/meditor.html"   style="width: 100%;" frameborder="0"></iframe>
+                                <iframe id="editor" src=""   style="width: 100%;" frameborder="0"></iframe>
                             </div>
                         </div>
                         <!-- <div class="layui-form-item">
@@ -44,13 +61,6 @@
                     <hr>
                     <form action="" method="post" class="layui-form" lay-filter="article-config">
                         
-                        <!-- <div class="layui-form-item">
-                            <label class="layui-form-label">关键字</label>
-                            <div class="layui-input-block">
-                                <input type="text" placeholder="（选填）请输入文章关键字...（尽量使用英文逗号分割）" id="key_word" name="key_word" required lay-verify="required"
-                                    autocomplete="off" class="layui-input">
-                            </div>
-                        </div> -->
                         <div class="layui-form-item">
                             <label class="layui-form-label">文章简介</label>
                             <div class="layui-input-block">
@@ -87,7 +97,7 @@
                         </div>
                         
                         <div class="layui-form-item">
-                            <label for="L_title" class="layui-form-label">添加标签</label>
+                            <label class="layui-form-label">添加标签</label>
                             <div class="layui-input-block">
                                 <div id="tag_bind" class=""></div>
                             </div>
@@ -95,7 +105,31 @@
                     </form>
 
                 </div>
+
+                <div class="layui-form layui-form-pane layui-tab-item">
+                    <blockquote class="layui-elem-quote">仅对本文章生效。如果文章已编写内容，切换后可能导致文章渲染或显示不正常，请谨慎！</blockquote>
+                    <form class="layui-form" lay-filter="form-editor-config">
+                        
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">编辑器</label>
+                            <div class="layui-input-block">
+                                <select name="editor" lay-verify="required">
+                                    <option value="2" checked>富文本编辑器（适合大部分用户，上手简单）</option>
+                                    <option value="1">Markdown 编辑器（适合了解markdown语法用户）</option>
+                                </select>
+                            </div>
+                        </div>
+                      
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit lay-filter="submit-editor-config">确定</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
+
+            
             
         </div>
     </div>
@@ -133,54 +167,147 @@
 </script>
 
 <script>
+
+    // 给子页面开放接口
+    function getApp() {
+        return app
+    }
     layui.use(["jquery","form","upload"],function(){
         var $=layui.$,form=layui.form,upload=layui.upload
 
         var editor={}
         var tag_select, anthology_select2, anthology_select
-        var editor_type=1
 
         var article_id = Number(app.parseUrl().params.article_id);
+        var urlEditor= Number(app.parseUrl().params.editor);
+        var defineEditor=["meditor","wang_editor"]
         var auto_release=false;
+        var oldSaveContent="";// 每次保存进行更新（仅限内容）
+        var isSave=true;// 是否保存
+        var articleEditor=2;// 1.md 2.富文本
+        var uploadConfig={};// 上传的配置
+        var siteTitle="创作"
+        var articleInfo={};// 文章详情
 
-        var iframeEditor= $("#editor");
-        iframeEditor.load(function(){
-            editor = iframeEditor[0].contentWindow.$E;
-            editor.uploadFile = function () {
-                uploadFileLayer()
+        // 获取用户的编辑器配置 编辑器邮箱优先级：文章保存的编辑器 > 浏览器url配置编辑器 > 用户默认编辑器
+        app.base.ajaxGet("/api/personal/getUserConfig",function(userConfig){
+            
+            var articleEditorName= "";
+            // 如果get参数中定义使用的编辑器，强制浏览器中所定义的
+            if (urlEditor) {
+                articleEditorName = defineEditor[urlEditor - 1];
+                articleEditor = urlEditor
+            }else{
+                articleEditorName = defineEditor[userConfig.editor - 1];
+                articleEditor = userConfig.editor
             }
-            if(article_id){
-                // 读取配置
-                app.base.ajaxPost("/api/personal/getArticleInfoAndConfig", { article_id: article_id }, function (data) {
-                    form.val("article-config", data)
-                    $("#article_title").val(data.title)
-                    editor.setContent(data.content)
-                    
 
-                    var anthologysIds = objectToArrayById(data.anthologys)
-                    var tags = objectToArrayById(data.tags)
+            form.val("form-editor-config", {"editor": articleEditor})
+            
+            // 编辑文章
+            if (article_id) {
+                
+                // 获取配置
+                app.base.ajaxPost("/api/personal/getArticleInfoAndConfig", { article_id: article_id }, function (articleConfig) {
+                    articleInfo= articleConfig
+                    // console.log("文章详情",articleInfo)
+                    articleEditorName = defineEditor[articleConfig.editor - 1];
+                    articleEditor = articleConfig.editor
+                    $("#editor").attr("src", "/profile/pages/writing_editor/editors/" + articleEditorName + ".html")
+                    var iframeEditor = $("#editor");
+                    
+                    form.val("article-config", articleConfig)
+                    form.val("form-editor-config", articleConfig)
+                    siteTitle ="编写文章 - " +articleConfig.title
+                    
+                    $("#article_title").val(articleConfig.title)
+                    iframeEditor.load(function () {
+                        editor = iframeEditor[0].contentWindow.$E;
+                        editor.uploadFile = function () {
+                            uploadFileLayer()
+                        }
+                        editor.setContent(articleConfig.content)
+                        editor.app=app
+                        // console.log("加载完成",editor.getContent())
+                        // console.log("加载完成1", articleConfig.content)
+                        oldSaveContent = articleConfig.content// 获取初始内容进行修改比对
+                        // oldSaveContent = editor.getContent()// 获取初始内容进行修改比对
+                        listenSaveKey()
+                        open_timing_content()
+                    })
+
+
+                    var anthologysIds = objectToArrayById(articleConfig.anthologys)
+                    var tags = objectToArrayById(articleConfig.tags)
                     renderMyAnthology(anthologysIds)
                     renderOpenAnthology(anthologysIds)
                     renderTag(tags)
+                    
                 })
             }else{
+                
+                $("#editor").attr("src", "/profile/pages/writing_editor/editors/" + articleEditorName + ".html")
+                var iframeEditor = $("#editor");
+                iframeEditor.load(function () {
+                    editor = iframeEditor[0].contentWindow.$E;
+                    editor.uploadFile = function () {
+                        uploadFileLayer()
+                    }
+                    editor.app = app
+                    // console.log("加载完成", editor.getContent())
+                    oldSaveContent = editor.getContent()// 获取初始内容进行修改比对,由于编辑器为空，可能存在初始样式，故读取一次编辑器的
+                    listenSaveKey()
+                    open_timing_content()
+                })
+                // var iframeEditor = $("#editor");
                 renderMyAnthology()
                 renderOpenAnthology()
                 renderTag()
+                
             }
 
-            // 监听快捷键
-            $("body iframe").contents().bind("keydown", save_keydown);
-            $(document).bind("keydown", save_keydown);
             
-        })
-        
-        
-        layui.jquery("#editor").css("height", layui.jquery(document).height()-300+"px")
-        layui.form.render()
-        
-        run_listen()
+            // iframeEditor.load(function () {
+            //     editor = iframeEditor[0].contentWindow.$E;
+            //     editor.uploadFile = function () {
+            //         uploadFileLayer()
+            //     }
+            //     if (article_id) {
+            //         // 读取配置
+            //         app.base.ajaxPost("/api/personal/getArticleInfoAndConfig", { article_id: article_id }, function (data) {
+            //             oldSaveContent = data.content
+            //             form.val("article-config", data)
+            //             $("#article_title").val(data.title)
+            //             editor.setContent(data.content)
 
+
+            //             var anthologysIds = objectToArrayById(data.anthologys)
+            //             var tags = objectToArrayById(data.tags)
+            //             renderMyAnthology(anthologysIds)
+            //             renderOpenAnthology(anthologysIds)
+            //             renderTag(tags)
+            //         })
+            //     } else {
+            //         renderMyAnthology()
+            //         renderOpenAnthology()
+            //         renderTag()
+            //     }
+
+            //     // 监听快捷键
+            //     $("body iframe").contents().bind("keydown", save_keydown);
+            //     $(document).bind("keydown", save_keydown);
+
+            // })
+
+
+            layui.jquery("#editor").css("height", layui.jquery(document).height() - 300 + "px")
+            layui.form.render()
+
+            run_listen()
+
+        })
+
+        
         
         
         
@@ -242,6 +369,9 @@
                     el: '#anthology_bind',
                     tips: '（选填）最多只能选择1个',
                     max: 1,
+                    theme: {
+                        color: '#4a7eb3',
+                    },
                     filterable: true,
                     maxMethod(seles, item) {
                         layer.msg("最多只能选择1个")
@@ -273,6 +403,9 @@
                     el: '#anthology_bind2',
                     tips: '（选填）最多只能选择2个。此项仅在发布时生效！',
                     max: 2,
+                    theme: {
+                        color: '#4a7eb3',
+                    },
                     filterable: true,
                     maxMethod(seles, item) {
                         layer.msg("最多只能选择2个")
@@ -290,6 +423,9 @@
                 tips: '（选填）最多只能添加5个标签',
                 searchTips: '请输入标签名称',
                 max: 5,
+                theme: {
+                    color: '#4a7eb3',
+                },
                 filterable: true,
                 remoteSearch: true,
                 remoteMethod: function (val, cb, show) {
@@ -354,29 +490,62 @@
             config.status= Number(cfg.status)
             config.auto_release = Number(cfg.auto_release)
             config.description = cfg.description
-            config.editor =editor_type
+            config.editor =articleEditor
             config.anthologys = cfg.anthologys
             return config
+        }
+        
+        function setSiteTitle(c){
+            $("title").html(c)
+        }
+
+        // 监听触发保存快捷键
+        function listenSaveKey(){
+            // 监听快捷键
+            $("body iframe").contents().bind("keydown", save_keydown);
+            $(document).bind("keydown", save_keydown);
         }
 
         // 未保存关闭拦截
         
-        function onbeforeunload_handler() {
-            var warning = "退出吗?";
-            return warning;
-        }
+        // function onbeforeunload_handler() {
+        //     var warning = "退出吗?";
+        //     return warning;
+        // }
 
-        function onbeforeunload(status){
-            if(status==true){
-                window.onbeforeunload = onbeforeunload_handler;
-            }else{
-                window.onbeforeunload = false;
-            }
+        // function onbeforeunload(status){
+        //     if(status==true){
+        //         window.onbeforeunload = onbeforeunload_handler;
+        //     }else{
+        //         window.onbeforeunload = false;
+        //     }
             
-        }
+        // }
         
 
         function run_listen(){
+
+            // 监听文章详情按钮被单击
+            $("#article_info").click(function(){
+                var html="<div class='article-layer'>"+
+                    "<p>访问数：" + (articleInfo.visit? articleInfo.visit:0 )+ "</p>" + 
+                    "<p>公开状态："+(articleInfo.status==1?"公开":"私密")+"</p><hr>" + 
+                    "<p style='font-size:13px;'>首次发布：" + (articleInfo.release_time ? articleInfo.release_time : "未发布") + "</p>" +
+                    "<p style='font-size:13px;'>更新发布：" + (articleInfo.release_update_time ? articleInfo.release_update_time : "未发布") + "</p><hr>"+
+                    // "<p style='font-size:13px;'>创建时间："+ articleInfo.create_time +"</p>" + 
+                    "<p style='font-size:13px;'>最后修改：" + (articleInfo.update_time? articleInfo.update_time:"") +"</p></div>" ;
+                    
+                
+                app.base.layer({
+                    type: 1,
+                    shade: 0.5,
+                    shadeClose: true,
+                    title: "文章信息",
+                    area: ['300px'],
+                    content: html,
+                })  
+            })
+
             // 保存按钮点击
             $("#save-btn").click(function () {
                 save_article()
@@ -397,10 +566,32 @@
                 
             })
 
-            // 切换编辑器
-            $("#chage_editor_btn").click(function () {
-                layer.msg("更多编辑器正在开发中，请期待....")
-            })
+            // 切换编辑器的保存
+            form.on('submit(submit-editor-config)', function (data) {
+                layer.confirm('如果文章已编写内容，切换后可能导致文章渲染或显示不正常，请谨慎修改', {
+                    btn: ['执意修改', '取消'] //按钮
+                }, function () {
+                    var reload = true
+                    if (!article_id) {
+                        reload = false
+                    }
+                    articleEditor = Number(data.field.editor)
+                    save_article()
+                    if (reload) {
+                        if(app.parseUrl().params.article_id){
+                            location.reload()
+                        }else{
+                            location.href = "/profile/writing.html/#/editor?article_id=" + article_id;
+                        }
+                        layer.msg("切换成功，如果没有跳转，请手动刷新")
+                    } else {
+                        location.href = "/profile/writing.html/#/editor?editor=" + data.field.editor;
+                    }
+                });
+                
+                
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
 
             // 开启自动保存
             // form.on('checkbox(auto_save)', function (data) {
@@ -415,7 +606,8 @@
             //     // console.log(data.value); //复选框value值，也可以通过data.elem.value得到
             //     // console.log(data.othis); //得到美化后的DOM对象
             // });        
-            open_timing_save()
+            // open_timing_save()
+            
 
             
         }
@@ -423,10 +615,15 @@
         // 保存文章
         // 参数 是否保存渲染
         function save_article(render,callback) {
-            // layer.msg("保存成功")
+            $("#save-btn").html('<i class="layui-icon layui-icon-loading-1 layui-anim layui-anim-rotate layui-anim-loop"></i>')
             var data = {}
             data.title = $("#article_title").val()
             data.content = editor.getContent()
+            if(data.title=="" || data.content==""){
+                layer.msg("标题和内容不能为空")
+                return
+            }
+            oldSaveContent = data.content
             var config = getConfig()
             for (const k in config) {
                 if (Object.hasOwnProperty.call(config, k)) {
@@ -438,36 +635,54 @@
             // 保存渲染内容
             if(render){
                 data.content_render = editor.getContentRender()
+                // if (data.content_render == "" ) {
+                //     layer.msg("发布内容不能为空")
+                //     return
+                // }
             }
             
             if (article_id) {
                 // 更新
                 data.id = article_id
                 app.base.ajaxPost("/api/personal/saveArticle", data, function (res) {
+                    articleInfo.update_time = app.base.getDateTime()
+                    articleInfo.create_time = app.base.getDateTime()
+                    articleInfo.status = data.status
+                    // 发布
                     if(render){
                         if(callback){
+                            // articleInfo.release_time = app.base.getDateTime() // 非首次不更改
+                            articleInfo.release_update_time = app.base.getDateTime()
                             callback(true)
                         }
                     }
-
-                    $("#save-status-lable").html("已保存")
+                    isSave=true
+                    
+                    $("#save-btn").html("已保存")
                     setTimeout(function () {
-                        $("#save-status-lable").html("")
-                    }, 3000);
+                        $("#save-btn").html("保存")
+                    }, 1000);
                 })
             } else {
                 // 新增文章
                 if(data.title && data.content ){
                     app.base.ajaxPost("/api/personal/saveArticle", data, function (res) {
+                        articleInfo.update_time = app.base.getDateTime()
+                        articleInfo.create_time = app.base.getDateTime()
+                        articleInfo.status = data.status
+                        // 发布
                         if (render) {
                             if (callback) {
+                                articleInfo.release_time = app.base.getDateTime()
+                                articleInfo.release_update_time = app.base.getDateTime()
                                 callback(true)
                             }
                         }
-                        $("#save-status-lable").html("已保存")
+                        isSave = true
+                        $("#save-btn").html("保存")
                         setTimeout(function () {
                             $("#save-status-lable").html("")
-                        }, 3000);
+                        }, 1000);
                         article_id = res.id
                     })
                 }else{
@@ -479,21 +694,46 @@
 
         // 按键保存
         function save_keydown(e) {
-            if ((e.ctrlKey || oEvent.metaKey) && (e.which == 83)) {
-                e.preventDefault();
+
+            if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+               
                 setTimeout(function () {
                     save_article()
-                    
+
                 }, 100);
                 return false;
             }
         }
 
-        // 定时保存
-        function open_timing_save(params) {
+        // 定时保存 60秒存一次
+        // function open_timing_save(params) {
+        //     // 暂时取消自动保存
+        //     // setInterval(function () {
+        //     //     // 判断与旧的内容是否一致，不一致进行保存
+        //     //     if (oldSaveContent != editor.getContent()) {
+        //     //         save_article()
+        //     //     }
+        //     // }, 1000*60);
+        // }
+
+        // 定时检测内容是否一致(2s)
+        function open_timing_content(params) {
             setInterval(function () {
-                save_article()
-            }, 1000*30);
+                // 判断与旧的内容是否一致，不一致进行保存
+                // console.log(oldSaveContent);
+                // console.log("-------------");
+                // console.log(editor.getContent());
+                siteTitle="编写文章 - "+ $("#article_title").val()
+                if (oldSaveContent != editor.getContent()) {
+                    isSave=false
+                    $("#save-btn").html("*保存")
+                    setSiteTitle("*"+siteTitle)
+                }else{
+                    $("#save-btn").html("保存")
+                    isSave=true
+                    setSiteTitle(siteTitle)
+                }
+            }, 1000 * 2);
         }
         
         // 上传文件弹窗
@@ -558,8 +798,17 @@
 
                     // })
                 }
-            })     
+            })
         }
+
+        // 拦截关闭
+        window.addEventListener("beforeunload", function (e) {
+            if (isSave==false) {
+                var confirmationMessage = "内容有更改没有保存！你确定要离开吗？";
+                (e || window.event).returnValue = confirmationMessage; // 兼容 Gecko + IE
+                return confirmationMessage; // 兼容 Gecko + Webkit, Safari, Chrome
+            }
+        });
     })
 
 </script>

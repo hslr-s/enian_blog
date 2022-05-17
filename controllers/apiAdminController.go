@@ -200,6 +200,36 @@ func (c *AdminController) UploadLogo() {
 	}
 }
 
+// 上传ICO图标
+func (c *AdminController) UploadIco() {
+	f, h, err := c.GetFile("image")
+	defer f.Close()
+	if err != nil {
+		c.ApiError(-1, err.Error())
+	} else {
+		if h.Size >= 2097152 {
+			c.ApiErrorMsg("尺寸超出限制")
+		}
+		ext := path.Ext(h.Filename)
+		if ext != ".ico" {
+			c.ApiError(-1, "请上传.ico格式图片")
+		}
+		uploadDir := "static/upload/" + time.Now().Format("2006/01/02/")
+		err := os.MkdirAll(uploadDir, 0777)
+		if err != nil {
+			c.ApiError(-1, err.Error())
+			return
+		}
+		rand.Seed(time.Now().UnixNano())
+		randNum := fmt.Sprintf("%d", rand.Intn(9999)+1000)
+		hashName := md5.Sum([]byte(time.Now().Format("2006_01_02_15_04_05_") + randNum))
+
+		fileName := uploadDir + fmt.Sprintf("%x", hashName) + ext
+		c.SaveToFile("image", fileName)
+		c.ApiSuccess(fileName)
+	}
+}
+
 // 上传头部图片
 func (c *AdminController) UploadHeaderImage() {
 	f, h, err := c.GetFile("image")

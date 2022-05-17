@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/static/layui/css/layui.theme.css">
 <script type="text/html" id="tpl-header">
     <div class="fly-header layui-bg-black">
         <div class="layui-container">
@@ -6,7 +7,7 @@
                 </a> -->
             <ul class="layui-nav fly-nav layui-hide-xs">
                 <li class="layui-nav-item">
-                    <a href="/">首页</a>
+                    <a href="/" target="_blank" title="首页">首页</a>
                 </li>
                 <!-- 权限检测 -->
                 {{# if(d.role==1){ }}
@@ -15,7 +16,7 @@
                 </li>
                 {{# } }}
                 <li class="layui-nav-item">
-                    <a href="/profile/">个人中心</a>
+                    <a href="/profile/" title="个人中心">个人中心</a>
                 </li>
                 <li class="layui-nav-item">
                     <a href="/profile/writing.html"><i class="layui-icon layui-icon-edit"></i>创作</a>

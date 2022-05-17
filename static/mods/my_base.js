@@ -249,44 +249,47 @@ layui.define(['jquery','layer','laytpl',"app"],function(exports){
     // 时间戳格式化
     // type:0 => 2021-09-12 10:34:12
     // type:1 => 2021-09-12 10:34
-    o.timeStampFormat = function (stamp,type){
-        var type=type||0;
-        let str = stamp
-        if (stamp && stamp.indexOf('-') > 0) {
-            str = new Date(stamp.replace(/-/g, '/')).getTime()
-        }
-        let date = new Date(str)
-        let y = date.getFullYear();
-        let m = (date.getMonth() + 1 + '').padStart(2, '0');
-        let d = (date.getDate() + '').padStart(2, '0');
-        let hh = (date.getHours() + '').padStart(2, '0')
-        let mm = (date.getMinutes() + '').padStart(2, '0')
-        let ss = (date.getSeconds() + '').padStart(2, '0')
-        let time;
-        switch (type) {
-            case 0:
-                time = `${y}-${m}-${d}`;
-                break;
-            case 1:
-                time = `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
-                break;
+    // o.timeStampFormat = function (stamp,type){
+    //     var type=type||0;
+    //     let str = stamp
+    //     if (stamp && stamp.indexOf('-') > 0) {
+    //         str = new Date(stamp.replace(/-/g, '/')).getTime()
+    //     }
+    //     let date = new Date(str)
+    //     let y = date.getFullYear();
+    //     let m = (date.getMonth() + 1 + '').padStart(2, '0');
+    //     let d = (date.getDate() + '').padStart(2, '0');
+    //     let hh = (date.getHours() + '').padStart(2, '0')
+    //     let mm = (date.getMinutes() + '').padStart(2, '0')
+    //     let ss = (date.getSeconds() + '').padStart(2, '0')
+    //     let time;
+    //     switch (type) {
+    //         case 0:
+    //             time = `${y}-${m}-${d}`;
+    //             break;
+    //         case 1:
+    //             time = `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+    //             break;
            
-        }
-        return time;
-    }
+    //     }
+    //     return time;
+    // }
+
+    
 
     // 时间格式化（在有效的识别范围内，实现最短的显示）
     o.timeFormat = function (time,display_second,display_today){
+        
         var display_second = display_second || false
         var display_today = display_today || false
-        
+        time=time.replace(/-/g, "/") // 兼容Safari
         var date = new Date(time)
-        let y = date.getFullYear();
-        let m = (date.getMonth() + 1 + '').padStart(2, '0');
-        let d = (date.getDate() + '').padStart(2, '0');
-        let hh = (date.getHours() + '').padStart(2, '0')
-        let mm = (date.getMinutes() + '').padStart(2, '0')
-        let ss = (date.getSeconds() + '').padStart(2, '0')
+        var y = date.getFullYear();
+        var m = (date.getMonth() + 1 + '').padStart(2, '0');
+        var d = (date.getDate() + '').padStart(2, '0');
+        var hh = (date.getHours() + '').padStart(2, '0')
+        var mm = (date.getMinutes() + '').padStart(2, '0')
+        var ss = (date.getSeconds() + '').padStart(2, '0')
 
         var tdate = new Date();
         var tyear = tdate.getFullYear() 
@@ -304,6 +307,18 @@ layui.define(['jquery','layer','laytpl',"app"],function(exports){
             newTime = y + "-" + m + "-" + d + " " + strTime
         }
         return newTime;
+    }
+
+
+    o.getDateTime = function () {
+        var date = new Date()
+        let y = date.getFullYear();
+        let m = (date.getMonth() + 1 + '').padStart(2, '0');
+        let d = (date.getDate() + '').padStart(2, '0');
+        let hh = (date.getHours() + '').padStart(2, '0')
+        let mm = (date.getMinutes() + '').padStart(2, '0')
+        let ss = (date.getSeconds() + '').padStart(2, '0')
+        return y + "-" + m + "-" + d + " " + hh + ":" + mm + ":" + ss
     }
 
     

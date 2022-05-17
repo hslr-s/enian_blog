@@ -2,6 +2,8 @@ package models
 
 import (
 	"enian_blog/lib/cmn"
+	"strconv"
+	"strings"
 )
 
 // 专栏
@@ -53,9 +55,25 @@ func (m *Anthology) GetList(condition cmn.Msi) (list []Anthology, err error) {
 }
 
 // 获取专栏列表
-func (m *Anthology) GetListByIds(ids string) (list []Anthology, err error) {
+func (m *Anthology) GetListByIds(ids string) (sortList []Anthology, err error) {
+	idsStr := strings.Split(ids, ",")
+	list := []Anthology{}
+
 	if ids != "" {
-		err = Db.Preload("User").Where("id in (" + ids + ")").Order("field(id ," + ids + ")").Find(&list).Error
+		// 由于sqlite不支持下写法，故有下方排序代码进行兼容
+		// err = Db.Preload("User").Where("id in (" + ids + ")").Order("field(id ," + ids + ")").Find(&list).Error
+		err = Db.Preload("User").Where("id in (" + ids + ")").Find(&list).Error
+	}
+
+	// 排序
+	for _, v := range idsStr {
+		for _, v1 := range list {
+			if idInt, err := strconv.Atoi(v); err == nil {
+				if uint(idInt) == v1.ID {
+					sortList = append(sortList, v1)
+				}
+			}
+		}
 	}
 	return
 }

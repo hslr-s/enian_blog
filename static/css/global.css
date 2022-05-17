@@ -106,8 +106,8 @@ i{font-style: normal;}
 
 
 /* 辅助 */
-a:hover{color: #009688; transition: all .3s;}
-pre{padding: 10px 15px; margin: 10px 0; font-size: 12px; border-left: 6px solid #009688;  background-color: #f8f8f8; font-family: Courier New; overflow: auto;}
+a:hover{color: #004b8c; transition: all .3s;}
+/* pre{padding: 10px 15px; margin: 10px 0; font-size: 12px; border-left: 6px solid #004b8c;  background-color: #f8f8f8; font-family: Courier New; overflow: auto;} */
 
 .layui-container{padding: 0;}
 .fly-main{width: 1079px; min-height: 600px; margin: 0 auto 15px;}
@@ -135,10 +135,10 @@ pre{padding: 10px 15px; margin: 10px 0; font-size: 12px; border-left: 6px solid 
 
 /* 徽章 */
 .fly-badge-vip{height: 16px; line-height: 16px; padding: 0 3px; background-color: #FF5722; color: #fff; border-radius: 2px;}
-.fly-badge-accept{height: 18px; line-height: 18px; padding: 0 5px !important; background-color: #5FB878; border-radius: 2px;}
+.fly-badge-accept{height: 18px; line-height: 18px; padding: 0 5px !important; background-color: #4a7eb3; border-radius: 2px;}
 
 /* 赞助商 */
-.fly-zanzhu{display: block; position: relative; height: 60px; line-height: 60px; margin-top: 10px; padding: 0 20px; text-align: center; font-size: 16px; font-weight: 300; background-color: #009688; color: #fff;}
+.fly-zanzhu{display: block; position: relative; height: 60px; line-height: 60px; margin-top: 10px; padding: 0 20px; text-align: center; font-size: 16px; font-weight: 300; background-color: #004b8c; color: #fff;}
 .fly-zanzhu:first-child{margin-top: 0;}
 .fly-zanzhu:hover{opacity: 0.9; color: #fff;}
 
@@ -229,7 +229,7 @@ pre{padding: 10px 15px; margin: 10px 0; font-size: 12px; border-left: 6px solid 
 .fly-tab-border span{border: 1px solid #ddd; border-right: none; font-size:0;}
 .fly-tab-border span a{position: relative; height: 36px; line-height: 36px; padding: 0 20px; border-right: 1px solid #ddd; font-size: 14px; background-color: #fff;}
 .fly-tab-border .tab-this{color: #000;}
-.fly-tab-border .tab-this:after{content: ''; position: absolute; bottom: -1px; left: -1px; width: 100%; height: 1px; padding: 0 1px; background-color: #009688;}
+.fly-tab-border .tab-this:after{content: ''; position: absolute; bottom: -1px; left: -1px; width: 100%; height: 1px; padding: 0 1px; background-color: #004b8c;}
 
 /* 分页 */
 .laypage-main,
@@ -475,8 +475,8 @@ body .fly-user-main{position: relative; min-height: 600px;}
 
 .fly-case-tab{margin-top: 20px; text-align: center;}
 .fly-case-tab span,
-.fly-case-tab span a{border-color: #009688;}
-.fly-case-tab .tab-this{background-color: #009688; color: #fff;}
+.fly-case-tab span a{border-color: #004b8c;}
+.fly-case-tab .tab-this{background-color: #004b8c; color: #fff;}
 
 .fly-case-list{margin-top: 15px; font-size: 0;}
 .fly-case-list li, 
@@ -498,7 +498,7 @@ body .fly-user-main{position: relative; min-height: 600px;}
 .layer-ext-ul{margin: 10px; max-height: 500px;}
 .layer-ext-ul img{width: 50px; height: 50px; border-radius: 100%;}
 .layer-ext-ul li{margin: 8px;}
-.layer-ext-case .layui-layer-title{border: none; background-color: #009688; color: #fff;}
+.layer-ext-case .layui-layer-title{border: none; background-color: #004b8c; color: #fff;}
 
 /* 广告 */
 .fly-ad{position: relative; background-color: #f2f2f2; overflow:hidden;}
@@ -578,3 +578,215 @@ body .fly-user-main{position: relative; min-height: 600px;}
     margin-left: 20px;
     color: #c2c2c2;
 }
+
+/* 自定义layui样式 */
+ .layui-layout-admin .layui-logo {
+   color: #4a7eb3
+ }
+
+ .layui-elem-quote {
+   border-left-color: #4a7eb3
+ }
+
+ .layui-nav-tree .layui-this,
+ .layui-nav-tree .layui-this>a,.layui-btn {
+   background-color: #4a7eb3
+ }
+
+ .layui-btn-primary {
+   background-color: #fff
+ }
+
+ .layui-btn-primary:hover {
+   border-color: #4a7eb3
+ }
+
+ .layui-btn-group .layui-btn-primary:hover {
+   color: #4a7eb3
+ }
+
+ .layui-laypage a:hover {
+   color: #4a7eb3
+ }
+
+ .layui-nav-tree .layui-this,
+ .layui-nav-tree .layui-this>a:hover,.layui-laypage .layui-laypage-curr .layui-laypage-em {
+   background-color: #4a7eb3
+ }
+
+ .layui-laypage select:focus {
+   border-color: #4a7eb3 !important
+ }
+
+ .layui-upload-drag .layui-icon {
+   font-size: 50px;
+   color: #4a7eb3
+ }
+
+ .layui-upload-drag[lay-over] {
+   border-color: #4a7eb3
+ }
+
+ .layui-nav-tree .layui-nav-child dd.layui-this a {
+   background-color: #4a7eb3
+ }
+
+ .layui-nav-tree .layui-nav-bar {
+   background-color: #4a7eb3
+ }
+
+ .layui-tab-brief>.layui-tab-title .layui-this {
+   color: #4a7eb3
+ }
+
+ .layui-slider-input-btn i:hover {
+   color: #4a7eb3
+ }
+
+ .layui-slider-wrap-btn {
+   border-color: #4a7eb3 !important
+ }
+
+ .layui-slider-bar {
+   background: #4a7eb3 !important
+ }
+
+ html .layui-laydate .layui-this {
+   background-color: #4a7eb3 !important
+ }
+
+ .laydate-theme-molv .layui-laydate-header {
+   background-color: #4a7eb3
+ }
+
+ .laydate-theme-grid .laydate-selected,
+ .laydate-theme-grid .laydate-selected:hover {
+   color: #4a7eb3 !important
+ }
+
+ .layui-progress-bar {
+   background-color: #004b8c
+ }
+
+ .layui-form-select dl dd.layui-this {
+   background-color: #004b8c
+ }
+
+ .layui-form-checked,
+ .layui-form-checked:hover {
+   border-color: #004b8c
+ }
+
+ .layui-form-checked span,
+ .layui-form-checked:hover span {
+   background-color: #004b8c
+ }
+
+ .layui-form-checked i,
+ .layui-form-checked:hover i {
+   color: #004b8c
+ }
+
+ .layui-form-checkbox[lay-skin=primary]:hover i {
+   border-color: #004b8c
+ }
+
+ .layui-form-checked[lay-skin=primary] i {
+   border-color: #004b8c;
+   background-color: #004b8c
+ }
+
+ .layui-form-onswitch {
+   border-color: #004b8c;
+   background-color: #004b8c
+ }
+
+ .layui-form-radio>i:hover,
+ .layui-form-radioed>i {
+   color: #004b8c
+ }
+
+ .layui-table-edit:focus {
+   border-color: #004b8c !important
+ }
+
+ .layui-nav-tree .layui-nav-itemed:after {
+   background-color: #004b8c
+ }
+
+ .layui-nav-child dd.layui-this {
+   background-color: #004b8c
+ }
+
+ .layui-nav .layui-nav-child dd.layui-this a {
+   background-color: #004b8c
+ }
+
+ .layui-breadcrumb a:hover {
+   color: #004b8c !important
+ }
+
+ .layui-tab-brief>.layui-tab-more li.layui-this:after,
+ .layui-tab-brief>.layui-tab-title .layui-this:after {
+   border-bottom: 2px solid #004b8c
+ }
+
+ .layui-tab-card>.layui-tab-more .layui-this {
+   color: #004b8c
+ }
+
+ .layui-timeline-axis {
+   color: #004b8c
+ }
+
+ .laydate-day-mark::after {
+   background-color: #004b8c !important
+ }
+
+ .layui-laydate-header i:hover,
+ .layui-laydate-header span:hover {
+   color: #004b8c !important
+ }
+
+ .layui-laydate-footer span:hover {
+   color: #004b8c !important
+ }
+
+ .layui-nav .layui-this:after,
+ .layui-nav-bar,
+ .layui-nav-tree .layui-nav-itemed:after {
+   background-color: #004b8c !important
+ }
+
+ .layui-transfer-active .layui-btn {
+   background-color: #004b8c;
+   border-color: #004b8c;
+ }
+
+ .layui-form-checked[lay-skin=primary] i {
+   border-color: #004b8c !important;
+   background-color: #004b8c;
+ }
+
+ .layui-btn-normal {
+   background-color: #1E9FFF;
+ }
+
+ .layui-btn-warm {
+   background-color: #e8aa00;
+ }
+
+ .layui-btn-danger {
+   background-color: #fd6a3d;
+ }
+
+ .layui-btn-disabled,
+ .layui-btn-disabled:hover,
+ .layui-btn-disabled:active {
+   background-color: #FBFBFB;
+ }
+ .layui-form-radio:hover *,
+ .layui-form-radioed,
+ .layui-form-radioed>i{
+  color: #004b8c !important
+ }

@@ -66,6 +66,7 @@ func GetDb() (*gorm.DB, error) {
 			&Message{},
 			&Tag{},
 			&File{},
+			&UserConfig{},
 		)
 		sqlDb, _ := db.DB()
 		sqlDb.SetMaxIdleConns(10)             // SetMaxIdleConns 设置空闲连接池中连接的最大数量
@@ -90,6 +91,7 @@ func GetDb() (*gorm.DB, error) {
 			&Message{},
 			&Tag{},
 			&File{},
+			&UserConfig{},
 		)
 
 	}

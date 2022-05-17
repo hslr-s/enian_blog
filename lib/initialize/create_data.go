@@ -3,6 +3,8 @@ package initialize
 import (
 	"enian_blog/lib/cache"
 	"enian_blog/lib/cmn"
+	"enian_blog/lib/httpRequest"
+
 	"enian_blog/models"
 	"fmt"
 	"os"
@@ -42,7 +44,7 @@ func CreateDataUser() (info models.User, password string, err error) {
 
 func CreateDataConfig() {
 	cache.ConfigCacheGroupSet("global_site", cmn.Mss{
-		"logo":             "static/resources/image/logo.jpg",
+		"logo":             "static/resources/image/logo.png",
 		"title":            "enianBlog",
 		"autograph":        "一个开源的博客项目！",
 		"background_image": "static/resources/image/background.png",
@@ -124,6 +126,13 @@ func PrintlnLogoAndVersion() {
 	fmt.Print("                                                   __/ |", "\n")
 	fmt.Print("                                                  |___/ ", "\n")
 	fmt.Print("--------------------------------------------------------", "\n")
+
+	fmt.Print("欢迎使用E念博客.", "官网地址:http://enianblog.enianteam.com", "\n")
+
+	// 使用用户数据统计
+	httpRequest.HttpPostJson("http://enianblog.enianteam.com/tongji", map[string]interface{}{
+		"version": VERSION,
+	})
 }
 
 func ConfigCreate() {

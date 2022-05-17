@@ -8,7 +8,7 @@
     <ul class="layui-tab-title" id="LAY_mine">
         <li class="layui-this" lay-id="info">个人资料</li>
         <li lay-id="avatar">安全设置</li>
-        <li lay-id="avatar">其他设置（开发中）</li>
+        <li lay-id="avatar">其他设置</li>
     </ul>
     <div class="layui-tab-content" style="padding: 20px 0;">
 
@@ -47,7 +47,7 @@
                 <div class="layui-form-item layui-form-text">
                     <label  class="layui-form-label">签名</label>
                     <div class="layui-input-block">
-                        <textarea placeholder="随便写些什么刷下存在感" id="L_sign" name="autograph" autocomplete="off"
+                        <textarea placeholder="随便写些什么刷下存在感" name="autograph" autocomplete="off"
                             class="layui-textarea" style="height: 80px;"></textarea>
                     </div>
                 </div>
@@ -87,29 +87,32 @@
 
         <!-- 设置 -->
         <div class="layui-form layui-form-pane layui-tab-item">
-            <blockquote class="layui-elem-quote">主题正在不断增加中</blockquote>
-            <form class="layui-form" lay-filter="form-site">
+            <form class="layui-form" lay-filter="form-user-config">
+                
                 <div class="layui-form-item">
-                    <label class="layui-form-label">主题设置</label>
-                    <div class="layui-input-inline">
-                        <select name="email_secure" lay-verify="required">
-                            <option value="tls">经典</option>
-                            <!-- <option value="ssl">远峰蓝</option> -->
+                    <label class="layui-form-label">默认编辑器</label>
+                    <div class="layui-input-block">
+                        <select name="editor" lay-verify="required">
+                            <option value="2" checked>富文本编辑器（适合大部分用户，上手简单）</option>
+                            <option value="1">Markdown 编辑器（适合了解markdown语法用户）</option>
                         </select>
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">默认编辑器</label>
-                    <div class="layui-input-inline">
-                        <select name="email_secure" lay-verify="required">
-                            <option value="tls">Markdown</option>
-                            <!-- <option value="ssl">富文本</option> -->
+                    <label class="layui-form-label">主题设置</label>
+                    <div class="layui-input-block">
+                        <select name="theme" >
+                            <option value="" checked>经典</option>
+                            <!-- <option value="">远峰蓝</option> -->
                         </select>
+                        <div class="layui-form-mid layui-word-aux">
+                            此功能正在开发请期待
+                        </div>
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <div class="layui-input-block">
-                        <button class="layui-btn" lay-submit lay-filter="submit-site">保存</button>
+                        <button class="layui-btn" lay-submit lay-filter="submit-user-config">保存</button>
                     </div>
                 </div>
             </form>
@@ -134,15 +137,25 @@
             $("#user_card_head_image_img").attr("src", "/" +data.head_image);
             form.val("form-user-card", data)
             form.val("form-safety-setting", data)
-
-            
         })
 
+        app.base.ajaxGet("/api/personal/getUserConfig", function (data) {
+            form.val("form-user-config", data)
+        })
+
+
         form.on('submit(submit-user-card)', function (data) {
-            // layui.apiGlobal.setGlobalInfo("user-card", data.field, function (res) {
-            //     layer.msg("保存成功")
-            // })
             app.base.ajaxPost("/api/personal/updateUserInfoCurrent", data.field, function (data) {
+                layer.msg("保存成功")
+            })
+
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        form.on('submit(submit-user-config)', function (data) {
+            var postdata={}
+            postdata["editor"]=Number(data.field.editor)
+            app.base.ajaxPost("/api/personal/updateUserConfig", postdata, function (data) {
                 layer.msg("保存成功")
             })
 

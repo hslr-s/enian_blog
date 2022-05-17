@@ -1,0 +1,84 @@
+<style>
+    h3 {
+        padding: 20px;
+        border-bottom: dashed #fff 1px;
+    }
+
+    .box {
+        background-color: #00c9e4;
+        min-width: 300px;
+        max-width: 700px;
+        margin: 20px auto;
+    }
+
+    .content {
+        padding: 20px;
+    }
+
+    .btn_style {
+        color: #fff;
+        background-color: #2e2e2e;
+        display: inline-block;
+        padding: 10px 30px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    a {
+        color: #fff;
+    }
+</style>
+<div class="box">
+    <div>
+        <h3>Hi 红烧猎人，</h3>
+    </div>
+    <div class="content">我们盼星星盼月亮终于等到你的来临，您当前正在注册<a href="">XXX官方博客</a>，你当前的验证码是：<p>825632</p><a class="btn_style"
+            href="5">点击查看</a></div>
+    <div style="padding: 20px;text-align: right;">-来自[<a href="">XXX官方博客</a>]</div>
+</div>
+
+<!-- 验证码格式 -->
+<div class="box">
+    <div>
+        <h3>Hi 红烧猎人，</h3>
+    </div>
+    <div class="content">我们盼星星盼月亮终于等到你的来临，您当前正在注册<a href="">XXX官方博客</a>，你当前的验证码是：<p style="text-align: center;font-size: 25px;background-color: #fff;">825632</p></div>
+    <div style="padding: 20px;text-align: right;">-来自[<a href="">XXX官方博客</a>]</div>
+</div>
+
+<!-- 链接 -->
+<div class="box">
+    <div>
+        <h3>Hi 红烧猎人，</h3>
+    </div>
+    <div class="content">用户XXX正在向【XXX】专栏推送文章，但是需要您的审核
+        <p><a class="btn_style" href="5">点此去审核</a></p>
+    </div>
+    <div style="padding: 20px;text-align: right;">-来自[<a href="">XXX官方博客</a>]</div>
+</div>
+
+<!-- 新版 -->
+<table width="600px" style="max-width: 600px;" align="center">
+    <tr style="width: 600px;background-color: rgb(28, 197, 249);">
+        <td align="left" style="width: 600px;padding: 22px 18px 11px;display: inline-block;">
+            <div style="font-weight: 900;font-size: 18px;">
+                <p>Hi,红烧猎人：</p>
+            </div>
+        </td>
+        <td style="width: 100%;display: inline-block;border-top: 4px dashed rgb(255, 255, 255);"> </td>
+        <td style="width: 600px;padding: 18px;display: inline-block;">
+            <div align="left"
+                style="color: rgb(57, 57, 57); line-height: 1.6; font-size: 14px; margin: 0px;font-weight: bolder;">
+                您正在注册，点击以下链接完成注册，以下链接有效期48小时。
+                <div><a style="color: #fff;background-color: #2e2e2e;display: inline-block;padding: 10px 30px;border-radius: 5px;"
+                        href="5">点此去审核</a></div>
+            </div>
+        </td>
+        <td style="width: 600px;padding: 18px;display: inline-block;">
+            <div align="rignt">
+                <div style="font-size: 14px; margin: 0px;text-align: right;font-size: 14px; font-weight: bolder;">
+                    -- 来自[<a href="` + fromUrl + `" style="color: #575757;">` + teamName + `</a>]</div>
+            </div>
+        </td>
+    </tr>
+</table>

@@ -82,7 +82,7 @@ func (c *ViewController) Home() {
 	list, count, _ = mArticle.GetListByCondition(page, limit, condition, "release_time Desc")
 	for _, v := range list {
 		latest_html_label := false
-		if time.Now().Unix()-v.UpdatedAt.Unix() < 432000 {
+		if time.Now().Unix()-v.ReleaseTime.Unix() < 432000 {
 			latest_html_label = true
 		}
 		// 获取标签
@@ -146,7 +146,14 @@ func (c *ViewController) Preview() {
 
 	if err == nil {
 		c.Data["ArticleInfo"] = info
-		c.TplName = "index/content_md.html"
+		switch info.Editor {
+		case 1:
+			// markdown
+			c.TplName = "index/content_md_preview.html"
+		case 2:
+			// 富文本
+			c.TplName = "index/content_wang_editor_preview.html"
+		}
 	} else {
 		c.Data["Error_msg"] = "没有找到那个页面"
 		c.TplName = "index/404.html"
@@ -196,7 +203,14 @@ func (c *ViewController) Content() {
 
 	if err == nil {
 		c.Data["ArticleInfo"] = info
-		c.TplName = "index/content.html"
+		switch info.Editor {
+		case 1:
+			// markdown
+			c.TplName = "index/content_md.html"
+		case 2:
+			// 富文本
+			c.TplName = "index/content_wang_editor.html"
+		}
 	} else {
 		c.Data["Error_msg"] = "没有找到那个页面"
 		c.TplName = "index/404.html"

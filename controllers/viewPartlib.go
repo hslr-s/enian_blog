@@ -6,10 +6,78 @@ package controllers
 
 import (
 	"crypto/rand"
+	"enian_blog/lib/cmn"
 	"enian_blog/models"
 	"math"
 	"math/big"
 )
+
+// ============
+// 定义的结构体
+// ============
+
+// 网站关键字，描述，统计代码
+func (c *BaseViewController) UsePartSeo(SiteKeywords, SiteKescription, TongJi string) {
+	c.Data["Seo"] = cmn.Msi{
+		"SiteKeywords":    SiteKeywords,
+		"SiteKescription": SiteKescription,
+		"TongJi":          TongJi,
+	}
+}
+
+// 全局
+func (c *BaseViewController) UsePartGlobal(SiteKeywords, SiteKescription, TongJi string) {
+	c.Data["Global"] = cmn.Msi{
+		"Version":   SiteKeywords,
+		"Domain":    SiteKescription,
+		"Title":     TongJi,
+		"Autograph": TongJi,
+		"Logo":      TongJi,
+	}
+}
+
+// 菜单栏
+func (c *BaseViewController) UsePartMenuBarList(currentId, about_url string) {
+	dataList := []cmn.Msi{}
+	dataList = append(dataList, cmn.Msi{
+		"Url":       "/",
+		"Title":     "首页",
+		"Id":        "home",
+		"IsCurrent": false,
+	})
+	if about_url != "" {
+		dataList = append(dataList, cmn.Msi{
+			"Url":       about_url,
+			"Title":     "关于",
+			"Id":        "about",
+			"IsCurrent": false,
+		})
+	}
+	dataList = append(dataList, cmn.Msi{
+		"Url":       "/profile/",
+		"Title":     "个人中心",
+		"Id":        "profile",
+		"IsCurrent": false,
+	})
+	for _, v := range dataList {
+		if cmn.InterfaceToString(v["Id"]) == currentId {
+			v["IsCurrent"] = true
+		}
+	}
+	c.Data["MenuBarList"] = dataList
+}
+
+// 当前用户
+func (c *BaseViewController) UsePartCurrentUser() {
+	data := cmn.Msi{}
+	if c.UserInfo.ID != 0 {
+		data["Username"] = c.UserInfo.Username
+		data["Name"] = c.UserInfo.Name
+		data["HomeUrl"] = "/u/" + c.UserInfo.Username
+		data["Autograph"] = c.UserInfo.Autograph
+	}
+	c.Data["CurrentUser"] = data
+}
 
 // ============
 // 定义的结构体

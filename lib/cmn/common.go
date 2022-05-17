@@ -140,3 +140,14 @@ func FatalError(msg string) {
 	fmt.Printf("\n %c[1;40;31m%s%c[0m\n\n", 0x1B, "ERROR："+msg, 0x1B)
 	os.Exit(1)
 }
+
+func PathExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
+}

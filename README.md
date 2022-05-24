@@ -8,29 +8,26 @@ EnianBlog(E念博客)
 <a title="Gitee" target="_blank" href="https://gitee.com/hslr/enian_blog">Gitee开源地址</a>
 </p>
 
-## 🌈介绍
-EnianBlog(E念博客)是一个支持多人使用的团队博客系统。是基于前端layui和后端go语言的beego框架开发。支持专栏、标签、SEO、markdown语法等特色功能！
+## 🌈 介绍
+EnianBlog(E念博客)是一个支持多人使用的团队博客系统。是基于前端layui和后端go语言的beego框架开发。支持专栏、标签、SEO、markdown语法、同时支持人人都会使用的富文本编辑器等诸多特色功能！
 
-#### 注意
-**小伙伴请看：目前项目正在测试中，暂时不能保证无缝升级，新功能不断的增加到开发计划中。大家尽量不要用在正式环境中。有想参与开发的小伙伴可以联系我(群和联系方式在下方)！目前正在学习Go语言，代码如果哪里不完美欢迎指点。**
-
-- 大家可以去看[B站视频开发vlog](https://space.bilibili.com/27407696)。给个三连，让更多人看到。谢谢♥♥♥
-
+##### 小伙伴请看：
+ - 项目正在测试阶段，暂不能保证无缝升级，新功能不断的增加到开发计划中。大家尽量不要应用在正式环境中。
+ - 有想参与开发的小伙伴可以联系我(群和联系方式在下方)！
+ - 目前正在学习Go语言，代码如果哪里不完美欢迎指点。
+- 大家可以去看[B站视频开发vlog](https://space.bilibili.com/27407696)。给个三连，让更多人看到。多谢🧡🧡🧡
 - 如果不想自己编译可以下载[发布版](https://gitee.com/hslr/enian_blog/releases)，目前已编译windows64和linux64版本
 
-## 🎇演示站点信息
+## 🎇 演示站点信息
 
-前台地址：[点击直达](http://demoblog.enianteam.com/ "点击直达")
-
-后台地址：[点击直达](http://demoblog.enianteam.com/profile/auth.html#/login "点击直达")
-
-演示账号：admin  演示密码：111111
-
-## 🎉适合用户
+- 前台地址：[点击直达](http://demoblog.enianteam.com/ "点击直达")
+- 后台地址：[点击直达](http://demoblog.enianteam.com/profile/auth.html#/login "点击直达")
+- 演示账号：admin  演示密码：111111
+## 🎉 适合用户
 个人、开发团队、各行业人员。
 
 
-## 软件架构
+## 🎨 软件架构
 
 | 名称       | 版本   | 说明                                     |
 | ---------- | ------ | ---------------------------------------- |
@@ -42,7 +39,7 @@ EnianBlog(E念博客)是一个支持多人使用的团队博客系统。是基�
 | editor.md     |        | 前端markdown组件，用于编辑文章和渲染     |
 |   wangEditor       |        | 前端富文本编辑器插件，低门槛，用户上手容易，用于编辑文章和渲染 |
 
-## 页面截图
+## ✨ 页面截图
 (前4张为前台，后4张为后台)
 
 |||
@@ -52,18 +49,18 @@ EnianBlog(E念博客)是一个支持多人使用的团队博客系统。是基�
 |![后台我的文章列表](./readme_src/后台我的文章列表.png)| ![文章编写](./readme_src/文章编写.png)|
 |![用户管理](./readme_src/用户管理.png)|![管理平台设置](./readme_src/管理平台设置.png)|
 
-## 功能及进度
+## ⛳ 功能、进度、计划
 > 此脑图更新不及时仅供参考
 
 ![输入图片说明](./readme_src/func_mind_map.png)
 
-### 开发计划
+#### 开发计划
 
 [点此查看完整开发计划](https://thoughts.teambition.com/share/624be0f1483c2900418ca6c9#title=团队博客开发计划)
 
 ![输入图片说明](./readme_src/jindu.png)
 
-## 编译运行
+## 👑 编译运行
 
 ### 1.配置数据库驱动及其信息
 程序本身支持sqlite和mysql数据库。配置文件是`./conf/app.conf`。复制`app.example.conf`命名为`app.conf`
@@ -80,7 +77,7 @@ bee run
 ### 4.访问
 浏览器访问：`http://127.0.0.1:8080`
 
-## 发布版使用教程
+## 📙 发布版使用教程
 
 地址：[直达发布版页面](https://gitee.com/hslr/enian_blog/releases)
 
@@ -113,7 +110,7 @@ bee run
 
 如果8080端口占用，请在 **app.conf** 配置文件中修改 **httpport** 项即可
 
-## 关于作者
+## 😁 关于作者
 
 微信/QQ:95302870（避免骚扰请备注）
 

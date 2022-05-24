@@ -6,6 +6,7 @@ require github.com/astaxie/beego v1.12.3
 
 require (
 	github.com/beego/beego/v2 v2.0.2
+	github.com/dchest/captcha v0.0.0-20200903113550-03f5f0333e1f // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/jinzhu/now v1.1.4 // indirect
 	github.com/smartystreets/goconvey v1.6.4

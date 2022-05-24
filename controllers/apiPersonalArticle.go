@@ -51,6 +51,7 @@ func (c *PersonalController) GetArticleList() {
 			"update_time":         v.UpdatedAt.Format(cmn.TIMEMODE_1),
 			"release_time":        releaseTime,
 			"release_update_time": releaseUpdateTime,
+			"save_time":           v.SaveTime.Format(cmn.TIMEMODE_1),
 			"user_id":             v.User.ID,
 			"user_username":       v.User.Username,
 			"status":              v.Status,

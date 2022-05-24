@@ -48,6 +48,7 @@ func CreateDataConfig() {
 		"title":            "enianBlog",
 		"autograph":        "一个开源的博客项目！",
 		"background_image": "static/resources/image/background.png",
+		"ico":              "static/favicon.ico",
 	})
 	cache.ConfigCacheSetOne("home_anthology", "1", 60)
 }

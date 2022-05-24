@@ -89,6 +89,10 @@ func init() {
 	web.Router("/api/front/articleVisit", &controllers.FrontController{}, "get:ArticleVisit")           // 访问文章的统计接口(临时)
 	web.Router("/api/front/getAuthPageInfo", &controllers.FrontController{}, "get:GetAuthPageInfo")     // 访问文章的统计接口(临时)
 
+	// 验证码相关
+	web.Router("/api/captcha/getCaptchaId", &controllers.CaptchaController{}, "get:GetCaptchaId")  // 获取验证码id
+	web.Router("/api/captcha/:captchaId", &controllers.CaptchaController{}, "get:GetCaptchaImage") // 获取验证码id
+
 	web.Router("/api/test", &controllers.AuthController{}, "*:Test") // 测试
 
 	// 全局

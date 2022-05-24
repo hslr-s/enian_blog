@@ -287,7 +287,7 @@ func (c *ViewController) UserHome() {
 	articleListItem := []ArticleListItem{}
 	for _, v := range articleList {
 		latest_html_label := false
-		if time.Now().Unix()-v.UpdatedAt.Unix() < 432000 {
+		if time.Now().Unix()-v.ReleaseTime.Unix() < 432000 {
 			latest_html_label = true
 		}
 		// 获取标签
@@ -303,7 +303,7 @@ func (c *ViewController) UserHome() {
 			ID:                v.ID,
 			Title:             v.Title,
 			Visit_times:       v.Visit,
-			Update_time:       v.UpdatedAt.Format("2006-01-02 15:04:05"),
+			Update_time:       v.ReleaseTime.Format("2006-01-02 15:04:05"),
 			Latest_html_label: latest_html_label,
 			User_name:         v.User.Name,
 			Tags:              tags,
@@ -361,7 +361,7 @@ func (c *ViewController) AnthologyHome() {
 	articleListItem := []ArticleListItem{}
 	for _, v := range articleList {
 		latest_html_label := false
-		if time.Now().Unix()-v.UpdatedAt.Unix() < 432000 {
+		if time.Now().Unix()-v.ReleaseTime.Unix() < 432000 {
 			latest_html_label = true
 		}
 		// 获取标签
@@ -377,7 +377,7 @@ func (c *ViewController) AnthologyHome() {
 			ID:                v.ID,
 			Title:             v.Title,
 			Visit_times:       v.Visit,
-			Update_time:       v.UpdatedAt.Format("2006-01-02 15:04:05"),
+			Update_time:       v.ReleaseTime.Format("2006-01-02 15:04:05"),
 			Latest_html_label: latest_html_label,
 			User_name:         v.User.Name,
 			Tags:              tags,
@@ -438,7 +438,7 @@ func (c *ViewController) SearchTag() {
 		articleListItem := []ArticleListItem{}
 		for _, v := range articleList {
 			latest_html_label := false
-			if time.Now().Unix()-v.UpdatedAt.Unix() < 432000 {
+			if time.Now().Unix()-v.ReleaseTime.Unix() < 432000 {
 				latest_html_label = true
 			}
 			// 获取标签
@@ -454,7 +454,7 @@ func (c *ViewController) SearchTag() {
 				ID:                v.ID,
 				Title:             v.Title,
 				Visit_times:       v.Visit,
-				Update_time:       v.UpdatedAt.Format("2006-01-02 15:04:05"),
+				Update_time:       v.ReleaseTime.Format("2006-01-02 15:04:05"),
 				Latest_html_label: latest_html_label,
 				User_name:         v.User.Name,
 				Tags:              tags,
@@ -501,7 +501,7 @@ func (c *ViewController) SearchKeyWord() {
 	articleListItem := []ArticleListItem{}
 	for _, v := range articleList {
 		latest_html_label := false
-		if time.Now().Unix()-v.UpdatedAt.Unix() < 432000 {
+		if time.Now().Unix()-v.ReleaseTime.Unix() < 432000 {
 			latest_html_label = true
 		}
 		// 获取标签
@@ -517,7 +517,7 @@ func (c *ViewController) SearchKeyWord() {
 			ID:                v.ID,
 			Title:             v.Title,
 			Visit_times:       v.Visit,
-			Update_time:       v.UpdatedAt.Format("2006-01-02 15:04:05"),
+			Update_time:       v.ReleaseTime.Format("2006-01-02 15:04:05"),
 			Latest_html_label: latest_html_label,
 			User_name:         v.User.Name,
 			Tags:              tags,

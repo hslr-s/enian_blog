@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"enian_blog/lib/cache"
+	captchaLib "enian_blog/lib/captcha"
 	"enian_blog/lib/cmn"
 	"enian_blog/lib/initialize"
 	"enian_blog/lib/mail"
@@ -38,9 +39,13 @@ func (c *AuthController) Login() {
 	loginMethod, _ := c.GetValueByMsiKeyInt(params, "method")
 	username := cmn.InterfaceToString(params["username"])
 	password := cmn.InterfaceToString(params["password"])
+	vcode := cmn.InterfaceToString(params["vcode"])
+	captchaId := cmn.InterfaceToString(params["captcha_id"])
+	if !captchaLib.Instance().Verify(captchaId, vcode) {
+		c.ApiError(-1, "验证码错误")
+	}
 	if loginMethod == 1 {
 		userInfo, err := mUser.GetUserInfoByUsernameAndPassword(username, cmn.PasswordEncryption(password))
-		// fmt.Println(userInfo, err)
 		if err != nil {
 			c.ApiError(-1, "账号密码不正确或者被限制登录")
 		} else {
@@ -105,6 +110,12 @@ func (c *AuthController) JoinOpenSubmit() {
 	// 判断是否开放注册
 	global_register := cache.ConfigCacheGroupGet("global_register")
 	register_method, ok := global_register["method"].(string)
+	vcode := cmn.InterfaceToString(params["vcode"])
+	captchaId := cmn.InterfaceToString(params["captcha_id"])
+	if !captchaLib.Instance().Verify(captchaId, vcode) {
+		c.ApiError(-1, "验证码错误")
+	}
+
 	if !ok || register_method != "1" {
 		c.ApiError(-1, "不开放注册")
 	}

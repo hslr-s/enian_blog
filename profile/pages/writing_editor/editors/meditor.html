@@ -48,6 +48,7 @@
             var editor = editormd("editormd", {
                     width: "calc(100% - 2px)",
                     height: $(document).height() - 2 + 'px',
+                    htmlDecode: "style,script", // you can filter tags decode
                     taskList: true,
                     syncScrolling: true,
                     codeFold: true,
@@ -103,7 +104,7 @@
             function getRenderContainer(markdown_content){
                 var params = {
                     markdown: markdown_content,
-                    htmlDecode: "style,script,iframe", // you can filter tags decode
+                    htmlDecode: "style,script", // you can filter tags decode
                     emoji: true,
                     taskList: true,
                     tex: true, // 默认不解析

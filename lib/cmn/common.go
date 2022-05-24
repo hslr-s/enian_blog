@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"math/big"
 	"os"
+	"time"
 )
 
 // =================
@@ -150,4 +151,38 @@ func PathExists(path string) (bool, error) {
 		return false, nil
 	}
 	return false, err
+}
+
+// 时间转相对时间(不包含秒)
+// 刚刚 相对时间: 刚刚 (定义为5分钟内)
+// 今天 相对时间: 今天 02:02
+// 昨天 相对时间: 昨天 10:02
+// 今年 相对时间: 02-23 10:02
+// 非今年 相对时间: 2021-02-23 10:02
+func TimeToRelativeTime(calcTimeTime time.Time) string {
+	relativeTime := ""
+	nowTime := time.Now()
+	sourceTime := calcTimeTime.Format("2006-01-02 15:04:05")
+	nowTimeStr := nowTime.Format("20060102")
+	calcTime := calcTimeTime.Format("20060102")
+	// 最久，今年，前天，昨天，今天 ，刚刚（5分钟内）
+	switch {
+	case nowTime.Unix()-calcTimeTime.Unix() < 300:
+		relativeTime = "刚刚"
+	case nowTimeStr[0:8] == calcTime[0:8]:
+		relativeTime = "今天 " + sourceTime[11:16]
+	case nowTime.AddDate(0, 0, -1).Format("20060102") == calcTime:
+		relativeTime = "昨天 " + sourceTime[11:16]
+	case nowTimeStr[0:4] != calcTime[0:4]:
+		relativeTime = sourceTime[:16]
+	case nowTimeStr[0:4] == calcTime[0:4]:
+		relativeTime = sourceTime[5:16]
+	}
+	return relativeTime
+}
+
+func TimeStrToRelativeTime(calcTime string) string {
+	local, _ := time.LoadLocation("Asia/Shanghai")
+	showTime, _ := time.ParseInLocation("2006-01-02 15:04:05", calcTime, local)
+	return TimeToRelativeTime(showTime)
 }

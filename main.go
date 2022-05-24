@@ -38,6 +38,7 @@ func main() {
 	if err != nil {
 		initialize.CreateData()
 	}
-
+	web.AddFuncMap("TimeToRelativeTime", cmn.TimeToRelativeTime)
+	web.AddFuncMap("TimeStrToRelativeTime", cmn.TimeStrToRelativeTime)
 	web.Run()
 }

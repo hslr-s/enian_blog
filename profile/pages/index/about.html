@@ -1,0 +1,44 @@
+<style>
+
+    .box{
+        margin: 0 auto;
+        text-align: center;
+        margin-top: 50px;
+    }
+
+</style>
+
+
+
+<div>
+    <div class="box" >
+        <img style="width: 100px;" src="/static/resources/image/logo.png" />
+        <h2 style="font-weight: 700;margin-top: 10px;" >EnianBlog <h5 id="info_version">--</h5></h2>
+        <hr>
+        <div>本系统由 <a href="http://enianblog.enianteam.com" target="_blank" style="color: #004b8c;">EnianBlog</a>  强力驱动</div>
+        <div>
+            <p>Gitee开源地址：<a href="https://gitee.com/hslr/enian_blog" target="_blank" style="color: #004b8c;">https://gitee.com/hslr/enian_blog</a></p>
+            <p>Github开源地址：<a href="https://github.com/hslr-s/enian_blog" target="_blank" style="color: #004b8c;">https://github.com/hslr-s/enian_blog</a></p>
+            <p>作者：<a href="http://enianteam.com/" target="_blank" style="color: #004b8c;">红烧猎人</a></p>
+            <p>作者微信/QQ：95302870</p>
+            <p>作者QQ群：685960647</p>
+        </div>
+    </div>
+    
+
+</div>
+
+<script>
+    //注意：选项卡 依赖 element 模块，否则无法进行功能性操作
+    layui.use(['element', 'jquery'], function () {
+        var element = layui.element, table = layui.table, form = layui.form,layer=layui.layer,upload=layui.upload;
+        var $=layui.$
+        form.render()
+
+        app.base.ajaxGet("/api/front/getAuthPageInfo",function(data){
+            $("#info_version").html(data.system.version);
+        })
+
+  
+    });
+</script>

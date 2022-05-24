@@ -3,6 +3,7 @@ package controllers
 import (
 	"enian_blog/lib/cache"
 	"enian_blog/lib/cmn"
+	"enian_blog/lib/initialize"
 	"enian_blog/models"
 )
 
@@ -38,5 +39,8 @@ func (c *FrontController) GetAuthPageInfo() {
 	returnData := cmn.Msi{}
 	returnData["register"] = cache.ConfigCacheGroupGet("global_register")
 	returnData["site"] = cache.ConfigCacheGroupGet("global_site")
+	returnData["system"] = cmn.Msi{
+		"version": initialize.VERSION,
+	}
 	c.ApiSuccess(returnData)
 }

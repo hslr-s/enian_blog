@@ -1,17 +1,24 @@
-# [E念博客] EnianBlog 团队/个人博客
 
-> **小伙伴请看：目前项目正在测试中，暂时不能保证无缝升级，新功能不断的增加到开发计划中。大家尽量不要用在正式环境中。有想参与开发的小伙伴可以联系我(群和联系方式在下方)！目前正在学习Go语言，代码如果哪里不完美欢迎指点。**
+<p align="center">
+<img alt="Vditor" src="./readme_src/logo.png" width="100px" />
+<br>
+EnianBlog(E念博客)
+<br>
+<a title="Github" target="_blank" href="https://github.com/hslr-s/enian_blog">Github开源地址</a> |
+<a title="Gitee" target="_blank" href="https://gitee.com/hslr/enian_blog">Gitee开源地址</a>
+</p>
 
-大家可以去看[B站视频开发vlog](https://space.bilibili.com/27407696)。给个三连，让更多人看到。谢谢♥♥♥
+## 🌈介绍
+EnianBlog(E念博客)是一个支持多人使用的团队博客系统。是基于前端layui和后端go语言的beego框架开发。支持专栏、标签、SEO、markdown语法等特色功能！
 
-如果不想自己编译可以下载[发布版](https://gitee.com/hslr/enian_blog/releases)，目前已编译windows64和linux64版本
+#### 注意
+**小伙伴请看：目前项目正在测试中，暂时不能保证无缝升级，新功能不断的增加到开发计划中。大家尽量不要用在正式环境中。有想参与开发的小伙伴可以联系我(群和联系方式在下方)！目前正在学习Go语言，代码如果哪里不完美欢迎指点。**
 
+- 大家可以去看[B站视频开发vlog](https://space.bilibili.com/27407696)。给个三连，让更多人看到。谢谢♥♥♥
 
-## 介绍
-enianBlog(E念博客)是一个支持多人使用的团队博客系统。是基于前端layui和后端go语言的beego框架开发。支持专栏、标签、SEO、markdown语法等特色功能！
+- 如果不想自己编译可以下载[发布版](https://gitee.com/hslr/enian_blog/releases)，目前已编译windows64和linux64版本
 
-
-## 演示站点信息
+## 🎇演示站点信息
 
 前台地址：[点击直达](http://demoblog.enianteam.com/ "点击直达")
 
@@ -19,7 +26,7 @@ enianBlog(E念博客)是一个支持多人使用的团队博客系统。是基�
 
 演示账号：admin  演示密码：111111
 
-## 适合用户
+## 🎉适合用户
 个人、开发团队、各行业人员。
 
 

@@ -18,7 +18,7 @@
         <span><a href="/u/{{.Usernametag}}" title="进入{{.User_name}}的主页">{{.User_name}}</a></span>
         {{end}}
         
-        <span>{{.Update_time}}</span>
+        <span title="{{.Update_time}}">{{TimeStrToRelativeTime .Update_time}}</span>
         <span>阅读：{{.Visit_times}}</span>
         {{range .Tags}}
         <span class="layui-badge fly-badge-accept layui-hide-xs blog-tags"><a

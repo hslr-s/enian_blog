@@ -6,4 +6,4 @@ const (
 	DefaultUserNickName = "无昵称"
 )
 
-const VERSION = "V0.1.2(beta)"
+const VERSION = "V0.1.3.beta"

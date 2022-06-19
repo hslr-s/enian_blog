@@ -58,6 +58,22 @@ func (c *BaseViewController) GlobalDataInit() {
 	c.UsePartMenuBarList("about", "/about")
 	global_site := cache.ConfigCacheGroupGet("global_site")
 	c.Data["site_ico"] = "/" + cmn.InterfaceToString(global_site["ico"])
+	mFriendLink := models.FriendLink{}
+	list, err := mFriendLink.GetList(false)
+	if err == nil && len(list) != 0 {
+		friendLinkList := []map[string]interface{}{}
+		for _, v := range list {
+			friendLinkList = append(friendLinkList, map[string]interface{}{
+				"id":          v.ID,
+				"link":        v.Link,
+				"title":       v.Title,
+				"create_time": v.CreatedAt.Format(cmn.TIMEMODE_1),
+				"sort":        v.Sort,
+			})
+		}
+		c.Data["friend_link"] = friendLinkList
+	}
+
 	c.UsePartCurrentUser()
 }
 

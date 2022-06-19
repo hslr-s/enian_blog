@@ -35,7 +35,7 @@
         var $=layui.$
         form.render()
 
-        app.base.ajaxGet("/api/front/getAuthPageInfo",function(data){
+        app.base.ajaxGet("/api/front/getAuthPageInfo?param=system",function(data){
             $("#info_version").html(data.system.version);
         })
 

@@ -5,6 +5,7 @@ import (
 	"enian_blog/lib/cmn"
 	"enian_blog/lib/initialize"
 	"enian_blog/models"
+	"strings"
 )
 
 // =========
@@ -36,11 +37,33 @@ func (c *FrontController) ArticleVisit() {
 
 // 获取权限页面的基本信息
 func (c *FrontController) GetAuthPageInfo() {
+	param := c.GetString("param")
+
 	returnData := cmn.Msi{}
-	returnData["register"] = cache.ConfigCacheGroupGet("global_register")
-	returnData["site"] = cache.ConfigCacheGroupGet("global_site")
-	returnData["system"] = cmn.Msi{
-		"version": initialize.VERSION,
+	if param == "" {
+		// 全部
+		returnData["register"] = cache.ConfigCacheGroupGet("global_register")
+		returnData["site"] = cache.ConfigCacheGroupGet("global_site")
+		returnData["system"] = cmn.Msi{
+			"version": initialize.VERSION,
+		}
+	} else {
+		// 根据选择返回
+		params := strings.Split(param, ",")
+		for i := 0; i < len(params); i++ {
+			if params[i] == "register" {
+				returnData["register"] = cache.ConfigCacheGroupGet("global_register")
+			}
+			if params[i] == "site" {
+				returnData["site"] = cache.ConfigCacheGroupGet("global_site")
+			}
+			if params[i] == "system" {
+				returnData["system"] = cmn.Msi{
+					"version": initialize.VERSION,
+				}
+			}
+		}
 	}
+
 	c.ApiSuccess(returnData)
 }

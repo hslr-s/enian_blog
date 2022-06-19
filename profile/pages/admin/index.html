@@ -1,12 +1,173 @@
 <style>
+.fly-panel{
+    /* background-color: #f2f2f2; */
+    /* background: none; */
+    
+}
 
+.layui-card-header{
+    text-align: center;
+}
+
+
+.statistic-box{
+    margin-top: 20px;
+}
+
+.statistic-card{
+    padding: 20px;
+    color: #b5b5b5;
+    font-weight: 600;
+}
+
+.article_text{
+    font-weight: normal;
+}
+
+.statistic-card-body-number{
+    font-size: 2rem;
+    margin-top: 10px;
+    /* text-align: center; */
+    font-weight: 900;
+    color: #4a7eb3;
+}
 </style>
 
 <div>
-<h1>这是一个整站统计页，页面开发中，请期待😁！</h1>
+
+    <div class="layui-row layui-col-space10 statistic-box">
+        <div class="layui-col-md4">
+            <div class="layui-panel statistic-card">
+                <span class="statistic-card-title">文章数</span>
+                <div class="statistic-card-body-number" id="article_count">
+                    --
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="layui-panel statistic-card">
+                <span class="statistic-card-title">访问量</span>
+                <div class="statistic-card-body-number" id="visit_count">
+                    --
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="layui-panel statistic-card">
+                <span class="statistic-card-title">用户数</span>
+                <div class="statistic-card-body-number" id="user_count">
+                    --
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space10 ">
+        <div class="layui-col-md7">
+            <div class="layui-panel statistic-card">
+                <span class="statistic-card-title">近15天文章发布统计</span>
+                <div class="statistic-card-body-number" style="height: 300px;" id="week_line">
+                    --
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md5">
+            <div class="layui-panel statistic-card">
+                <span class="statistic-card-title">最新发布</span>
+                
+                <div class="statistic-card-body" >
+                    <table class="layui-table" lay-even lay-skin="nob">
+                            <colgroup>
+                                <col width="150">
+                                <col width="200">
+                                <col>
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>标题</th>
+                                    <th>发布时间</th>
+                                    <th>作者</th>
+                                </tr>
+                            </thead>
+                            <tbody id="latest_articles">
+                                <tr>
+                                    <td>--</td>
+                                    <td>--</td>
+                                    <td>--</td>
+                                </tr>
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 
 </div>
-
+<script src="/static/echarts/echarts.min.js"></script>
+<!-- <script src="/static/echarts/echarts.js"></script> -->
 <script>
+    layui.use(["table", "jquery", "layer","form"], function () {
+        var table = layui.table, $ = layui.jquery, layer = layui.layer, form = layui.form;
+    
+        app.base.ajaxGet("/api/admin/dashboard", function (data) {
+            $("#article_count").html(data.article_count)
+            $("#user_count").html(data.user_count)
+            $("#visit_count").html(data.visit_count)
+            getWeekBrokenLine(data.week_line)
+            renderLatestArticles(data.latest_articles)
+        }, function (msg) {
+
+        })
+
+        function renderLatestArticles(latest_articles){
+            $("#latest_articles").html("")
+            var forTimes=8
+            if(latest_articles.length<8){
+                forTimes= latest_articles.length
+            }
+            for (let index = 0; index < forTimes; index++) {
+                const element = latest_articles[index];
+                var html = "<tr class='article_text'><td >"+element.article_title+"</td><td>" + app.base.timeFormat(element.release_time) +"</td><td>" + element.user_name +"</td></tr>";
+                $("#latest_articles").append(html)
+            }
+        }
+
+        function getWeekBrokenLine(week_line){
+            // var echarts = require('echarts');
+            var myChart = echarts.init(document.getElementById('week_line'));
+            var option = {
+                xAxis: {
+                    type: 'category',
+                    data: week_line.dates
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                // grid: {
+                //     left: '3%',
+                //     right: '4%',
+                //     bottom: '3%',
+                //     containLabel: true
+                // },
+                yAxis: {
+                    type: 'value',
+                    minInterval:1
+                },
+                series: [
+                    {
+                        data: week_line.data,
+                        type: 'line',
+                        smooth: true
+                    }
+                ],
+                lineStyle: {
+                    color:"#4a7eb3"
+                }
+            };
+            option && myChart.setOption(option);
+        }
+    });
    
 </script>

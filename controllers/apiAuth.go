@@ -110,6 +110,7 @@ func (c *AuthController) JoinOpenSubmit() {
 	// 判断是否开放注册
 	global_register := cache.ConfigCacheGroupGet("global_register")
 	register_method, ok := global_register["method"].(string)
+	register_email_suffix, register_email_suffix_ok := global_register["email_suffix"].(string)
 	vcode := cmn.InterfaceToString(params["vcode"])
 	captchaId := cmn.InterfaceToString(params["captcha_id"])
 	if !captchaLib.Instance().Verify(captchaId, vcode) {
@@ -128,6 +129,11 @@ func (c *AuthController) JoinOpenSubmit() {
 	// 验证邮箱
 	if !cmn.VerifyEmail(mail) {
 		c.ApiError(-1, "邮箱格式错误")
+	}
+
+	// 验证是否为允许的邮箱后缀
+	if register_email_suffix_ok && register_email_suffix != "" && !cmn.VerifyFormat("^.*"+register_email_suffix+"$", mail) {
+		c.ApiError(-1, "请使用后缀为'"+register_email_suffix+"'的邮箱地址注册")
 	}
 
 	// 3-15位英文、数字、下划线

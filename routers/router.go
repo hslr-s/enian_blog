@@ -136,15 +136,26 @@ func init() {
 	// =============
 	// 管理员
 	// =============
-	web.Router("/api/admin/user/getList", &controllers.AdminUsersController{}, "*:GetList")                           // 用户列表
-	web.Router("/api/admin/user/edit", &controllers.AdminUsersController{}, "post:Edit")                              // 添加/编辑用户
-	web.Router("/api/admin/user/delete", &controllers.AdminUsersController{}, "post:Delete")                          // 添加/编辑用户
-	web.Router("/api/admin/user/updatePassword", &controllers.AdminUsersController{}, "post:UpdatePassword")          // 修改密码
+
+	web.Router("/api/admin/dashboard", &controllers.AdminController{}, "*:Dashboard") // 仪表盘接口
+
+	// 用户管理
+	web.Router("/api/admin/user/getList", &controllers.AdminUsersController{}, "*:GetList")                  // 用户列表
+	web.Router("/api/admin/user/edit", &controllers.AdminUsersController{}, "post:Edit")                     // 添加/编辑用户
+	web.Router("/api/admin/user/delete", &controllers.AdminUsersController{}, "post:Delete")                 // 删除
+	web.Router("/api/admin/user/updatePassword", &controllers.AdminUsersController{}, "post:UpdatePassword") // 修改密码
+
+	// 平台设置
 	web.Router("/api/admin/setting/setHomeAnthology", &controllers.AdminUsersController{}, "post:SetHomeAnthology")   // 设置首页专栏
 	web.Router("/api/admin/setting/setGlobalSetting", &controllers.AdminUsersController{}, "post:SetGlobalSetting")   // 设置全局信息
 	web.Router("/api/admin/setting/uploadLogo", &controllers.AdminUsersController{}, "post:UploadLogo")               // 上传LOGO
 	web.Router("/api/admin/setting/uploadIco", &controllers.AdminUsersController{}, "post:UploadIco")                 // 上传Ico
 	web.Router("/api/admin/setting/uploadHeaderImage", &controllers.AdminUsersController{}, "post:UploadHeaderImage") // 上传背景图
 	web.Router("/api/admin/setting/sendTestMail", &controllers.AdminUsersController{}, "post:SendTestMail")           // 发送测试邮件
+
+	// 友情链接
+	web.Router("/api/admin/friendLink/getList", &controllers.AdminFriendLinkController{}, "get:GetList") // 获取友情链接列表
+	web.Router("/api/admin/friendLink/edit", &controllers.AdminFriendLinkController{}, "post:Edit")      // 添加编辑友情链接
+	web.Router("/api/admin/friendLink/delete", &controllers.AdminFriendLinkController{}, "post:Delete")  // 删除
 
 }

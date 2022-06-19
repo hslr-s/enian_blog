@@ -206,13 +206,19 @@ func (m *Article) GetInfoAndTag(id uint) (article Article, err error) {
 	// article.Status = 2
 	// err = Db.Model(&article).Association("Tags").Find(&tagList)
 	// err = Db.Model(&article).Association("Tags").Find(&tagList)
-	err = Db.Preload("Tags").Preload("User").Where("status=1").First(&article).Error
+	err = Db.Preload("Tags").Preload("User").First(&article).Error
 	return
 }
 
 // 获取详情和标签
 func (m *Article) GetInfo(id uint) (article Article, err error) {
 	err = Db.Where("id=? ", id).First(&article).Error
+	return
+}
+
+// 获取详情和标签
+func (m *Article) GetInfoFull(id uint) (article Article, err error) {
+	err = Db.Where("id=? ", id).Preload("Tags").Preload("Anthologys").Preload("Anthologys.User").Preload("User").First(&article).Error
 	return
 }
 

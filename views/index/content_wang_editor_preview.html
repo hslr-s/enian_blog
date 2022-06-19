@@ -55,16 +55,29 @@
       <div class="fly-panel detail-box">
         <h1>[预览] {{.ArticleInfo.Title}}</h1>
         <div class="fly-detail-info">
-          <span class="fly-list-nums" style="color: #c2c2c2;">
-            <div>
-              <span>标签：</span>
+          <span class="fly-list-nums" style="color: #8f8f8f;">
+            <!-- <a style="color: #8f8f8f;" title='首次发布于{{dateformat .ArticleInfo.ReleaseTime "2006-01-02 15:04:05"}}'>发布时间：<span
+                class="realease-time">{{dateformat .ArticleInfo.ReleaseTime "2006-01-02 15:04:05"}}</span></a>
+            <i class="iconfont" title="浏览量" style="color: #8f8f8f;">&#xe60b;</i>{{.ArticleInfo.Visit}}
+            <br><br> -->
+            <div style="margin-top: 5px;">
+              {{if $.anthologys}}
+              <span style="color: #999999;">专栏：</span>
+              {{range $.anthologys}}
+              <span class="layui-badge-rim"><a href="{{.anthologys_url}}">{{.title}}</a></span>
+              {{end}}
+            
+              {{end}}
+            
+              {{if .ArticleInfo.Tags}}
+              <span style="color: #999999;">标签：</span>
               {{range .ArticleInfo.Tags}}
-              <span class="layui-badge fly-badge-accept blog-tags"><a href="/search/tag/{{.ID}}">{{.Title}}</a></span>
+              <span class="layui-badge-rim"><a href="/search/tag/{{.ID}}">{{.Title}}</a></span>
+              {{end}}
               {{end}}
             </div>
           </span>
         </div>
-        <br /><br />
         <hr />
         <div class="detail-body photos">
           <div id="editormd-to-html" class="markdown-body editor-content-view">
@@ -80,6 +93,7 @@
       <div class="fixed-panel">
         {{template "template/right/article_menu.html" .}}
         {{template "template/right/label.html" .}}
+        {{template "template/right/friend_link.html" .}}
       </div>
     </div>
   </div>

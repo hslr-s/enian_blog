@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"enian_blog/lib/buildRoute"
 	"enian_blog/lib/cache"
 	"enian_blog/lib/cmn"
 	"enian_blog/models"
@@ -178,9 +179,15 @@ func (c *ViewController) Content() {
 	articleId := c.Ctx.Input.Param(":article_id")
 	mArticle := models.Article{}
 	id, _ := strconv.Atoi(articleId)
-	info, err := mArticle.GetInfoAndTag(uint(id))
+	info, err := mArticle.GetInfoFull(uint(id))
 	if info.ReleaseTime.IsZero() {
 		c.Ctx.Redirect(302, "/404")
+		return
+	}
+	// 判断是否为当前用户文章
+	if info.Status == 0 && c.UserInfo.ID != info.UserId {
+		c.Ctx.Redirect(302, "/404")
+		return
 	}
 	keyWords := ""
 	for i := 0; i < len(info.Tags); i++ {
@@ -200,7 +207,6 @@ func (c *ViewController) Content() {
 	)
 	// 用户卡片
 	c.UsePartUserCardData("/"+info.User.Head_image, info.User.Name, "/u/"+info.User.Username, info.User.Autograph, strconv.Itoa(info.User.Gender))
-
 	if err == nil {
 		c.Data["ArticleInfo"] = info
 		switch info.Editor {
@@ -218,6 +224,24 @@ func (c *ViewController) Content() {
 	c.Data["seo"] = map[string]interface{}{
 		"TongJi": global_seo["tongji"],
 	}
+
+	// 专栏
+	{
+		anthologys := []map[string]interface{}{}
+		for _, v := range info.Anthologys {
+			if v.UserId == info.UserId {
+				anthologys = append(anthologys, map[string]interface{}{
+					"title":          v.Title,
+					"anthologys_id":  v.ID,
+					"user_id":        v.UserId,
+					"username":       v.User.Username,
+					"anthologys_url": buildUrlAnthology(v.User.Username, v.ID),
+				})
+			}
+		}
+		c.Data["anthologys"] = anthologys
+	}
+
 	c.UsePartFooterData(FooterData{
 		Team_name: siteTitle,
 		Name:      info.User.Name,
@@ -554,6 +578,11 @@ func (c *ViewController) Test() {
 	mArticle := models.Article{}
 	mArticle.GetInfoAndTag(5)
 	c.TplName = "index/test.html"
+}
+
+// 生成专栏链接
+func buildUrlAnthology(username string, anthologyId uint) string {
+	return buildRoute.BuildUrlAnthology(username, anthologyId)
 }
 
 func (c *ViewController) Test1() {

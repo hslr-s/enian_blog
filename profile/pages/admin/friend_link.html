@@ -1,0 +1,165 @@
+<style>
+
+</style>
+
+<div>
+    <table class="layui-hide" id="friend_link" lay-filter="friend_link"></table>
+
+    <script type="text/html" class="layui-hide" id="tpl_edit_friend_link">
+        <form class="layui-form" style="padding:20px" lay-filter="form-edit_friend_link" >
+            <!-- 隐藏的id -->
+            <input type="text" class="layui-hide" name="id">
+            <div class="layui-form-item">
+                <label class="layui-form-label">网站名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="title"  autocomplete="off" placeholder="请输入网站名称"
+                        value="" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">链接地址</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="link"  required lay-verify="required" autocomplete="off" value="http://"  placeholder="请输入网站链接地址" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">序号排序</label>
+                <div class="layui-input-inline">
+                    <input type="Number" name="sort" required lay-verify="required" autocomplete="off" placeholder="1-999(越大排序越靠前)" value="" class="layui-input">
+                </div>
+            </div>
+         
+            
+        </form>
+    </script>
+    
+    <script type="text/html" id="toolbarUserlist">
+      <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="add_user">新增</button>
+      </div>
+    </script>
+    
+    <script type="text/html" id="barDemo">
+      <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+      <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+
+
+
+</div>
+
+<script>
+   layui.use(['table',"jquery","layer","form"], function () {
+        var table = layui.table,$=layui.jquery,layer=layui.layer,form=layui.form;
+
+        table.render({
+            elem: '#friend_link'
+            ,url: '/api/admin/friendLink/getList'
+            , headers: {
+                "token": app.base.getUserInfo().token
+            }
+            , toolbar: '#toolbarUserlist' //开启头部工具栏，并为其绑定左侧模板
+            , defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+                title: '提示'
+                , layEvent: 'LAYTABLE_TIPS'
+                , icon: 'layui-icon-tips'
+            }]
+            , cols: [[
+                // { type: 'checkbox', fixed: 'left' }
+                { field: 'title', title: '网站名称' }
+                , { field: 'link', title: '网站链接'  }
+                , { field: 'sort', title: '排序序号' }
+                , { field: 'create_time', title: '添加时间' }
+                , { fixed: 'right', title: '操作', toolbar: '#barDemo'}
+            ]]
+            , parseData: app.base.layuiTableParseData
+        });
+
+        //头工具栏事件
+        table.on('toolbar(friend_link)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'add_user':
+                    var data = checkStatus.data;
+                    edit_friend_link(1)
+                    break;
+                //自定义头工具栏右侧图标 - 提示
+                case 'LAYTABLE_TIPS':
+                    layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                    break;
+            };
+        });
+
+        //监听行工具事件
+        table.on('tool(friend_link)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('确定删除该用户？请一定要至少保留一个管理员的账号。', function (index) {
+                    app.base.ajaxPost("/api/admin/friendLink/delete", {id:data.id}, function () {
+                        obj.del();
+                        layer.close(index)
+                        table.reload("friend_link");
+                    }, function (msg) {
+                        layer.msg(msg)
+                    })
+                });
+            } else if (obj.event === 'edit') {
+                edit_friend_link(2,data)
+            }
+        });
+
+
+        layerButtons = [
+           {
+                title: '保存',
+                type: 'primary',// warm,danger,primary
+                onClick: function (layer_index) {
+                    var value = form.val("form-edit_friend_link")
+                    if(!value.title || !value.link || !value.sort){
+                        layer.msg("请检查必填项（网站名称，链接地址，序号排序）")
+                        return
+                    }
+                    
+                    value.sort=Number(value.sort)
+                    if(value.id){
+                        value.id = Number(value.id)
+                    }
+                    app.base.ajaxPost("/api/admin/friendLink/edit", value, function () {
+                        layer.close(layer_index)
+                        table.reload("friend_link");
+                    },function(msg){
+                        layer.msg(msg)
+                    })
+                    return false;//阻止默认事件
+                }
+           },
+       ];
+
+        function edit_friend_link(type, old_obj_value) {
+           if (type == 1) {
+                app.base.layer({
+                    type: 1,
+                    shade: 0.5,
+                    title: (type == 1 ? "添加" : "编辑"),
+                    content: $('#tpl_edit_friend_link').html(),
+                    buttons: layerButtons,
+                    success: function () {
+                        form.render()
+                    }
+                })
+           } else {
+                app.base.layer({
+                    type: 1,
+                    shade: 0.5,
+                    title: (type == 1 ? "添加" : "编辑"),
+                    content: $('#tpl_edit_friend_link').html(),
+                    buttons: layerButtons,
+                    success: function () {
+                        form.render()
+                        form.val("form-edit_friend_link", old_obj_value)
+                    }
+                })
+           }
+       }
+    });
+</script>

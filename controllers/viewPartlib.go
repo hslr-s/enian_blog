@@ -144,7 +144,7 @@ func (c *BaseViewController) UsePartHeaderData(Title, Description, Keywords, Bac
 	pHeaderData := HeaderData{}
 	userName := c.UserInfo.Name
 	if userName == "" {
-		userName = "登录*"
+		userName = "登录"
 	} else {
 		userName = "个人中心（" + userName + ")"
 	}

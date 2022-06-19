@@ -2,13 +2,13 @@ package controllers
 
 import (
 	"crypto/md5"
+	"enian_blog/lib/buildRoute"
 	"enian_blog/lib/cmn"
 	"enian_blog/models"
 	"fmt"
 	"math/rand"
 	"os"
 	"path"
-	"strconv"
 	"time"
 )
 
@@ -133,8 +133,14 @@ func (c *PersonalController) SaveArticle() {
 func (c *PersonalController) pushArticleToAnthotogyApply(artcileInfo models.Article, anthotogyInfos []models.Anthology, article_title string) {
 	for _, v := range anthotogyInfos {
 		mMessage := models.Message{}
-		fmt.Println(v)
-		messageContent := "<a>" + c.UserInfo.Name + "</a>的文章标题为<a href='/u/" + artcileInfo.User.Username + "/content/" + strconv.Itoa(int(artcileInfo.ID)) + "'>[" + article_title + "]</a>正在申请推送到你的专栏<a href='/u/li/anthology/" + strconv.Itoa(int(v.ID)) + "'>[" + v.Title + "]</a>"
+		// fmt.Println(v.User)
+		// fmt.Println(artcileInfo.User)
+		mArticle := models.Article{}
+		artcileInfo, _ = mArticle.GetInfoFull(artcileInfo.ID)
+		articleUrl := buildRoute.BuildUrlArticle(artcileInfo.User.Username, artcileInfo.ID)
+		anthologyUrl := buildRoute.BuildUrlAnthology(v.User.Username, v.ID)
+		userHome := buildRoute.BuildUrlUserHome(v.User.Username)
+		messageContent := "<a href='" + userHome + "'>[" + c.UserInfo.Name + "]</a>的文章标题为<a href='" + articleUrl + "'>[" + article_title + "]</a>正在申请推送到你的专栏<a href='" + anthologyUrl + "'>[" + v.Title + "]</a>"
 		extendParam := cmn.Msi{}
 		extendParam["type"] = 1
 		extendParam["article_id"] = artcileInfo.ID

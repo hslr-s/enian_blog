@@ -5,6 +5,7 @@ import (
 	"enian_blog/lib/cache"
 	"enian_blog/lib/cmn"
 	mailLib "enian_blog/lib/mail"
+	"enian_blog/models"
 	"fmt"
 	"math/rand"
 	"os"
@@ -94,7 +95,7 @@ func (c *AdminController) SetGlobalSetting() {
 		field, err := c.MssKeyExistCheck(
 			param,
 			// 注册相关
-			// "register_email_suffix",
+			"register_email_suffix",
 			"register_method",
 		)
 
@@ -104,8 +105,8 @@ func (c *AdminController) SetGlobalSetting() {
 		}
 
 		cache.ConfigCacheGroupSet("global_register", cmn.Mss{
-			// "email_suffix": param["register_email_suffix"],
-			"method": param["register_method"],
+			"email_suffix": param["register_email_suffix"],
+			"method":       param["register_method"],
 		})
 
 	case "tag":
@@ -151,7 +152,7 @@ func (c *AdminController) SetGlobalSetting() {
 			"email_host",
 			"email_port",
 			"email_password",
-			"email_secure",
+			// "email_secure",
 		)
 
 		if err != nil {
@@ -164,7 +165,7 @@ func (c *AdminController) SetGlobalSetting() {
 			"host":     param["email_host"],
 			"port":     param["email_port"],
 			"password": param["email_password"],
-			"secure":   param["email_secure"],
+			// "secure":   param["email_secure"],
 		})
 
 	}
@@ -276,4 +277,54 @@ func (c *AdminController) SendTestMail() {
 	mailObj := mailLib.NewMail(param["address"], param["pass"], param["host"], port)
 	mailObj.SendMail(param["test_mail"], "邮件测试", "邮件测试通过，你可以返回到刚才的页面，继续操作。")
 	c.ApiOk()
+}
+
+// 仪表盘数据
+func (c *AdminController) Dashboard() {
+	returnRes := cmn.Msi{}
+
+	var userCount int64
+	var articleCount int64
+
+	// 总用户数
+	models.Db.Model(&models.User{}).Count(&userCount)
+	returnRes["user_count"] = userCount
+	// 总文章数
+	models.Db.Model(&models.Article{}).Count(&articleCount)
+	returnRes["article_count"] = articleCount
+	// 总访问量（已发布）
+	resMap := map[string]interface{}{}
+	models.Db.Raw("SELECT sum(`visit`) `count` FROM `article` WHERE `article`.`deleted_at` IS NULL").Scan(&resMap)
+	visitCount, _ := strconv.Atoi(resMap["count"].(string))
+	returnRes["visit_count"] = visitCount
+	// 最近15天发文曲线图
+	type WeekLineStruct struct {
+		Dates []string `json:"dates"`
+		Data  []int64  `json:"data"`
+	}
+	weekLineData := WeekLineStruct{}
+	todayTime := time.Now()
+	for i := -15; i <= 0; i++ {
+		currentTime := todayTime.AddDate(0, 0, i).Format("2006-01-02")
+		var dateCount int64
+		models.Db.Model(&models.Article{}).Where("release_time LIKE ?", currentTime+"%").Count(&dateCount)
+		weekLineData.Data = append(weekLineData.Data, dateCount)
+		weekLineData.Dates = append(weekLineData.Dates, currentTime[5:])
+	}
+	returnRes["week_line"] = weekLineData
+	// 最新发布的文章10条
+	articleList := []models.Article{}
+	articleListMap := []cmn.Msi{}
+	models.Db.Model(&models.Article{}).Preload("User").Limit(10).Order("release_time DESC").Find(&articleList)
+	for _, v := range articleList {
+		articleListMap = append(articleListMap, cmn.Msi{
+			"article_title": v.Title,
+			"article_id":    v.ID,
+			"user_name":     v.User.Name,
+			"release_time":  v.ReleaseTime.Format(cmn.TIMEMODE_1),
+		})
+	}
+	returnRes["latest_articles"] = articleListMap
+
+	c.ApiSuccess(returnRes)
 }

@@ -135,7 +135,7 @@
                         var status_html = (element.status == 0) ? '<span class="layui-badge layui-bg-red">私</span>' : "";
                         var release_status = (element.release_time != "") ? '<span class="layui-badge layui-bg-blue">已发布</span>' : "";
                         var browseBtn="";
-                        if(element.status == 0 || element.release_time != ""){
+                        if(element.release_time != ""){
                             browseBtn = '<a class="mine-edit" style="background-color:#84b6f7" href="/u/'+element.user_username+'/content/' + element.id + '">浏览</a>';
                         }else{
                             browseBtn = '<a class="mine-edit" href="/u/'+element.user_username+'/preview/' + element.id + '">预览</a>';

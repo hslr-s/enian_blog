@@ -37,7 +37,7 @@ func GetDb() (*gorm.DB, error) {
 	var err error
 
 	if dbDrive == "mysql" {
-		fmt.Println("数据库驱动:", "MySQL")
+		fmt.Print("数据库驱动:", "MySQL", "\n")
 		// gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
 		// 	return "blog_" + defaultTableName
 		// }
@@ -67,6 +67,7 @@ func GetDb() (*gorm.DB, error) {
 			&Tag{},
 			&File{},
 			&UserConfig{},
+			&FriendLink{},
 		)
 		sqlDb, _ := db.DB()
 		sqlDb.SetMaxIdleConns(10)             // SetMaxIdleConns 设置空闲连接池中连接的最大数量
@@ -92,6 +93,7 @@ func GetDb() (*gorm.DB, error) {
 			&Tag{},
 			&File{},
 			&UserConfig{},
+			&FriendLink{},
 		)
 
 	}

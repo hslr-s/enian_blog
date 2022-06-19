@@ -261,7 +261,7 @@ a:hover{color: #004b8c; transition: all .3s;}
 .fly-list-info .icon-renzheng{position: relative; top: 1px; margin-right: 3px;}
 .fly-list-info .fly-badge-vip{position: relative; margin-left: 2px;}
 .fly-list-kiss{color: #FF5722;}
-.fly-list-nums{position: absolute; top: 0; padding-right: 0!important;}
+.fly-list-nums{ top: 0; padding-right: 0!important;}
 .fly-list-nums i{position: relative; padding: 0 3px 0 15px;}
 
 .fly-list-badge{position: absolute; right: 15px; top: 15px; font-size: 0;}
@@ -332,13 +332,14 @@ body .layui-edit-face  .layui-layer-content{padding:0; background-color:#fff; co
 
 /* Detail页 */
 .detail-box{padding: 20px;}
+.detail-box h1{font-weight: 700;}
 .detail h1{font-size: 24px; line-height: 36px;}
 .fly-detail-info{position: relative; margin: 10px 0 15px;}
 .fly-detail-info .layui-btn{height: 20px; line-height: 20px; vertical-align: top; border-radius: 0;}
 .fly-detail-info .layui-btn+.layui-btn{margin-left: 0;}
 .fly-admin-box{position: relative; display: inline-block; vertical-align: top; margin-left: 20px;}
-.fly-detail-info .fly-list-nums{top: -3px; font-size: 16px;}
-.fly-detail-info .fly-list-nums i{padding: 0 3px 0 15px; font-size: 22px; color: #999;}
+.fly-detail-info .fly-list-nums{top: -3px; font-size: 13px;}
+.fly-detail-info .fly-list-nums i{padding: 0 3px 0 15px; font-size: 15px; color: #999;}
 
 .detail-about{position: relative; line-height: 20px; padding: 15px 15px 15px 75px; font-size: 13px; background-color: #f8f8f8; color: #999;}
 .detail-about .jie-status, .detail-about .jie-status-ok{color:#fff;}

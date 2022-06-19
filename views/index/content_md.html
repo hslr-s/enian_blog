@@ -10,6 +10,7 @@
     .toc-list-item{
         margin-top: 5px;
     }
+    
    /*解决layui屏蔽li标签默认样式临时方案*/
   .markdown-body ul li{list-style: disc;}
   .markdown-body ul li li{list-style: circle;}
@@ -22,22 +23,36 @@
   <div class="layui-row layui-col-space15">
     <div class="layui-col-md8">
       <div class="fly-panel detail-box">
+        {{if eq .ArticleInfo.Status 0}}
+        <div style="text-align: center;color: #ffa083;"><span> 本文为私密文章，仅对自己可见 </span></div>
+        <hr />
+        {{end}}
         <h1>{{.ArticleInfo.Title}}</h1>
         <div class="fly-detail-info">
-
-          <span class="fly-list-nums" style="color: #c2c2c2;">
-            <a style="color: #c2c2c2;">更新时间：{{dateformat .ArticleInfo.ReleaseTime "2006-01-02 15:04:05"}}</a>
-            <i class="iconfont" title="浏览量" style="color: #c2c2c2;">&#xe60b;</i>{{.ArticleInfo.Visit}}
-            <div>
-              <span>标签：</span>
+          <span class="fly-list-nums" style="color: #999999;">
+            <a style="color: #8f8f8f;" title='首次发布于 {{dateformat .ArticleInfo.ReleaseTime "2006-01-02 15:04:05"}}'>更新于 <span
+                class="realease-time">{{dateformat .ArticleInfo.ReleaseUpdateTime "2006-01-02 15:04"}}</span></a>
+            <i class="iconfont" title="浏览量" style="color: #999999;">&#xe60b;</i>{{.ArticleInfo.Visit}}
+            <div style="margin-top: 5px;">
+              {{if $.anthologys}}
+              <span style="color: #999999;">专栏：</span>
+              {{range $.anthologys}}
+              <span class="layui-badge-rim"><a href="{{.anthologys_url}}">{{.title}}</a></span>
+              {{end}}
+            
+              {{end}}
+            
+              {{if .ArticleInfo.Tags}}
+              <span style="color: #999999;">标签：</span>
               {{range .ArticleInfo.Tags}}
-              <span class="layui-badge fly-badge-accept blog-tags"><a href="/search/tag/{{.ID}}">{{.Title}}</a></span>
+              <span class="layui-badge-rim"><a href="/search/tag/{{.ID}}">{{.Title}}</a></span>
+              {{end}}
               {{end}}
             </div>
           </span>
         </div>
-        <br /><br />
         <hr />
+        <!-- <div><div class="layui-btn layui-btn-primary layui-border-green layui-btn-xs" style="float: right;">修改</div></div> -->
         <div class="detail-body photos">
           <div id="editormd-to-html" class="markdown-body editormd-html-preview">
             {{str2html .ArticleInfo.ContentRender}}
@@ -52,6 +67,7 @@
       <div class="fixed-panel">
         {{template "template/right/article_menu.html" .}}
         {{template "template/right/label.html" .}}
+        {{template "template/right/friend_link.html" .}}
       </div>
     </div>
   </div>

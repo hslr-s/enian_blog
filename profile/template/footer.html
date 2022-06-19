@@ -8,7 +8,7 @@
 </script>
 <script type="text/javascript">
     app.defTpl('footer', function (tplArg) {
-        app.base.ajaxGet("/api/front/getAuthPageInfo", function (data) {
+        app.base.ajaxGet("/api/front/getAuthPageInfo?param=site", function (data) {
             app.base.tplRender('#tpl-footer', data, null, function (html) {
                 layui.$(tplArg.elem).html(html)
             })

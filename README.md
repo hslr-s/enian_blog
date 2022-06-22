@@ -4,19 +4,28 @@
 <br>
 EnianBlog(E念博客)
 <br>
-<a title="Github" target="_blank" href="https://github.com/hslr-s/enian_blog">Github开源地址</a> |
-<a title="Gitee" target="_blank" href="https://gitee.com/hslr/enian_blog">Gitee开源地址</a>
+<a title="官网地址" target="_blank" href="http://enianblog.enianteam.com/">官网</a> |
+<a title="官方文档地址" target="_blank" href="http://enianblog.enianteam.com/guide">官方文档</a> |
+<a title="意见反馈" target="_blank" href="https://support.qq.com/product/412977">意见反馈</a> |
+<a title="Github" target="_blank" href="https://github.com/hslr-s/enian_blog">Github</a> |
+<a title="Gitee" target="_blank" href="https://gitee.com/hslr/enian_blog">Gitee</a> 
+
 </p>
+
+
 
 ## 🌈 介绍
 EnianBlog(E念博客)是一个支持多人使用的团队博客系统。是基于前端layui和后端go语言的beego框架开发。支持专栏、标签、SEO、markdown语法、同时支持人人都会使用的富文本编辑器等诸多特色功能！
 
+> 官网：http://enianblog.enianteam.com/<br>文档：http://enianblog.enianteam.com/guide
+
+
 ##### 小伙伴请看：
- - 项目正在测试阶段，暂不能保证无缝升级，新功能不断的增加到开发计划中。大家尽量不要应用在正式环境中。
+ - 项目正在测试阶段，暂不能保证无缝升级，新功能不断的增加到开发计划中。
  - 有想参与开发的小伙伴可以联系我(群和联系方式在下方)！
  - 目前正在学习Go语言，代码如果哪里不完美欢迎指点。
-- 大家可以去看[B站视频开发vlog](https://space.bilibili.com/27407696)。给个三连，让更多人看到。多谢🧡🧡🧡
-- 如果不想自己编译可以下载[发布版](https://gitee.com/hslr/enian_blog/releases)，目前已编译windows64和linux64版本
+ - 大家可以去看[B站视频开发vlog](https://space.bilibili.com/27407696)。给个三连，让更多人看到。多谢🧡🧡🧡 
+ - 如果不想自己编译可以下载[发布版](https://gitee.com/hslr/enian_blog/releases)，目前已编译windows64和linux64版本
 
 ## 🎇 演示站点信息
 
@@ -39,7 +48,11 @@ EnianBlog(E念博客)是一个支持多人使用的团队博客系统。是基�
 |   wangEditor       |        | 前端富文本编辑器插件，低门槛，用户上手容易，用于编辑文章和渲染 |
 
 ## 🚀 升级说明及更新日志
-[升级说明及更新日志](./readme_src/upload_log.md "升级说明及更新日志")
+[升级说明](http://enianblog.enianteam.com/guide/update "升级说明")
+
+[更新日志](http://enianblog.enianteam.com/update_log "更新日志")
+
+
 
 ## ✨ 页面截图
 (前4张为前台，后4张为后台)

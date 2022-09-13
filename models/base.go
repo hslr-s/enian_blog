@@ -2,6 +2,8 @@ package models
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"time"
 
 	"github.com/beego/beego/v2/server/web"
@@ -9,6 +11,7 @@ import (
 	"gorm.io/driver/sqlite"
 	_ "gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 )
 
@@ -55,6 +58,7 @@ func GetDb() (*gorm.DB, error) {
 				// TablePrefix:   "blog_",
 				SingularTable: true,
 			},
+			Logger:                                   GetLogger(),
 			DisableForeignKeyConstraintWhenMigrating: true,
 		})
 		// db.InstanceSet("gorm:table_options", "ENGINE=InnoDB")
@@ -81,6 +85,7 @@ func GetDb() (*gorm.DB, error) {
 				// TablePrefix:   "blog_",
 				SingularTable: true,
 			},
+			Logger: GetLogger(),
 			// DisableForeignKeyConstraintWhenMigrating: true,
 		})
 
@@ -100,4 +105,18 @@ func GetDb() (*gorm.DB, error) {
 
 	Db = db
 	return Db, err
+}
+
+// 日志
+func GetLogger() logger.Interface {
+	return logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer（日志输出的目标，前缀和日志包含的内容——译者注）
+		logger.Config{
+			SlowThreshold:             time.Second, // 慢 SQL 阈值
+			LogLevel:                  logger.Warn, // 日志级别
+			IgnoreRecordNotFoundError: true,        // 忽略ErrRecordNotFound（记录未找到）错误
+			Colorful:                  true,        // 彩色打印
+		},
+	)
+
 }

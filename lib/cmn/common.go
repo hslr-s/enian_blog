@@ -123,16 +123,16 @@ func CheckMailConfigComplete(mailInfo Msi) error {
 		return errors.New("邮件信息不完整")
 	}
 	if _, ok := mailInfo["password"]; !ok {
-		return errors.New("邮件信息不完整")
+		return errors.New("邮件密码不完整")
 	}
 	if _, ok := mailInfo["host"]; !ok {
-		return errors.New("邮件信息不完整")
+		return errors.New("邮件服务器不完整")
 	}
 	if _, ok := mailInfo["port"]; !ok {
-		return errors.New("邮件信息不完整")
+		return errors.New("邮件端口不完整")
 	}
-	if _, ok := mailInfo["address"]; ok {
-		return errors.New("邮件信息不完整")
+	if _, ok := mailInfo["email_address"]; ok {
+		return errors.New("邮件地址不完整")
 	}
 	return nil
 }

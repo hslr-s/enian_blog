@@ -96,7 +96,7 @@ func sendMail(mail_connect_info *Mail_Connect_Info, mailTo []string, send_name, 
 	m.SetBody("text/html", body)  //设置邮件正文
 
 	d := gomail.NewDialer(mail_connect_info.Host, mail_connect_info.Port, mail_connect_info.User, mail_connect_info.Pass)
-
+	// d.TLSConfig = &tls.Config{InsecureSkipVerify: true} // 跳过证书验证
 	err := d.DialAndSend(m)
 	return err
 }

@@ -275,7 +275,9 @@ func (c *AdminController) SendTestMail() {
 	}
 	port, _ := strconv.Atoi(param["port"])
 	mailObj := mailLib.NewMail(param["address"], param["pass"], param["host"], port)
-	mailObj.SendMail(param["test_mail"], "邮件测试", "邮件测试通过，你可以返回到刚才的页面，继续操作。")
+	if err := mailObj.SendMail(param["test_mail"], "邮件测试", "邮件测试通过，你可以返回到刚才的页面，继续操作。"); err != nil {
+		c.ApiErrorMsg("邮箱发送失败:" + err.Error())
+	}
 	c.ApiOk()
 }
 

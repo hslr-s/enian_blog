@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"enian_blog/lib/cache"
 	"enian_blog/lib/cmn"
 	"enian_blog/lib/initialize"
 	"enian_blog/models"
@@ -49,6 +50,14 @@ func (c *AdminUsersController) UpdatePassword() {
 	mUser := models.User{}
 	userId, _ := strconv.Atoi(param["id"])
 	password := cmn.PasswordEncryption(param["password"])
+
+	// 删除用户token
+	{
+		findUser := mUser.GetUserInfoByUid(uint(userId))
+		if findUser != nil {
+			cache.UserLoginTokenDel(findUser.Token)
+		}
+	}
 	mUser.UpdateUserInfoByUserId(uint(userId), cmn.Msi{
 		"password": password,
 		"token":    "",
@@ -86,6 +95,19 @@ func (c *AdminUsersController) Edit() {
 		if findUser != nil && findUser.ID != uint(userId) {
 			c.ApiError(-1, "用户名被占用")
 		}
+
+		// 验证是否锁定，锁定将删除用户token信息，强制下线
+		{
+			if v, ok := updateData["status"]; ok {
+				if s, sok := v.(string); sok {
+					if s == "2" {
+						cache.UserLoginTokenDel(findUser.Token)
+						updateData["token"] = ""
+					}
+				}
+			}
+		}
+
 		err = mUser.UpdateUserInfoByUserId(uint(userId), updateData)
 	} else {
 		// 新建

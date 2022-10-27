@@ -46,8 +46,11 @@ func (c *AuthController) Login() {
 	}
 	if loginMethod == 1 {
 		userInfo, err := mUser.GetUserInfoByUsernameAndPassword(username, cmn.PasswordEncryption(password))
+		if userInfo.Status == 2 {
+			c.ApiError(-1, "用户已被禁止登录")
+		}
 		if err != nil {
-			c.ApiError(-1, "账号密码不正确或者被限制登录")
+			c.ApiError(-1, "账号密码不正确")
 		} else {
 			// 查询是否有token，没有则创建，并保存到数据库，有则返回
 			var token string
@@ -191,14 +194,14 @@ func (c *AuthController) JoinConfirm() {
 	if !cache.CacheIsExist(key) {
 		c.ApiError(-1, "找不到key")
 	}
-	// fmt.Println(cache.CacheGet(key))
 	registerInfo := RegisterInfoCache{}
-
-	// 删除该缓存
-	cache.CacheDelete(key)
 	if err := cache.CacheGet(key, &registerInfo); err != nil {
+		// 删除该缓存
+		cache.CacheDelete(key)
 		c.ApiError(-1, "key 过期")
 	}
+	// 删除该缓存
+	cache.CacheDelete(key)
 
 	mUser := models.User{
 		Password:   cmn.PasswordEncryption(registerInfo.Password),
@@ -207,6 +210,7 @@ func (c *AuthController) JoinConfirm() {
 		Name:       registerInfo.Name,
 		Head_image: initialize.DefaultHeadImage,
 		Status:     1,
+		Role:       2,
 	}
 
 	// 判断邮箱和用户名是否存在

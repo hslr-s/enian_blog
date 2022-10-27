@@ -199,6 +199,10 @@ func UserLoginTokenUserGet(loginToken string) (models.User, error) {
 // 删除用户登录信息
 func UserLoginTokenDel(token string) (err error) {
 	err = CacheDelete("login_user_token_" + token)
+	if err != nil {
+		return
+	}
+	err = CacheDelete("user_token_" + token)
 	return
 }
 

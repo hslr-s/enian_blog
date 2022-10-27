@@ -39,6 +39,18 @@ func GetDb() (*gorm.DB, error) {
 	var db *gorm.DB
 	var err error
 
+	dbModels := []interface{}{
+		&Article{},
+		&User{},
+		&Config{},
+		&Anthology{},
+		&Message{},
+		&Tag{},
+		&File{},
+		&UserConfig{},
+		&FriendLink{},
+	}
+
 	if dbDrive == "mysql" {
 		fmt.Print("数据库驱动:", "MySQL", "\n")
 		// gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
@@ -62,17 +74,7 @@ func GetDb() (*gorm.DB, error) {
 			DisableForeignKeyConstraintWhenMigrating: true,
 		})
 		// db.InstanceSet("gorm:table_options", "ENGINE=InnoDB")
-		db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(
-			&Article{},
-			&User{},
-			&Config{},
-			&Anthology{},
-			&Message{},
-			&Tag{},
-			&File{},
-			&UserConfig{},
-			&FriendLink{},
-		)
+		db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(dbModels...)
 		sqlDb, _ := db.DB()
 		sqlDb.SetMaxIdleConns(10)             // SetMaxIdleConns 设置空闲连接池中连接的最大数量
 		sqlDb.SetMaxOpenConns(100)            // SetMaxOpenConns 设置打开数据库连接的最大数量。
@@ -89,17 +91,7 @@ func GetDb() (*gorm.DB, error) {
 			// DisableForeignKeyConstraintWhenMigrating: true,
 		})
 
-		db.AutoMigrate(
-			&Article{},
-			&User{},
-			&Config{},
-			&Anthology{},
-			&Message{},
-			&Tag{},
-			&File{},
-			&UserConfig{},
-			&FriendLink{},
-		)
+		db.AutoMigrate(dbModels...)
 
 	}
 

@@ -48,9 +48,9 @@ EnianBlog(E念博客)是一个支持多人使用的团队博客系统。是基�
 |   wangEditor       |        | 前端富文本编辑器插件，低门槛，用户上手容易，用于编辑文章和渲染 |
 
 ## 🚀 升级说明及更新日志
-[升级说明](http://enianblog.enianteam.com/guide/update "升级说明")
+[升级说明](http://hslr.gitee.io/doc_enian_blog/guide/update "升级说明")
 
-[更新日志](http://enianblog.enianteam.com/update_log "更新日志")
+[更新日志](http://hslr.gitee.io/doc_enian_blog/update_log "更新日志")
 
 
 

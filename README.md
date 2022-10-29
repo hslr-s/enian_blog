@@ -4,8 +4,8 @@
 <br>
 EnianBlog(E念博客)
 <br>
-<a title="官网地址" target="_blank" href="http://enianblog.enianteam.com/">官网</a> |
-<a title="官方文档地址" target="_blank" href="http://enianblog.enianteam.com/guide">官方文档</a> |
+<a title="官方文档地址" target="_blank" href="http://hslr.gitee.io/doc_enian_blog">网站/文档</a> |
+<a title="更新日志" target="_blank" href="http://hslr.gitee.io/doc_enian_blog/update_log">更新日志</a> |
 <a title="意见反馈" target="_blank" href="https://support.qq.com/product/412977">意见反馈</a> |
 <a title="Github" target="_blank" href="https://github.com/hslr-s/enian_blog">Github</a> |
 <a title="Gitee" target="_blank" href="https://gitee.com/hslr/enian_blog">Gitee</a> 
@@ -17,7 +17,7 @@ EnianBlog(E念博客)
 ## 🌈 介绍
 EnianBlog(E念博客)是一个支持多人使用的团队博客系统。是基于前端layui和后端go语言的beego框架开发。支持专栏、标签、SEO、markdown语法、同时支持人人都会使用的富文本编辑器等诸多特色功能！
 
-> 官网：http://enianblog.enianteam.com/<br>文档：http://enianblog.enianteam.com/guide
+> 更新日志：http://hslr.gitee.io/doc_enian_blog/update_log <br>文档：http://hslr.gitee.io/doc_enian_blog
 
 
 ##### 小伙伴请看：

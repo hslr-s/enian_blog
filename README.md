@@ -31,11 +31,6 @@ EnianBlog(E念博客)是一个支持多人使用的团队博客系统。是基�
 
 由于服务器资源有限，不再提供demo演示，请直接下载编译后的可执行文件使用。
 
-<!- 
-- 前台地址：[点击直达](http://demoblog.enianteam.com/ "点击直达")
-- 后台地址：[点击直达](http://demoblog.enianteam.com/profile/auth.html#/login "点击直达")
-- 演示账号：admin  演示密码：111111
-->
 
 ## 🎉 适合用户
 个人、开发团队、各行业人员。

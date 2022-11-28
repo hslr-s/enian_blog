@@ -1,0 +1,51 @@
+<div class="layui-container" style="margin-top: 20px">
+	<div class="layui-row layui-col-space15">
+		<div>
+			<h1 class="e-page-title layui-inline">专栏</h1> <i class="layui-icon layui-icon-about"
+				title="所有公开到全局的专栏会显示在这里"></i>
+		</div>
+		<div class="layui-col-md8">
+
+			{{range .AnthologyData.list}}
+			<div class="layui-card">
+
+				<div class="layui-card-body">
+					<p class="anthology-title"><a href="/u/{{.User.Username}}/anthology/{{.ID}}">{{.Title}}</a></p>
+					<p class="e-font-black3 card-content-font"> <a href="/u/{{.User.Username}}">{{.User.Name}}</a>
+						创建于 {{date .CreatedAt "Y-m-d H:i"}} </p>
+					<!-- <p class="">作者：{{.User.Name}}</p> -->
+					<!-- <p class="">时间：{{date .CreatedAt "Y-m-d H:i"}}</p> -->
+					{{if .Description}}
+					<p class="e-font-black3 card-content-font layui-elip" title="{{.Description}}">
+						专栏介绍：{{.Description}}</p>
+					{{end}}
+
+				</div>
+			</div>
+			{{end}}
+		</div>
+
+		<div class="layui-col-md4">
+			{{template "template/right/user_card.html" .}}
+			{{template "template/right/search_word.html" .}}
+			{{template "template/right/label.html" .}}
+			{{template "template/right/friend_link.html" .}}
+
+		</div>
+		<!-- 统计 -->
+		{{ if .Seo.TongJi}}{{str2html .Seo.TongJi}}{{end}}
+	</div>
+</div>
+
+<style>
+	.anthology-title {
+		font-size: 20px;
+		margin: 10px 0;
+		padding-left: 10px;
+		border-left: 5px solid #4a7eb3;
+	}
+
+	.card-content-font {
+		font-size: 13px;
+	}
+</style>

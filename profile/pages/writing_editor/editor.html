@@ -12,7 +12,7 @@
         color:#979797;
     }
 </style>
-<div class="fly-panel" pad20 style="padding-top: 5px;">
+<div class="fly-panel" style="padding: 10px 20px 0 20px;">
     <!--<div class="fly-none">没有权限</div>-->
     <div class="layui-form">
         <div class="layui-tab layui-tab-brief" lay-filter="user">
@@ -21,7 +21,7 @@
                 <li>发布设置</li>
                 <li>切换编辑器</li>
             </ul>
-            <div class="layui-form layui-tab-content" style="padding: 20px 0;">
+            <div class="layui-form  layui-tab-content" style="padding: 15px 0 5px 0;">
                 <div class="layui-row layui-col-space15 layui-form-item layui-form-pane">
                 
                     <div class="layui-col-md9">
@@ -300,7 +300,7 @@
             // })
 
 
-            layui.jquery("#editor").css("height", layui.jquery(document).height() - 300 + "px")
+            layui.jquery("#editor").css("height", layui.jquery(document).height() - 250 + "px")
             layui.form.render()
 
             run_listen()
@@ -614,7 +614,7 @@
 
         // 保存文章
         // 参数 是否保存渲染
-        function save_article(render,callback) {
+        function save_article(isRelease,callback) {
             $("#save-btn").html('<i class="layui-icon layui-icon-loading-1 layui-anim layui-anim-rotate layui-anim-loop"></i>')
             var data = {}
             data.title = $("#article_title").val()
@@ -633,7 +633,7 @@
             }
 
             // 保存渲染内容
-            if(render){
+            if(isRelease){
                 data.content_render = editor.getContentRender()
                 // if (data.content_render == "" ) {
                 //     layer.msg("发布内容不能为空")
@@ -649,7 +649,7 @@
                     articleInfo.create_time = app.base.getDateTime()
                     articleInfo.status = data.status
                     // 发布
-                    if(render){
+                    if(isRelease){
                         if(callback){
                             // articleInfo.release_time = app.base.getDateTime() // 非首次不更改
                             articleInfo.release_update_time = app.base.getDateTime()
@@ -671,7 +671,7 @@
                         articleInfo.create_time = app.base.getDateTime()
                         articleInfo.status = data.status
                         // 发布
-                        if (render) {
+                        if (isRelease) {
                             if (callback) {
                                 articleInfo.release_time = app.base.getDateTime()
                                 articleInfo.release_update_time = app.base.getDateTime()

@@ -791,3 +791,28 @@ body .fly-user-main{position: relative; min-height: 600px;}
  .layui-form-radioed>i{
   color: #004b8c !important
  }
+
+ .e-font-black1{
+  color: #313131;
+ }
+
+ .e-font-black2{
+  color: #656565;
+ }
+
+ .e-font-black3 {
+  color: #7f7f7f;
+ }
+
+  .e-font-black4 {
+    color: #aeaeae;
+  }
+
+.e-page-title{
+  color: #313131;
+  font-weight: 600;
+}
+
+.e-body-style{
+  overflow: hidden;
+}

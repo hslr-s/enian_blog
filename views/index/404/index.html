@@ -1,0 +1,24 @@
+<div class="layui-container">
+	
+	<div class="layui-row layui-col-space15">
+		<div class="layui-col-md8">
+			<div class="fly-panel detail-box">
+				<h3><a onclick="window.history.back()" style="cursor: pointer;color: #660ee2">
+						< 返回上一页</a>
+				</h3>
+				<div class="box">
+					<h2><i class="layui-icon layui-icon-404 icon"></i></h2>
+					<h2>{{.Error_msg}}</h2>
+				</div>
+			
+			</div>
+		</div>
+	
+		<div class="layui-col-md4">
+			{{template "template/right/user_card.html" .}}
+			{{template "template/right/search_word.html" .}}
+			{{template "template/right/label.html" .}}
+			{{template "template/right/friend_link.html" .}}
+		</div>
+	</div>
+</div>

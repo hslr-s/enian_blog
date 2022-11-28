@@ -1,0 +1,36 @@
+<div class="fly-header layui-bg-black">
+  <div class="layui-container">
+    <ul class="layui-nav fly-nav layui-hide-xs">
+
+      <!-- 头部标题列表 -->
+      {{range .HeaderData.HeaderList}}
+      <li class="layui-nav-item {{if eq $.HeaderMenuCheck .ID}} layui-this {{end}}">
+        <a href="{{.Href}}">{{.Html}}</a>
+      </li>
+      {{end}}
+    </ul>
+
+
+    <ul class="layui-nav fly-nav-mobile">
+      <li class="layui-nav-item">
+        <a></i>{{.HeaderData.Title}}</a>
+      </li>
+    </ul>
+
+    <ul class="layui-nav fly-nav-user fly-nav-mobile">
+      <li class="layui-nav-item">
+        <a class="fly-nav-avatar" href="javascript:;">
+          <div>
+            <i class="layui-icon" style="color: white;font-size: 25px">&#xe653;</i>
+          </div>
+        </a>
+        <dl class="layui-nav-child">
+          <!-- 头部标题 手机端 -->
+          {{range .HeaderData.HeaderList}}
+          <dd><a href="{{.Href}}" style="text-align: center;">{{.Html}}</a></dd>
+          {{end}}
+        </dl>
+      </li>
+    </ul>
+  </div>
+</div>

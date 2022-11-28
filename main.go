@@ -23,15 +23,6 @@ func main() {
 	if dbErr != nil {
 		cmn.FatalError("数据库错误," + dbErr.Error())
 	}
-	// db.AutoMigrate(
-	// 	&models.Article{},
-	// 	&models.User{},
-	// 	&models.Config{},
-	// 	&models.Anthology{},
-	// 	&models.Message{},
-	// 	&models.Tag{},
-	// 	&models.File{},
-	// )
 
 	mUser := models.User{}
 	err := db.First(&mUser).Error
@@ -40,5 +31,7 @@ func main() {
 	}
 	web.AddFuncMap("TimeToRelativeTime", cmn.TimeToRelativeTime)
 	web.AddFuncMap("TimeStrToRelativeTime", cmn.TimeStrToRelativeTime)
+	web.AddFuncMap("GetUrlEditArticle", cmn.GetUrlEditArticle)
+
 	web.Run()
 }

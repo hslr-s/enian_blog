@@ -83,6 +83,8 @@
              form.render()
         })
 
+        let currentPage= 1
+
         // 搜索按钮
         form.on('submit(search-btn)', function (data) {
             // console.log(data.elem) //被执行事件的元素DOM对象，一般为button对象
@@ -96,6 +98,7 @@
         getList(1)
 
         function getList(page, anthology_id, keyword){
+            currentPage= page
             var limit=15
 
             var postData={};
@@ -120,7 +123,6 @@
                         //obj包含了当前分页的所有参数，比如：
                         // console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
                         // console.log(obj.limit); //得到每页显示的条数
-                        
                         //首次不执行
                         if (!first) {
                             //do something
@@ -163,7 +165,11 @@
                         }, function () {
                             // console.log("删除文章", article_id)
                             app.base.ajaxPost("/api/personal/deleteArticle",{id: article_id},function(res){
-                                that.parent().parent().remove()
+                                if(data.list.length==1 && currentPage!=1){
+                                   currentPage--
+                                }
+                                // that.parent().parent().remove() // dom删除
+                                getList(currentPage)
                                 layer.msg("删除成功")
                             },function(msg){
                                 layer.msg(msg)

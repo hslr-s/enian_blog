@@ -1,0 +1,63 @@
+<script src="/static/layui/layui.js?v={{.Version}}"></script>
+<div class="fly-home fly-panel" style="background-image: url();">
+	<img src="{{.UserCardData.HeaderImg}}" alt="{{.UserCardData.UserName}}">
+	<!-- <i class="iconfont icon-renzheng" title="Fly社区认证"></i> -->
+	<h1>
+		{{.UserCardData.UserName}}
+		<p>
+			{{if eq .UserCardData.Gender "1"}} <i class="iconfont icon-nan"> 男</i> {{end}}
+			{{if eq .UserCardData.Gender "2"}} <i class="iconfont icon-nv"> 女</i> {{end}}
+		</p>
+	</h1>
+
+	<!-- <p style="padding: 10px 0; color: #5FB878;">认证信息：layui 作者</p> -->
+
+	<!-- <p class="fly-home-info">
+		<i class="iconfont icon-kiss" title="飞吻"></i><span style="color: #FF7200;">66666 飞吻</span>
+		<i class="iconfont icon-shijian"></i><span>2015-6-17 加入</span>
+		<i class="iconfont icon-chengshi"></i><span>来自杭州</span>
+	</p> -->
+
+	<p class="fly-home-sign">{{.UserCardData.Autograph}}</p>
+
+	<!-- <div class="fly-sns" data-user="">
+		<a href="javascript:;" class="layui-btn layui-btn-primary fly-imActive" data-type="addFriend">加为好友</a>
+		<a href="javascript:;" class="layui-btn layui-btn-normal fly-imActive" data-type="chat">发起会话</a>
+	</div> -->
+
+</div>
+{{if .AnthologyTitleData}}
+<div class="fly-panel">
+	<div class="fly-panel fly-column">
+		<div class="layui-container">
+			<ul class="layui-clear">
+				{{range .AnthologyTitleData}}
+				<li>
+					<a href="{{.url}}" {{if .checked}}style="color:#5fb878" {{end}}>{{.title}}</a>
+				</li>
+				{{end}}
+			</ul>
+
+		</div>
+	</div>
+</div>
+{{end}}
+
+
+<div class="layui-container" style="margin-top: 20px">
+	<div class="layui-row layui-col-space15">
+		<div class="layui-col-md8">
+			{{template "template/list.html" .}}
+		</div>
+
+		<div class="layui-col-md4">
+			{{template "template/right/search_word.html" .}}
+			{{template "template/right/label.html" .}}
+			{{template "template/right/friend_link.html" .}}
+		</div>
+
+		<!-- 统计 -->
+		{{ if .Seo.TongJi}}{{str2html .Seo.TongJi}}{{end}}
+
+	</div>
+</div>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>{{.HeaderData.Title}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    {{if .HeaderData.Description }}
+    <meta name="description" content="{{.HeaderData.Description}}" /> {{end}}
+    {{if .HeaderData.Keywords }}
+    <meta name="keywords" content="{{.HeaderData.Keywords}}" /> {{end}}
+    <link rel="stylesheet" href="/static/layui/css/layui.css?v={{.Version}}">
+    <link rel="stylesheet" href="/static/layui/css/layui.theme.css">
+    <link rel="stylesheet" href="/static/css/global.css?v={{.Version}}">
+    <!-- <link rel="stylesheet" href="/static/css/main.css?v={{.Version}}"> -->
+    <!-- <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon"> -->
+    <link rel="icon" href="{{.site_ico}}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{.site_ico}}" type="image/x-icon">
+    <script src="/static/layui/layui.js?v={{.Version}}"></script>
+    {{.HtmlStyle}}
+</head>
+
+
+<body>
+    {{template "template/head_bar.html" .}}
+    {{.LayoutContent}}
+
+
+    <div class="fly-footer">
+        <p> Copyright &copy; <span id="foot-copyright-year"></span><a href="{{.FooterData.Team_url}}"
+                target="_blank">{{.FooterData.Team_name}}</a>{{if .FooterData.Name}}·<a>{{.FooterData.Name}}</a>{{end}}
+        </p>
+
+
+
+        <!-- 
+    您可以一直使用或进行二次开发本开源项目，全站只有一处带有版权且不可自定义的标签。
+    俗话说得好：吃水不忘挖井人，希望您保留下段标签内容，开源不易，感谢您的理解！ 
+    -->
+        <p>
+            Powered By<a href="http://enianblog.enianteam.com/" target="_blank" title="E念博客（EnianBlog）">EnianBlog</a>
+        </p>
+        <!-- 
+    如果您想参与和作者一同开发，欢迎联系我，加入进来，让此项目更加完美！
+    如果您在做二次开发，希望您在开源的同时，注明原作者出处，感谢您，我的宝🌈。
+  -->
+
+        {{if .FooterData.Icp}}
+        <p>
+            <a href="http://beian.miit.gov.cn" target="_blank" style="font-size: 13px;">{{.FooterData.Icp}}</a>
+        </p>
+        {{end}}
+    </div>
+
+
+    <script>
+
+        layui.config({
+            version: "{{.Version}}"
+            , base: '/static/mods/' //这里实际使用时，建议改成绝对路径
+        }).extend({
+            fly: 'index'
+        }).use(['fly', 'carousel', 'jquery', 'layer'], function () {
+
+            var $ = layui.jquery;
+            //执行一个轮播实例
+            layui.carousel.render({
+                elem: '#head_background'
+                , width: '100%' //设置容器宽度
+                , height: 200
+                , arrow: 'none' //不显示箭头
+                , anim: 'fade' //切换动画方式
+            });
+
+            $("#foot-copyright-year").text(new Date().getFullYear())
+
+            // 搜索
+            $('#search').bind('keypress', function (event) {
+                if (event.keyCode == "13") {
+                    var wd = $('#search').val();
+                    if (wd == '') {
+                        layui.layer.alert("搜索关键字不能为空");
+                    } else {
+                        location.href = "/search/keyword/" + wd;
+                    }
+
+                }
+            })
+        });
+    </script>
+</body>
+
+</html>

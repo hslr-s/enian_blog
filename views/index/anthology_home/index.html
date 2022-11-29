@@ -1,0 +1,34 @@
+<div class="layui-container">
+	<h1 class="anthology-title">{{.AnthologyInfo.title}}</h1>
+	<!-- 基础信息 -->
+	<div class="anthology-info">
+		<p class="e-font-black3">
+			<span>创建人：<a href="/u/{{.AnthologyInfo.username}}">{{.AnthologyInfo.userName}}</a></span>
+			<span>创建于：{{.AnthologyInfo.createTime}}</span>
+			<span> • 共收录了 {{.ArticleListData.count}} 篇文章</span>
+		</p>
+
+		{{if .AnthologyInfo.description}}
+		<p class="e-font-black3 description">专栏介绍：{{.AnthologyInfo.description}}</p>
+		{{end}}
+	</div>
+
+	<div class="layui-row layui-col-space15">
+		<div class="layui-col-md8">
+			{{template "template/list.html" .}}
+		</div>
+
+		<div class="layui-col-md4">
+			{{template "template/right/search_word.html" .}}
+			{{template "template/right/label.html" .}}
+			{{template "template/right/friend_link.html" .}}
+			<!-- {{template "template/right/user_card.html" .}}
+					{{template "template/right/user_card.html" .}}
+					{{template "template/right/user_card.html" .}} -->
+
+		</div>
+	</div>
+</div>
+
+<!-- 统计 -->
+{{ if .Seo.TongJi}}{{str2html .Seo.TongJi}}{{end}}

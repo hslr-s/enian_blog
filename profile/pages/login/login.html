@@ -242,12 +242,10 @@
 
         
         function start(){
-            
             if (callBackUrl) {
                 layer.msg("请先登录，再进行其他操作")
-            }else{
-                getCaptchaLogin()
             }
+            getCaptchaLogin()
         }
         start()
     })

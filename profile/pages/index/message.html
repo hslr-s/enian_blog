@@ -34,7 +34,7 @@
         param["page"]=1;
         param["limit"]=10
         app.base.ajaxPost("/api/personal/message/getList",param,function(data){
-            if(data.list.length>1){
+            if(data.list.length>0){
                 $(".message-list").html("")
                 for (let i = 0; i < data.list.length; i++) {
                     const element = data.list[i];

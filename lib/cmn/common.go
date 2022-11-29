@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"math/big"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -185,4 +186,9 @@ func TimeStrToRelativeTime(calcTime string) string {
 	local, _ := time.LoadLocation("Asia/Shanghai")
 	showTime, _ := time.ParseInLocation("2006-01-02 15:04:05", calcTime, local)
 	return TimeToRelativeTime(showTime)
+}
+
+// 获取文章编辑地址
+func GetUrlEditArticle(articleId uint) string {
+	return "/profile/writing.html/#/editor?article_id=" + strconv.Itoa(int(articleId))
 }

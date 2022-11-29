@@ -70,6 +70,7 @@ func (m *Article) GetListByAnthologyId(page, limit int, AnthologyId uint, articl
 
 	err = db.Preload("User").Preload("Tags").
 		Where("article.release_time is not null").
+		Order("release_update_time desc").
 		Offset(offset).Limit(limit).
 		Association("Articles").
 		Find(&articleList)
